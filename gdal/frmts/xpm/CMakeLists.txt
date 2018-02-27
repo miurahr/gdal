@@ -1,0 +1,3 @@
+GDAL_DRIVER(TARGET gdal_XPM SOURCES xpmdataset.cpp)
+GDAL_DRIVER_STANDARD_INCLUDES(gdal_XPM)
+target_include_directories(gdal_XPM PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>)

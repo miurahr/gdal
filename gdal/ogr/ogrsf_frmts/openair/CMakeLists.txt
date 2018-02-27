@@ -1,0 +1,2 @@
+ADD_GDAL_DRIVER(TARGET ogr_OpenAir SOURCES ogr_openair.h ogropenairdatasource.cpp ogropenairdriver.cpp ogropenairlabellayer.cpp ogropenairlayer.cpp)
+gdal_driver_standard_includes(ogr_OpenAir)

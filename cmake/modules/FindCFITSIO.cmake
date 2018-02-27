@@ -1,0 +1,40 @@
+# - Try to find the CFITSIO library
+#
+# Once done this will define
+#
+#  CFITSIO_FOUND - System has libgta
+#  CFITSIO_INCLUDE_DIR - The libgta include directory
+#  CFITSIO_LIBRARIES - The libraries needed to use libgta
+
+
+IF(CFITSIO_INCLUDE_DIR AND CFITSIO_LIBRARY)
+    # in cache already
+    SET(CFITSIO_FIND_QUIETLY TRUE)
+ENDIF()
+
+FIND_PACKAGE(PkgConfig QUIET)
+IF(PKG_CONFIG_FOUND)
+    # try using pkg-config to get the directories and then use these values
+    # in the FIND_PATH() and FIND_LIBRARY() calls
+    PKG_CHECK_MODULES(PC_CFITSIO QUIET cfitsio)
+    SET(CFITSIO_VERSION_STRING ${PC_CFITSIO_VERSION})
+ENDIF()
+
+FIND_PATH(CFITSIO_INCLUDE_DIR fitsio.h HINTS ${PC_CFITSIO_INCLUDE_DIRS})
+
+FIND_LIBRARY(CFITSIO_LIBRARY NAMES cfitsio libcfitsio HINTS ${PC_CFITSIO_LIBRARY_DIRS})
+
+MARK_AS_ADVANCED(CFITSIO_INCLUDE_DIR CFITSIO_LIBRARY)
+
+# handle the QUIETLY and REQUIRED arguments and set CFITSIO_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CFITSIO
+    REQUIRED_VARS CFITSIO_LIBRARY CFITSIO_INCLUDE_DIR
+    VERSION_VAR CFITSIO_VERSION_STRING
+)
+
+IF(CFITSIO_FOUND)
+    SET(CFITSIO_LIBRARIES ${CFITSIO_LIBRARY})
+    SET(CFITSIO_INCLUDE_DIRS ${CFITSIO_INCLUDE_DIR})
+ENDIF()

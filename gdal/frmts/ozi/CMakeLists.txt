@@ -1,0 +1,13 @@
+ADD_GDAL_DRIVER(TARGET gdal_OZI SOURCES ozidataset.cpp)
+target_compile_definitions(gdal_OZI PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
+if(GDAL_USE_LIBZ_INTERNAL)
+	target_include_directories(gdal_OZI PRIVATE
+							   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+else()
+	target_compile_definitions(gdal_OZI PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
+	target_include_directories(gdal_OZI PRIVATE ${ZLIB_INCLUDE_DIRS})
+	gdal_target_link_libraries(TARGET gdal_OZI LIBRARIES ${ZLIB_LIBRARIES})
+	if(MSVC)
+		target_compile_definitions(gdal_OZI PRIVATE -DZLIB_DLL)
+	endif(MSVC)
+endif()

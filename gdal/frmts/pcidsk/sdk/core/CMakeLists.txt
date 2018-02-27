@@ -1,0 +1,20 @@
+add_library(pcidsk_sdk_core OBJECT
+    clinksegment.cpp  edb_pcidsk.cpp     mutexholder.h        pcidskbuffer.cpp      pcidskopen.cpp
+    clinksegment.h    libjpeg_io.cpp     pcidsk_pubutils.cpp  pcidskcreate.cpp      protectedfile.h
+    cpcidskfile.cpp   metadataset.h      pcidsk_utils.cpp     pcidskexception.cpp   sysvirtualfile.cpp
+    cpcidskfile.h     metadataset_p.cpp  pcidsk_utils.h       pcidskinterfaces.cpp  sysvirtualfile.h
+)
+
+target_include_directories(pcidsk_sdk_core PRIVATE
+                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/pcidsk/sdk/core>
+                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/pcidsk/sdk>
+                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
+                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
+                           )
+
+if(HAVE_JPEG)
+    target_include_directories(pcidsk_sdk_core PRIVATE ${JPEG_INCLUDE_DIRS})
+    target_compile_definitions(pcidsk_sdk_core PRIVATE -DHAVE_LIBJPEG)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JPEG_LIBRARIES})
+endif()
+target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk_core>)

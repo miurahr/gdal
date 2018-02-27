@@ -1,0 +1,4 @@
+ADD_GDAL_DRIVER(TARGET gdal_ADRG SOURCES srpdataset.cpp adrgdataset.cpp)
+GDAL_DRIVER_STANDARD_INCLUDES(gdal_ADRG)
+target_include_directories(gdal_ADRG PRIVATE
+                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/iso8211>)

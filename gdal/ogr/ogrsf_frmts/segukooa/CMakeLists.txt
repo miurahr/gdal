@@ -1,0 +1,2 @@
+ADD_GDAL_DRIVER(TARGET ogr_SEGUKOOA SOURCES ogr_segukooa.h ogrsegukooadatasource.cpp ogrsegukooadriver.cpp ogrsegukooalayer.cpp)
+gdal_driver_standard_includes(ogr_SEGUKOOA)

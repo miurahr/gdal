@@ -1,0 +1,110 @@
+ADD_GDAL_DRIVER(TARGET gdal_GRIB SOURCES
+        gribdataset.h
+        gribdataset.cpp
+        gribcreatecopy.cpp
+        degrib/degrib/clock.h
+        degrib/degrib/datasource.h
+        degrib/degrib/filedatasource.h
+        degrib/degrib/memorydatasource.h
+        degrib/degrib/degrib1.h
+        degrib/degrib/degrib2.h
+        degrib/degrib/engribapi.h
+        degrib/degrib/grib2api.h
+        degrib/degrib/inventory.h
+        degrib/degrib/scan.h
+        degrib/degrib/meta.h
+        degrib/degrib/metaname.h
+        degrib/degrib/myutil.h
+        degrib/degrib/myerror.h
+        degrib/degrib/tdlpack.h
+        degrib/degrib/type.h
+        degrib/degrib/weather.h
+        degrib/degrib/hazard.h
+        degrib/degrib/tendian.h
+        degrib/degrib/clock.c
+        degrib/degrib/filedatasource.cpp
+        degrib/degrib/memorydatasource.cpp
+        degrib/degrib/degrib1.cpp
+        degrib/degrib/degrib2.cpp
+        degrib/degrib/engribapi.c
+        degrib/degrib/grib1tab.cpp
+        degrib/degrib/grib2api.c
+        degrib/degrib/inventory.cpp
+        degrib/degrib/myassert.c
+        degrib/degrib/scan.c
+        degrib/degrib/metaname.cpp
+        degrib/degrib/metaparse.cpp
+        degrib/degrib/metaprint.cpp
+        degrib/degrib/myutil.c
+        degrib/degrib/myerror.c
+        degrib/degrib/tdlpack.cpp
+        degrib/degrib/weather.c
+        degrib/degrib/hazard.c
+        degrib/degrib/tendian.cpp
+        degrib/g2clib/drstemplates.h
+        degrib/g2clib/grib2.h
+        degrib/g2clib/gridtemplates.h
+        degrib/g2clib/pdstemplates.h
+        degrib/g2clib/cmplxpack.c
+        degrib/g2clib/compack.c
+        degrib/g2clib/comunpack.c
+        degrib/g2clib/drstemplates.c
+        degrib/g2clib/g2_addfield.c
+        degrib/g2clib/g2_addgrid.c
+        degrib/g2clib/g2_addlocal.c
+        degrib/g2clib/g2_create.c
+        degrib/g2clib/g2_free.c
+        degrib/g2clib/g2_getfld.c
+        degrib/g2clib/g2_info.c
+        degrib/g2clib/g2_miss.c
+        degrib/g2clib/g2_unpack1.c
+        degrib/g2clib/g2_unpack2.c
+        degrib/g2clib/g2_unpack3.c
+        degrib/g2clib/g2_unpack4.c
+        degrib/g2clib/g2_unpack5.c
+        degrib/g2clib/g2_unpack6.c
+        degrib/g2clib/g2_unpack7.c
+        degrib/g2clib/gbits.c
+        degrib/g2clib/getdim.c
+        degrib/g2clib/getpoly.c
+        degrib/g2clib/g2_gribend.c
+        degrib/g2clib/gridtemplates.c
+        degrib/g2clib/int_power.c
+        degrib/g2clib/jpcpack.c
+        degrib/g2clib/jpcunpack.c
+        degrib/g2clib/misspack.c
+        degrib/g2clib/mkieee.c
+        degrib/g2clib/pack_gp.c
+        degrib/g2clib/pdstemplates.c
+        degrib/g2clib/rdieee.c
+        degrib/g2clib/reduce.c
+        degrib/g2clib/seekgb.c
+        degrib/g2clib/simpack.c
+        degrib/g2clib/simunpack.c
+        degrib/g2clib/specpack.c
+        degrib/g2clib/specunpack.c
+        degrib/g2clib/enc_jpeg2000.c
+        degrib/g2clib/dec_jpeg2000.cpp
+)
+GDAL_DRIVER_STANDARD_INCLUDES(gdal_GRIB)
+target_include_directories(gdal_GRIB PRIVATE
+                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/grib/degrib/degrib>
+                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/grib/degrib/g2clib>)
+if(GDAL_USE_LIBPNG_INTERNAL)
+    target_include_directories(gdal_GRIB PRIVATE
+                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/png/libpng>)
+    target_compile_definitions(gdal_GRIB PRIVATE -DUSE_PNG)
+    target_sources(gdal_GRIB PRIVATE degrib/g2clib/pngpack.c degrib/g2clib/pngunpack.c
+                   degrib/g2clib/enc_png.c degrib/g2clib/dec_png.c)
+else()
+    target_compile_definitions(gdal_GRIB PRIVATE -DUSE_PNG)
+    target_include_directories(gdal_GRIB PRIVATE ${PNG_INCLUDE_DIRS})
+    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_GRIB LIBRARIES PNG::PNG)
+    target_sources(gdal_GRIB PRIVATE degrib/g2clib/pngpack.c degrib/g2clib/pngunpack.c degrib/g2clib/enc_png.c degrib/g2clib/dec_png.c)
+endif()
+if(GDAL_USE_LIBZ_INTERNAL)
+    target_include_directories(gdal_GRIB PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+else()
+    target_include_directories(gdal_GRIB PRIVATE ${ZLIB_INCLUDE_DIRS})
+    gdal_target_link_libraries(TARGET gdal_GRIB LIBRARIES ZLIB::ZLIB)
+endif()
