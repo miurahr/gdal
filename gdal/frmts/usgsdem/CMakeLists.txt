@@ -1,0 +1,3 @@
+GDAL_DRIVER(TARGET gdal_USGSDEM SOURCES usgsdem_create.cpp usgsdemdataset.cpp
+        INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/alg>)
+GDAL_DRIVER_STANDARD_INCLUDES(gdal_USGSDEM)

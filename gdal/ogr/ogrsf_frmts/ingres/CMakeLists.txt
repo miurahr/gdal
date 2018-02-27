@@ -1,0 +1,4 @@
+GDAL_DRIVER(TARGET ogr_INGRESS
+    INCLUDES ${INGRESS_INCLUDE_DIR}
+    LIBRARIES ${INGRESS_LIBRARY})
+gdal_driver_standard_includes(ogr_INGRESS)

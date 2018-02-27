@@ -1,0 +1,5 @@
+GDAL_DRIVER(TARGET gdal_MRSID_Lidar
+    SOURCES mg4lidar_headers.h gdal_MG4Lidar.cpp
+    INCLUDEES ${MRSID_INCLUDE_DIR}
+    LIBRARIES ${MRSID_LIBRARY_LTI_LIDAR}
+)
