@@ -2,8 +2,16 @@
 environment:
   matrix:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    BUILD: cmake
     platform: x86
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    BUILD: cmake
+    platform: x64
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    BUILD: nmake
+    platform: x86
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    BUILD: nmake
     platform: x64
 
 shallow_clone: true
@@ -19,11 +27,14 @@ init:
       if($env:platform -eq "x86")
       {
         $env:PATH="c:\Python27;c:\Python27\Scripts;$env:PATH"
+        # Install VC for Python2.7 by Choco
+        cinst -y --no-progress vcpython27
         $env:VS_VER=2017
         $env:SDK="release-1911"
         $env:MSVC_VER=1911
         $env:ARCHITECTURE="x86"
         $env:WIN64_ARG=""
+        $env:CMAKE_GENERATOR="Visual Studio 15 2017"
       }
       else
       {
@@ -33,6 +44,7 @@ init:
         $env:MSVC_VER=1900
         $env:ARCHITECTURE="amd64"
         $env:WIN64_ARG="WIN64=YES"
+        $env:CMAKE_GENERATOR="Visual Studio 14 2015 Win64"
       }
       function exec
       {
@@ -62,8 +74,7 @@ install:
       Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
       Install-Module Pscx -AllowClobber
       Install-Module VSSetup -Scope CurrentUser
-      # Install SWIG and VC for Python2.7 by Choco
-      cinst -y --no-progress swig vcpython27
+      cinst -y --no-progress swig
       Import-VisualStudioVars -VisualStudioVersion $env:VS_VER -Architecture $env:ARCHITECTURE
       exec { pip install numpy }
       $env:SDK_ZIP="$env:SDK"+"-dev.zip"
@@ -75,89 +86,147 @@ install:
       mkdir sdk
       cd sdk
       exec { 7z x ..\downloads\$env:SDK_ZIP }
+      # removes libgdal staff from sdk.
+      Remove-Item "$env:APPVEYOR_BUILD_FOLDER\sdk\$env:SDK\include\gdal*.h" -Recurse
+      Remove-Item "$env:APPVEYOR_BUILD_FOLDER\sdk\$env:SDK\lib\gdal_i.lib"
+      Remove-Item "$env:APPVEYOR_BUILD_FOLDER\sdk\$env:SDK\include\ogr*.h" -Recurse
       $env:SDK_PREFIX="$env:APPVEYOR_BUILD_FOLDER\sdk\$env:SDK"
       $env:SDK_INC="$env:SDK_PREFIX\include"
       $env:SDK_LIB="$env:SDK_PREFIX\lib"
       $env:SDK_BIN="$env:SDK_PREFIX\bin"
-      $env:NMAKE_LOCAL= "GEOS_CFLAGS=-I`$(SDK_INC) -DHAVE_GEOS`n"
-      $env:NMAKE_LOCAL+="GEOS_LIB=`$(SDK_LIB)\geos_c.lib`n"
-      $env:NMAKE_LOCAL+="PG_INC_DIR=`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="PG_LIB=`$(SDK_LIB)\libpqdll.lib wsock32.lib`n"
-      $env:NMAKE_LOCAL+="CURL_DIR=bla`n"
-      $env:NMAKE_LOCAL+="CURL_INC=-I`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="CURL_LIB=`$(SDK_LIB)\libcurl_imp.lib wsock32.lib wldap32.lib winmm.lib`n"
-      $env:NMAKE_LOCAL+="SQLITE_INC=-I`$(SDK_INC) -DHAVE_SPATIALITE -DSPATIALITE_AMALGAMATION`n"
-      $env:NMAKE_LOCAL+="SQLITE_LIB=`$(SDK_LIB)\spatialite_i.lib `$(SDK_LIB)\sqlite3_i.lib`n"
-      $env:NMAKE_LOCAL+="KMLSUPEROVERLAY_SUPPORTED = YES`n"
-      $env:NMAKE_LOCAL+="MINIZIP_INCLUDE = -I`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="MINIZIP_LIBRARY = `$(SDK_LIB)\minizip.lib`n"
-      $env:NMAKE_LOCAL+="MYSQL_INC_DIR=`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="MYSQL_LIB=`$(SDK_LIB)\libmysql.lib advapi32.lib`n"
-      $env:NMAKE_LOCAL+="XERCES_DIR=bla`n"
-      $env:NMAKE_LOCAL+="XERCES_INCLUDE=-I`$(SDK_INC) -I`$(SDK_INC)\xercesc`n"
-      $env:NMAKE_LOCAL+="XERCES_LIB=`$(SDK_LIB)\xerces-c_3.lib`n"
-      $env:NMAKE_LOCAL+="ILI_ENABLED = YES`n"
-      $env:NMAKE_LOCAL+="EXPAT_DIR=bla`n"
-      $env:NMAKE_LOCAL+="EXPAT_INCLUDE=-I`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="EXPAT_LIB=`$(SDK_LIB)\expat.lib`n"
-      $env:NMAKE_LOCAL+="LIBKML_DIR=bla`n"
-      $env:NMAKE_LOCAL+="LIBKML_INCLUDE=-I`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="LIBKML_LIBS=`$(SDK_LIB)\libkmlbase.lib `$(SDK_LIB)\libkmlconvenience.lib `$(SDK_LIB)\libkmldom.lib `$(SDK_LIB)\libkmlengine.lib `$(SDK_LIB)\libkmlregionator.lib `$(SDK_LIB)\libkmlxsd.lib `$(SDK_LIB)\expat.lib `$(SDK_LIB)\zdll.lib`n"
-      $env:NMAKE_LOCAL+="POPPLER_ENABLED = YES`n"
-      $env:NMAKE_LOCAL+="POPPLER_CFLAGS = -I`$(SDK_INC) -I`$(SDK_INC)\poppler`n"
-      $env:NMAKE_LOCAL+="POPPLER_HAS_OPTCONTENT = YES`n"
-      $env:NMAKE_LOCAL+="POPPLER_0_20_OR_LATER = YES`n"
-      $env:NMAKE_LOCAL+="POPPLER_0_23_OR_LATER = YES`n"
-      $env:NMAKE_LOCAL+="POPPLER_BASE_STREAM_HAS_TWO_ARGS = YES`n"
-      $env:NMAKE_LOCAL+="POPPLER_LIBS = `$(SDK_LIB)\poppler.lib `$(SDK_LIB)\freetype.lib `$(SDK_LIB)\harfbuzz.lib advapi32.lib gdi32.lib`n"
-      $env:NMAKE_LOCAL+="OPENJPEG_ENABLED = YES`n"
-      $env:NMAKE_LOCAL+="OPENJPEG_CFLAGS = -I`$(SDK_INC)\openjpeg-2.1`n"
-      $env:NMAKE_LOCAL+="OPENJPEG_LIB = `$(SDK_LIB)\openjp2.lib`n"
-      $env:NMAKE_LOCAL+="ECWDIR=bla`n"
-      $env:NMAKE_LOCAL+="ECWLIB=`$(SDK_LIB)\libecwj2.lib`n"
-      $env:NMAKE_LOCAL+="ECWFLAGS=-DECWSDK_VERSION=33 -I`$(SDK_INC) /D_MBCS /D_UNICODE /DUNICODE /D_WINDOWS  /DLIBECWJ2 /DWIN32 /D_WINDLL -DNO_X86_MMI`n"
-      $env:NMAKE_LOCAL+="HDF5_DIR = `$(SDK_PREFIX)`n"
-      $env:NMAKE_LOCAL+="HDF5_LIB = `$(SDK_LIB)\hdf5.lib`n"
-      $env:NMAKE_LOCAL+="KEA_CFLAGS = -I`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="KEA_LIB = `$(SDK_LIB)\libkea.lib`n"
-      $env:NMAKE_LOCAL+="NETCDF_SETTING=yes`n"
-      $env:NMAKE_LOCAL+="NETCDF_LIB=`$(SDK_LIB)\netcdf.lib`n"
-      $env:NMAKE_LOCAL+="NETCDF_INC_DIR=`$(SDK_INC)`n"
-      $env:NMAKE_LOCAL+="NETCDF_HAS_NC4 = yes`n"
-      $env:NMAKE_LOCAL | Set-Content "$env:APPVEYOR_BUILD_FOLDER\gdal\nmake.local"
-      #
-      cd $env:APPVEYOR_BUILD_FOLDER\gdal
-      exec { nmake /f makefile.vc MSVC_VER=$env:MSVC_VER $env:WIN64_ARG USER_DEFS=/WX }
-      cd apps
-      exec { nmake /f makefile.vc test_ogrsf.exe MSVC_VER=$env:MSVC_VER $env:WIN64_ARG USER_DEFS=/WX }
-      $env:DISTUTILS_USE_SDK=1
-      $env:MSSdk=1
-      cd $env:APPVEYOR_BUILD_FOLDER\gdal\swig\python
-      exec { python setup.py build }
-      exec { python setup.py install }
-      cd $env:APPVEYOR_BUILD_FOLDER\gdal\swig\csharp
-      exec { nmake /f makefile.vc interface}
-      exec { nmake /f makefile.vc all $env:WIN64_ARG}
-      cd $env:APPVEYOR_BUILD_FOLDER\autotest\cpp
-      exec { nmake /f makefile.vc MSVC_VER=$env:MSVC_VER $env:WIN64_ARG }
+      if($env:BUILD -eq "cmake")
+      {
+          $CMAKE_LOCAL= "-DGEOS_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DGEOS_LIBRARY=$env:SDK_LIB\geos_c.lib "
+          $CMAKE_LOCAL+="-DPostgreSQL_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DPostgreSQL_LIBRARY=$env:SDK_LIB\libpqdll.lib "
+          $CMAKE_LOCAL+="-DCURL_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DCURL_LIBRARY=$env:SDK_LIB\libcurl_imp.lib "
+          $CMAKE_LOCAL+="-DSQLITE3_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DSQLITE3_LIBRARY=$env:SDK_LIB\sqlite3_i.lib "
+          $CMAKE_LOCAL+="-DMINIZIP_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DMINIZIP_LIBRARY=$env:SDK_LIB\minizip.lib "
+          $CMAKE_LOCAL+="-DMYSQL_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DMYSQL_LIBRARY=$env:SDK_LIB\libmysql.lib "
+          $CMAKE_LOCAL+="-DXERCESC_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DXERCESC_LIBRARY=$env:SDK_LIB\xerces-c_3.lib "
+          $CMAKE_LOCAL+="-DEXPAT_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DEXPAT_LIBRARY=$env:SDK_LIB\expat.lib "
+          $CMAKE_LOCAL+="-DLIBKML_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DLIBKML_LIBRARY=$env:SDK_LIB\libkmlbase.lib;$env:SDK_LIB\libkmlconvenience.lib;$env:SDK_LIB\libkmldom.lib;$env:SDK_LIB\libkmlengine.lib;$env:SDK_LIB\libkmlregionator.lib;$env:SDK_LIB\libkmlxsd.lib "
+          $CMAKE_LOCAL+="-DPOPPLER_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DPOPPLER_LIBRARY=$env:SDK_LIB\poppler.lib "
+          $CMAKE_LOCAL+="-DOPENJPEG_INCLUDE_DIR=$env:SDK_INC\openjpeg-2.1 "
+          $CMAKE_LOCAL+="-DOPENJPEG_LIBRARY=$env:SDK_LIB\openjp2.lib "
+          $CMAKE_LOCAL+="-DECW_LIBRARY=$env:SDK_LIB\libecwj2.lib "
+          $CMAKE_LOCAL+="-DECW_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DHDF5_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DHDF5_LIBRARY=$env:SDK_LIB\hdf5.lib "
+          $CMAKE_LOCAL+="-DKEA_INCLUDE_DIR=$env:SDK_INC "
+          $CMAKE_LOCAL+="-DKEA_LIBRARY=$env:SDK_LIB\libkea.lib "
+          $CMAKE_LOCAL+="-DNETCDF_LIBRARY=$env:SDK_LIB\netcdf.lib "
+          $CMAKE_LOCAL+="-DNETCDF_INCLUDE_DIR=$env:SDK_INC "
+          Set-Location "$env:APPVEYOR_BUILD_FOLDER"
+          New-Item -ItemType directory -Path cmake-build-windows
+          Set-Location "$env:APPVEYOR_BUILD_FOLDER\cmake-build-windows"
+          & cmake "-G$env:CMAKE_GENERATOR" -DCMAKE_COLOR_MAKEFILE=OFF $CMAKE_LOCAL -C ..\cmake\configurations\windows.cmake .. 2>&1 | %{ "$_" }
+          if ($LastExitCode -ne 0) { write-output "Fails with code:$LastExitCode"; exit 1 }
+          & cmake --build . --config Release 2>&1 | %{ "$_" }
+          if ($LastExitCode -ne 0) { write-output "Fails with code:$LastExitCode"; exit 1 }
+      }
+      else
+      {
+          $env:NMAKE_LOCAL= "GEOS_CFLAGS=-I`$(SDK_INC) -DHAVE_GEOS`n"
+          $env:NMAKE_LOCAL+="GEOS_LIB=`$(SDK_LIB)\geos_c.lib`n"
+          $env:NMAKE_LOCAL+="PG_INC_DIR=`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="PG_LIB=`$(SDK_LIB)\libpqdll.lib wsock32.lib`n"
+          $env:NMAKE_LOCAL+="CURL_DIR=bla`n"
+          $env:NMAKE_LOCAL+="CURL_INC=-I`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="CURL_LIB=`$(SDK_LIB)\libcurl_imp.lib wsock32.lib wldap32.lib winmm.lib`n"
+          $env:NMAKE_LOCAL+="SQLITE_INC=-I`$(SDK_INC) -DHAVE_SPATIALITE -DSPATIALITE_AMALGAMATION`n"
+          $env:NMAKE_LOCAL+="SQLITE_LIB=`$(SDK_LIB)\spatialite_i.lib `$(SDK_LIB)\sqlite3_i.lib`n"
+          $env:NMAKE_LOCAL+="KMLSUPEROVERLAY_SUPPORTED = YES`n"
+          $env:NMAKE_LOCAL+="MINIZIP_INCLUDE = -I`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="MINIZIP_LIBRARY = `$(SDK_LIB)\minizip.lib`n"
+          $env:NMAKE_LOCAL+="MYSQL_INC_DIR=`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="MYSQL_LIB=`$(SDK_LIB)\libmysql.lib advapi32.lib`n"
+          $env:NMAKE_LOCAL+="XERCES_DIR=bla`n"
+          $env:NMAKE_LOCAL+="XERCES_INCLUDE=-I`$(SDK_INC) -I`$(SDK_INC)\xercesc`n"
+          $env:NMAKE_LOCAL+="XERCES_LIB=`$(SDK_LIB)\xerces-c_3.lib`n"
+          $env:NMAKE_LOCAL+="ILI_ENABLED = YES`n"
+          $env:NMAKE_LOCAL+="EXPAT_DIR=bla`n"
+          $env:NMAKE_LOCAL+="EXPAT_INCLUDE=-I`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="EXPAT_LIB=`$(SDK_LIB)\expat.lib`n"
+          $env:NMAKE_LOCAL+="LIBKML_DIR=bla`n"
+          $env:NMAKE_LOCAL+="LIBKML_INCLUDE=-I`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="LIBKML_LIBS=`$(SDK_LIB)\libkmlbase.lib `$(SDK_LIB)\libkmlconvenience.lib `$(SDK_LIB)\libkmldom.lib `$(SDK_LIB)\libkmlengine.lib `$(SDK_LIB)\libkmlregionator.lib `$(SDK_LIB)\libkmlxsd.lib `$(SDK_LIB)\expat.lib `$(SDK_LIB)\zdll.lib`n"
+          $env:NMAKE_LOCAL+="POPPLER_ENABLED = YES`n"
+          $env:NMAKE_LOCAL+="POPPLER_CFLAGS = -I`$(SDK_INC) -I`$(SDK_INC)\poppler`n"
+          $env:NMAKE_LOCAL+="POPPLER_HAS_OPTCONTENT = YES`n"
+          $env:NMAKE_LOCAL+="POPPLER_0_20_OR_LATER = YES`n"
+          $env:NMAKE_LOCAL+="POPPLER_0_23_OR_LATER = YES`n"
+          $env:NMAKE_LOCAL+="POPPLER_BASE_STREAM_HAS_TWO_ARGS = YES`n"
+          $env:NMAKE_LOCAL+="POPPLER_LIBS = `$(SDK_LIB)\poppler.lib `$(SDK_LIB)\freetype.lib `$(SDK_LIB)\harfbuzz.lib advapi32.lib gdi32.lib`n"
+          $env:NMAKE_LOCAL+="OPENJPEG_ENABLED = YES`n"
+          $env:NMAKE_LOCAL+="OPENJPEG_CFLAGS = -I`$(SDK_INC)\openjpeg-2.1`n"
+          $env:NMAKE_LOCAL+="OPENJPEG_LIB = `$(SDK_LIB)\openjp2.lib`n"
+          $env:NMAKE_LOCAL+="ECWDIR=bla`n"
+          $env:NMAKE_LOCAL+="ECWLIB=`$(SDK_LIB)\libecwj2.lib`n"
+          $env:NMAKE_LOCAL+="ECWFLAGS=-DECWSDK_VERSION=33 -I`$(SDK_INC) /D_MBCS /D_UNICODE /DUNICODE /D_WINDOWS  /DLIBECWJ2 /DWIN32 /D_WINDLL -DNO_X86_MMI`n"
+          $env:NMAKE_LOCAL+="HDF5_DIR = `$(SDK_PREFIX)`n"
+          $env:NMAKE_LOCAL+="HDF5_LIB = `$(SDK_LIB)\hdf5.lib`n"
+          $env:NMAKE_LOCAL+="KEA_CFLAGS = -I`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="KEA_LIB = `$(SDK_LIB)\libkea.lib`n"
+          $env:NMAKE_LOCAL+="NETCDF_SETTING=yes`n"
+          $env:NMAKE_LOCAL+="NETCDF_LIB=`$(SDK_LIB)\netcdf.lib`n"
+          $env:NMAKE_LOCAL+="NETCDF_INC_DIR=`$(SDK_INC)`n"
+          $env:NMAKE_LOCAL+="NETCDF_HAS_NC4 = yes`n"
+          $env:NMAKE_LOCAL | Set-Content "$env:APPVEYOR_BUILD_FOLDER\gdal\nmake.local"
+          #
+          cd $env:APPVEYOR_BUILD_FOLDER\gdal
+          exec { nmake /f makefile.vc MSVC_VER=$env:MSVC_VER $env:WIN64_ARG USER_DEFS=/WX }
+          cd apps
+          exec { nmake /f makefile.vc test_ogrsf.exe MSVC_VER=$env:MSVC_VER $env:WIN64_ARG USER_DEFS=/WX }
+          $env:DISTUTILS_USE_SDK=1
+          $env:MSSdk=1
+          cd $env:APPVEYOR_BUILD_FOLDER\gdal\swig\python
+          exec { python setup.py build }
+          exec { python setup.py install }
+          cd $env:APPVEYOR_BUILD_FOLDER\gdal\swig\csharp
+          exec { nmake /f makefile.vc interface}
+          exec { nmake /f makefile.vc all $env:WIN64_ARG}
+          cd $env:APPVEYOR_BUILD_FOLDER\autotest\cpp
+          exec { nmake /f makefile.vc MSVC_VER=$env:MSVC_VER $env:WIN64_ARG }
+      }
 
 build: off
 
 test_script:
   - ps: |
-      $env:PATH="$env:APPVEYOR_BUILD_FOLDER\gdal;$env:APPVEYOR_BUILD_FOLDER\gdal\apps;$env:SDK_BIN;$env:PATH"
-      $env:GDAL_DATA="$env:APPVEYOR_BUILD_FOLDER\gdal\data"
-      $env:PROJ_LIB="$env:SDK_BIN\proj\SHARE"
-      $env:DO_NOT_FAIL_ON_RECODE_ERRORS="YES"
-      # The ca-bundle.crt file which we could point to is invalid in the current SDK
-      # See https://github.com/gisinternals/buildsystem/issues/104
-      $env:GDAL_HTTP_UNSAFESSL="YES"
-      cd $env:APPVEYOR_BUILD_FOLDER\autotest\cpp
-      exec { nmake /f makefile.vc check MSVC_VER=$env:MSVC_VER $env:WIN64_ARG }
-      cd $env:APPVEYOR_BUILD_FOLDER\autotest
-      exec { python run_all.py }
-      cd $env:APPVEYOR_BUILD_FOLDER\gdal\swig\csharp
-      exec { nmake /f makefile.vc test}
+      if($env:BUILD -eq "cmake")
+      {
+        Set-Location "$env:APPVEYOR_BUILD_FOLDER\cmake-build-windows"
+        & cmake --build . --target quicktest 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { write-output "Fails with code:$LastExitCode"; exit 1 }
+        & cmake --build . --target autotest 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { write-output "Fails with code:$LastExitCode"; exit 1 }
+      }
+      else
+      {
+          $env:PATH="$env:APPVEYOR_BUILD_FOLDER\gdal;$env:APPVEYOR_BUILD_FOLDER\gdal\apps;$env:SDK_BIN;$env:PATH"
+          $env:GDAL_DATA="$env:APPVEYOR_BUILD_FOLDER\gdal\data"
+          $env:PROJ_LIB="$env:SDK_BIN\proj\SHARE"
+          $env:DO_NOT_FAIL_ON_RECODE_ERRORS="YES"
+          # The ca-bundle.crt file which we could point to is invalid in the current SDK
+          # See https://github.com/gisinternals/buildsystem/issues/104
+          $env:GDAL_HTTP_UNSAFESSL="YES"
+          cd $env:APPVEYOR_BUILD_FOLDER\autotest\cpp
+          exec { nmake /f makefile.vc check MSVC_VER=$env:MSVC_VER $env:WIN64_ARG }
+          cd $env:APPVEYOR_BUILD_FOLDER\autotest
+          exec { python run_all.py }
+          cd $env:APPVEYOR_BUILD_FOLDER\gdal\swig\csharp
+          exec { nmake /f makefile.vc test}
+      }
 
 deploy: off
 
