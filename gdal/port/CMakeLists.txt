@@ -122,6 +122,9 @@ add_library(cpl OBJECT
 		cpl_swift.cpp
 )
 set_target_properties(cpl PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+if(UNIX)
+    target_compile_options(cpl PRIVATE -DCPL_LSB)
+endif()
 
 #include path to generated cpl_config.h
 target_include_directories(cpl PRIVATE
@@ -130,13 +133,12 @@ target_include_directories(cpl PRIVATE
 						   )
 if(WIN32)
     target_sources(cpl PRIVATE cpl_vsil_win32.cpp)
-else(WIN32)
+else()
     target_sources(cpl PRIVATE cpl_vsil_unix_stdio_64.cpp)
-endif(WIN32)
+endif()
 
 if(GDAL_USE_LIBJSONC_INTERNAL)
-    target_include_directories(cpl PRIVATE
-							   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson/libjson>)
+    target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
     target_include_directories(cpl PRIVATE ${JSONC_INCLUDE_DIR})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARY})

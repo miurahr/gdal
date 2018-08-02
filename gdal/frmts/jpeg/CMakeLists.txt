@@ -5,8 +5,8 @@ ADD_GDAL_DRIVER(TARGET gdal_JPEG SOURCES
                     jpgdataset.cpp
                 BUILTIN)
 gdal_standard_includes(gdal_JPEG)
-target_include_directories(gdal_JPEG PRIVATE
-                   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>)
+
+target_include_directories(gdal_JPEG PRIVATE $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)
 if(GDAL_JPEG12_SUPPORTED)
     target_sources(gdal_JPEG PRIVATE
             jpgdataset_12.cpp
@@ -14,22 +14,15 @@ if(GDAL_JPEG12_SUPPORTED)
 endif()
 
 if(GDAL_USE_LIBJPEG_INTERNAL)
-	target_include_directories(gdal_JPEG
-	    PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/jpeg/libjpeg>)
+	target_include_directories(gdal_JPEG PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
-	target_include_directories(gdal_JPEG
-		PRIVATE ${JPEG_INCLUDE_DIRS})
-	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_JPEG
-		LIBRARIES JPEG::JPEG)
+	target_include_directories(gdal_JPEG PRIVATE JPEG::JPEG)
+	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_JPEG LIBRARIES JPEG::JPEG)
 endif()
 
 if(GDAL_USE_LIBZ_INTERNAL)
-	target_include_directories(gdal_JPEG
-		PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+	target_include_directories(gdal_JPEG PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
-	target_include_directories(gdal_JPEG
-		PRIVATE {ZLIB_INCLUDE_DIRS})
-	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_JPEG
-		LIBRARIES ZLIB::ZLIB)
+	target_include_directories(gdal_JPEG PRIVATE ZLIB::ZLIB)
+	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_JPEG LIBRARIES ZLIB::ZLIB)
 endif()
-

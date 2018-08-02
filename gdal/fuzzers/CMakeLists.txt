@@ -20,8 +20,9 @@ foreach(FUZZER IN ITEMS gdal_translate_fuzzer gdal_vector_translate_fuzzer
 		gdal_fuzzer ogr_fuzzer)
     target_link_libraries(${FUZZER} PRIVATE gdal)
     gdal_standard_includes(${FUZZER})
+    #get_target_property(appslib_folder appslib SOURCE_DIR)
     target_include_directories(${FUZZER} PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/apps>)
+                               $<TARGET_PROPERTY:appslib,SOURCE_DIR>)
     ## Windows(Mingw/MSVC) link libraries
     if (CMAKE_SYSTEM_NAME MATCHES "Windows")
         target_link_libraries(${FUZZER} PRIVATE wsock32 ws2_32 psapi)

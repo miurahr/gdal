@@ -1,3 +1,3 @@
 ADD_GDAL_DRIVER(TARGET gdal_DIMAP SOURCES dimapdataset.cpp)
 GDAL_DRIVER_STANDARD_INCLUDES(gdal_DIMAP)
-target_include_directories(gdal_DIMAP PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>)
+target_include_directories(gdal_DIMAP PRIVATE $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)

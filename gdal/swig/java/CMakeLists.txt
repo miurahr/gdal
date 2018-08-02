@@ -4,7 +4,7 @@
 # * Author: Dmitriy Baryshnikov (aka Bishop), polimax@mail.ru,
 # *			Hiroshi Miura <miurahr@linux.com>
 # ******************************************************************************
-# * Copyright (C) 2017 Hiroshi Miura
+# * Copyright (C) 2017,2018 Hiroshi Miura
 # *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
@@ -25,72 +25,60 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-
 FIND_PACKAGE(SWIG REQUIRED)
 find_package(JNI REQUIRED)
 
-include_directories(${JNI_INCLUDE_DIRS})
-include_directories(${GDAL_ROOT_SOURCE_DIR}/alg)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/gcore)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/ogr)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/apps)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/gnm)
-include_directories(${GDAL_ROOT_BINARY_DIR}/swig/java/)
+include(GdalStandardIncludes)
+function(GDAL_JAVA_WRAP)
+    set(_options CXX)
+    set(_oneValueArgs TARGET)
+    set(_multiValueArgs ARGS)
+    cmake_parse_arguments(_SWIG "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
+   if(_SWIG_CXX)
+        set(SWIG_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.cpp)
+        add_custom_command(
+            OUTPUT ${SWIG_OUTPUT}
+            COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${GDAL_ROOT_SOURCE_DIR} -c++ -java
+                -o ${SWIG_OUTPUT}
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_TARGET}.i
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/java/typemaps_java.i
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/java/${_SWIG_TARGET}_java.i
+        )
+        set_source_files_properties(${SWIG_OUTPUT} PROPERTIES GENERATED 1)
+        add_library(${_SWIG_TARGET}jni MODULE ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.cpp)
+    else()
+        set(SWIG_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
+        add_custom_command(
+            OUTPUT ${SWIG_OUTPUT}
+            COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${GDAL_ROOT_SOURCE_DIR} -java
+                -o ${SWIG_OUTPUT}
+                ${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_TARGET}.i
+            WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/swig/java
+            DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
+                ${GDAL_ROOT_SOURCE_DIR}/swig/include/java/typemaps_java.i
+                ${GDAL_ROOT_SOURCE_DIR}/swig/include/java/${_SWIG_TARGET}_java.i
+        )
+        set_source_files_properties(${SWIG_OUTPUT} PROPERTIES GENERATED 1)
+        add_library(${_SWIG_TARGET}jni MODULE ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
+    endif()
+    gdal_standard_includes(${_SWIG_TARGET}jni)
+    target_include_directories(${_SWIG_TARGET}jni PRIVATE ${JNI_INCLUDE_DIRS})
+    target_include_directories(${_SWIG_TARGET}jni PRIVATE ${GDAL_ROOT_BINARY_DIR}/swig/java/)
+endfunction()
 
 file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdal)
 file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/ogr)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/osr)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gnm)
+GDAL_JAVA_WRAP(TARGET gdalconst
+               ARGS -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java
+                    -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst/ -package "org.gdal.gdalconst"
+               )
+foreach(tgt IN ITEMS gdal ogr osr gnm)
+    file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${tgt})
+    GDAL_JAVA_WRAP(TARGET ${tgt} CXX
+                   ARGS -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java
+                        -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${tgt}/ -package "org.gdal.${tgt}")
+endforeach()
 
-include(MacroSwigBindings)
-set(SWIG_ARGS1 -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java)
-set(SWIG_ARGS2 -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst/ -package "org.gdal.gdalconst" )
-
-# for gdalconst.i
-set(SWIG_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst/gdalconst_wrap.c )
-set(SWIG_INPUT  ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdalconst.i )
-set(GDAL_SWIG_DEPENDS
-        ${GDAL_ROOT_SOURCE_DIR}/swig/include/java/typemaps_java.i
-)
-add_custom_command(
-    OUTPUT  ${SWIG_OUTPUT}
-    COMMAND ${SWIG_EXECUTABLE} ${SWIG_ARGS1} ${SWIG_ARGS2} ${SWIG_DEFINES} -java -o ${SWIG_OUTPUT} ${SWIG_INPUT}
-    WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/swig/java/
-    DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${GDAL_SWIG_DEPENDS} ${SWIG_INPUT}
-)
-set_source_files_properties(${SWIG_OUTPUT} PROPERTIES GENERATED 1)
-
-set(SWIG_ARGS2 -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdal/ -package "org.gdal.gdal" )
-MACRO_SWIG_JAVA_BINDINGS(gdal SWIG_ARGS1 SWIG_ARGS2)
-
-set(SWIG_ARGS2 -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/ogr/ -package "org.gdal.ogr" )
-MACRO_SWIG_JAVA_BINDINGS(ogr  SWIG_ARGS1 SWIG_ARGS2)
-
-set(SWIG_ARGS2 -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/osr/ -package "org.gdal.osr" )
-MACRO_SWIG_JAVA_BINDINGS(osr  SWIG_ARGS1 SWIG_ARGS2)
-
-set(SWIG_ARGS2 -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gnm/ -package "org.gdal.gnm" )
-MACRO_SWIG_JAVA_BINDINGS(gnm  SWIG_ARGS1 SWIG_ARGS2)
-
-add_library(gdaljni MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdal/gdal_wrap.cpp
-            )
-add_library(ogrjni MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/ogr/ogr_wrap.cpp
-            )
-add_library(osrjni MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/osr/osr_wrap.cpp
-            )
-add_library(gnmjni MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gnm/gnm_wrap.cpp
-)
-add_library(gdalconstjni MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst/gdalconst_wrap.c
-            )
-add_custom_target(java_binding
-                  DEPENDS
-                      gdaljni ogrjni osrjni gnmjni gdalconstjni
-)
+add_custom_target(java_binding DEPENDS  gdaljni ogrjni osrjni gnmjni gdalconstjni)

@@ -2,18 +2,18 @@
 # ~~~~~~~~~~~~~~~
 #
 # Copyright (c) 2009, Sandro Furieri <a.furieri at lqt.it>
-# Copyright (C) 2017, Hiroshi Miura
+# Copyright (C) 2017,2018 Hiroshi Miura
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
-# CMake module to search for SpatiaLite library
+# CMake module to search for rasterlite library
 #
-# If it's found it sets RASTERLITE_FOUND to TRUE
+# If it's found it sets RASTERLITE2_FOUND to TRUE
 # and following variables are set:
-#    RASTERLITE_INCLUDE_DIR
-#    RASTERLITE_LIBRARY
-#    RASTERLITE_VERSION_STRING
-
+#    RASTERLITE2_INCLUDE_DIR
+#    RASTERLITE2_LIBRARIES
+#    RASTERLITE2_VERSION_STRING
+#
 # FIND_PATH and FIND_LIBRARY normally search standard locations
 # before the specified paths. To search non-standard paths first,
 # FIND_* is invoked first with specified paths and NO_DEFAULT_PATH
@@ -29,12 +29,12 @@ if(APPLE)
       OR NOT CMAKE_FIND_FRAMEWORK)
         set(CMAKE_FIND_FRAMEWORK_save ${CMAKE_FIND_FRAMEWORK} CACHE STRING "" FORCE)
         set(CMAKE_FIND_FRAMEWORK "ONLY" CACHE STRING "" FORCE)
-        find_path(RASTERLITE_INCLUDE_DIR rasterlite.h)
+        find_path(RASTERLITE2_INCLUDE_DIR rasterlite.h)
         # if no spatialite header, we don't want sqlite find below to succeed
-        if(RASTERLITE_INCLUDE_DIR)
-            find_library(RASTERLITE_LIBRARY rasterlite)
+        if(RASTERLITE2_INCLUDE_DIR)
+            find_library(RASTERLITE2_LIBRARY rasterlite)
             # FIND_PATH doesn't add "Headers" for a framework
-            set(RASTERLITE_INCLUDE_DIR ${RASTERLITE_LIBRARY}/Headers CACHE PATH "Path to a file." FORCE)
+            set(RASTERLITE_INCLUDE_DIR ${RASTERLITE2_LIBRARY}/Headers CACHE PATH "Path to a file." FORCE)
         endif()
         set(CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
     endif()
@@ -58,7 +58,7 @@ FIND_LIBRARY(RASTERLITE2_LIBRARY
 
 mark_as_advanced(RASTERLITE2_LIBRARY RASTERLITE2_INCLUDE_DIR)
 
-# Handle the QUIETLY and REQUIRED arguments and set GEOS_FOUND to TRUE
+# Handle the QUIETLY and REQUIRED arguments and set RASTERLITE2_FOUND to TRUE
 # if all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(RASTERLITE2
@@ -69,5 +69,11 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(RASTERLITE2
 if(RASTERLITE2_FOUND)
     set(RASTERLITE2_LIBRARIES ${RASTERLITE2_LIBRARY})
     set(RASTERLITE2_INCLUDE_DIRS ${RASTERLITE2_INCLUDE_DIR})
+    if(NOT TARGET RASTERLITE2::RASTERLITE2)
+        add_library(RASTERLITE2::RASTERLITE2 UNKNOWN IMPORTED)
+        set_target_properties(RASTERLITE2::RASTERLITE2 PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES ${RASTERLITE2_INCLUDE_DIRS}
+                              IMPORTED_LINK_INTERFACE_LANGUAGES C
+                              IMPORTED_LOCATION ${RASTERLITE2_LIBRARY})
+    endif()
 endif()
-

@@ -75,7 +75,7 @@ IF(DOXYGEN_FOUND)
               -Doutfile:FILEPATH=${GDAL_ROOT_BINARY_DIR}/html/header_ru.html
               -Dfrom:STRING="iso-8859-1"
               -Dto:STRING="utf-8"
-              -P ${GDAL_CMAKE_MACRO_PATH}/ReplaceStr.cmake
+              -P ${CMAKE_CURRENT_SOURCE_DIR}/ReplaceStr.cmake
               MAIN_DEPENDENCY
               ${GDAL_ROOT_BINARY_DIR}/html/header.html
               WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/html

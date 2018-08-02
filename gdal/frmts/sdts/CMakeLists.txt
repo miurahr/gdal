@@ -15,18 +15,6 @@ ADD_GDAL_DRIVER(TARGET gdal_SDTS SOURCES
         sdtsdataset.cpp
                 BUILTIN
 )
-target_include_directories(gdal_SDTS PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/iso8211>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/shapelib>)
-
+gdal_standard_includes(gdal_SDTS)
+target_include_directories(gdal_SDTS PRIVATE $<TARGET_PROPERTY:gdal_iso8211,SOURCE_DIR>)
 add_executable(sdts2shp EXCLUDE_FROM_ALL sdts2shp.cpp)
-target_include_directories(sdts2shp PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/shapelib>)

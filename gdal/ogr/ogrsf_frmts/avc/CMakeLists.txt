@@ -1,5 +1,5 @@
 #depend from frmts/aigrid
-GDAL_DRIVER(TARGET  ogr_AVCBin FORCE_BUILTIN
+ADD_GDAL_DRIVER(TARGET  ogr_AVCBin
     SOURCES
         avc.h
         ogr_avc.h
@@ -11,6 +11,7 @@ GDAL_DRIVER(TARGET  ogr_AVCBin FORCE_BUILTIN
         avc_e00write.cpp
         avc_e00read.cpp
         avc_mbyte.cpp
+        avc_mbyte.h
         avc_misc.cpp
         ogravcbindatasource.cpp
         ogravcbindriver.cpp
@@ -20,5 +21,7 @@ GDAL_DRIVER(TARGET  ogr_AVCBin FORCE_BUILTIN
         ogravce00driver.cpp
         ogravce00layer.cpp
         ogravclayer.cpp
-    INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/shape>)
+                BUILTIN)
+gdal_standard_includes(ogr_AVCBin)
+target_include_directories(ogr_AVCBin PRIVATE $<TARGET_PROPERTY:ogr_Shape,SOURCE_DIR>)
 

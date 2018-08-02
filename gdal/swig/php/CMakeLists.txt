@@ -1,9 +1,9 @@
 # ******************************************************************************
 # * Project:  CMake4GDAL
 # * Purpose:  CMake build scripts
-# *	Author:	Hiroshi Miura <miurahr@linux.com>
+# *	Author:	Hiroshi Miura
 # ******************************************************************************
-# * Copyright (C) 2017 Hiroshi Miura
+# * Copyright (C) 2017,2018 Hiroshi Miura
 # *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
@@ -24,46 +24,31 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-FIND_PACKAGE(SWIG REQUIRED)
 find_package(PHP REQUIRED)
-
-include_directories(${PHP_INCLUDE_DIRS})
-include_directories(${GDAL_ROOT_SOURCE_DIR}/alg)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/gcore)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/ogr)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/apps)
-include_directories(${GDAL_ROOT_SOURCE_DIR}/gnm)
-include_directories(${GDAL_ROOT_BINARY_DIR}/swig/php/)
-
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/php/)
-
-set(SWIG_ARGS -prefix "gdal::" -outdir ${GDAL_ROOT_BINARY_DIR}/swig/php )
-set(GDAL_SWIG_OUTPUT
-        ${GDAL_ROOT_BINARY_DIR}/swig/php/gdal.php
-        ${GDAL_ROOT_BINARY_DIR}/swig/php/gdalconst.php
-        ${GDAL_ROOT_BINARY_DIR}/swig/php/gnm.php
-        ${GDAL_ROOT_BINARY_DIR}/swig/php/ogr.php
-        ${GDAL_ROOT_BINARY_DIR}/swig/php/osr.php
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+include(GdalSwigBindings)
+gdal_swig_bindings(
+        TARGET php
+        ARGS -prefix "gdal::" -outdir ${CMAKE_CURRENT_BINARY_DIR}
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/gdal.php
+            ${CMAKE_CURRENT_BINARY_DIR}/gdalconst.php
+            ${CMAKE_CURRENT_BINARY_DIR}/gnm.php
+            ${CMAKE_CURRENT_BINARY_DIR}/ogr.php
+            ${CMAKE_CURRENT_BINARY_DIR}/osr.php
 )
-include(MacroSwigBindings)
-MACRO_SWIG_BINDINGS(php SWIG_ARGS GDAL_SWIG_OUTPUT)
 
-add_library(php_gdal MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/php/extensions/gdal_wrap.cpp
-            )
-add_library(php_gdalconst MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/php/extensions/gdalconst_wrap.c
-            )
-add_library(php_gnm MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/php/extensions/gnm_wrap.cpp
-            )
-add_library(php_ogr MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/php/extensions/ogr_wrap.cpp
-            )
-add_library(php_osr MODULE
-            ${GDAL_ROOT_BINARY_DIR}/swig/php/extensions/osr_wrap.cpp
-            )
+foreach(tgt IN ITEMS php_gdalconst php_gdal php_gnm php_ogr php_osr)
+    if(tgt STREQUAL php_gdalconst)
+        add_library(${tgt} MODULE ${CMAKE_CURRENT_BINARY_DIR}/extensions/${tgt}_wrap.c)
+    else()
+        add_library(${tgt} MODULE ${CMAKE_CURRENT_BINARY_DIR}/extensions/${tgt}_wrap.cpp)
+    endif()
+    gdal_standard_includes(${tgt})
+    target_include_directories(${tgt} PRIVATE ${PHP_INCLUDE_DIRS})
+    target_include_directories(${tgt} PRIVATE $<TARGET_PROPERTY:appslib,SOURCE_DIR>)
+    target_include_directories(${tgt} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
 add_custom_target(php_binding
                   DEPENDS
                   php_gdal php_gnm php_ogr php_osr php_gdalconst

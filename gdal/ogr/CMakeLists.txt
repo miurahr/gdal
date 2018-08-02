@@ -66,7 +66,6 @@ add_library(ogr OBJECT
         ogr_srs_usgs.cpp
         ogr_srs_validate.cpp
         ogr_srs_xml.cpp
-        ogr_xerces.cpp
         osr_cs_wkt.c
         osr_cs_wkt_parser.c
         swq.cpp
@@ -111,6 +110,7 @@ target_include_directories(ogr PRIVATE
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
                            )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogr>)
+target_compile_definitions(ogr PRIVATE -DHAVE_MITAB)
 
 if(HAVE_GEOS)
     get_filename_component(GEOS_ROOT ${GEOS_INCLUDE_DIR} PATH)

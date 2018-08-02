@@ -4,9 +4,9 @@ add_library(pcidsk_sdk_channel OBJECT
         cexternalchannel.cpp         cpcidskchannel.h    ctiledchannel.cpp
         )
 target_include_directories(pcidsk_sdk_channel PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/pcidsk/sdk/channel>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/pcidsk/sdk>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
+                           ${CMAKE_CURRENT_SOURCE_DIR}
+                           $<TARGET_PROPERTY:pcidsk_sdk,SOURCE_DIR>
+                           $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+                           $<TARGET_PROPERTY:cpl,BINARY_DIR>
                            )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk_channel>)

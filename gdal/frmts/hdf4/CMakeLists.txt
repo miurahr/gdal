@@ -9,7 +9,7 @@ ADD_GDAL_DRIVER(TARGET gdal_HDF4 SOURCES
             hdf4compat.h hdf4dataset.h
             hdf4dataset.cpp  hdf4imagedataset.cpp
             )
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_HDF4)
+GDAL_STANDARD_INCLUDES(gdal_HDF4)
 target_include_directories(gdal_HDF4 PRIVATE ${HDF4_INCLUDE_DIR}
             $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/hdf4/hdf-eos>
             $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/hdf4>

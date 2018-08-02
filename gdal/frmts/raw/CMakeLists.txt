@@ -35,7 +35,4 @@ ADD_GDAL_DRIVER(TARGET gdal_raw SOURCES
         snodasdataset.cpp
 BUILTIN)
 gdal_standard_includes(gdal_raw)
-target_include_directories(gdal_raw PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/raw>
-                           )
-
+target_include_directories(gdal_raw PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

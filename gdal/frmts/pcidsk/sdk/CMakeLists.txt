@@ -7,10 +7,9 @@ add_library(pcidsk_sdk OBJECT
     pcidsk_segment.h pcidsk_shape.h pcidsk_tex.h pcidsk_toutin.h pcidsk_types.h
     pcidsk_vectorsegment.h
 )
-target_include_directories(pcidsk_sdk PRIVATE
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/pcidsk/sdk>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
+target_include_directories(pcidsk_sdk PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+						   $<TARGET_PROPERTY:cpl,BINARY_DIR>
 						   )
 
 if(WIN32)
@@ -23,3 +22,8 @@ add_subdirectory(channel)
 add_subdirectory(core)
 add_subdirectory(segment)
 
+if(NOT TARGET PCIDSK::PCIDSK)
+    add_library(PCIDSK::PCIDSK UNKNOWN IMPORTED)
+    set_target_properties(PCIDSK::PCIDSK PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
+endif()

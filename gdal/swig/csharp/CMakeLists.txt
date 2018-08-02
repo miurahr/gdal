@@ -27,7 +27,8 @@
 FIND_PACKAGE(SWIG REQUIRED)
 find_package(CSharp REQUIRED)
 file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/)
-include(MacroSwigBindings)
+
+include(GdalStandardIncludes)
 
 add_custom_command(
          OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal.snk
@@ -35,7 +36,6 @@ add_custom_command(
             ${GDAL_ROOT_SOURCE_DIR}/swig/csharp/gdal.snk
             ${GDAL_ROOT_BINARY_DIR}/swig/csharp/
 )
-
 
 #############################################################
 # gdal_csharp.dll
@@ -53,6 +53,7 @@ add_custom_command(
 )
 set_source_files_properties(gdal_wrap PROPERTIES GENERATED 1)
 add_library(gdal_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal/gdal_wrap.cpp)
+gdal_standard_includes(gdal_wrap)
 add_custom_command(
 		OUTPUT gdal_csharp.dll
 		COMMAND ${CSHARP_COMPILER} /debug:full /target:library /out:gdal_csharp.dll /r:ogr_csharp.dll
@@ -97,6 +98,7 @@ add_custom_command(
 )
 set_source_files_properties(ogr_wrap PROPERTIES GENERATED 1)
 add_library(ogr_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/ogr/ogr_wrap.cpp)
+gdal_standard_includes(ogr_wrap)
 add_custom_command(
 		OUTPUT  ogr_csharp.dll
 		COMMAND ${CSHARP_COMPILER} /debug:full /target:library /out:ogr_csharp.dll  /r:osr_csharp.dll
@@ -127,6 +129,7 @@ add_custom_command(
 )
 set_source_files_properties(osr_wrap PROPERTIES GENERATED 1)
 add_library(osr_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/osr/osr_wrap.cpp)
+gdal_standard_includes(osr_wrap)
 add_custom_command(
 		OUTPUT  osr_csharp.dll
 		COMMAND ${CSHARP_COMPILER} /debug:full /target:library /out:osr_csharp.dll
@@ -153,6 +156,7 @@ add_custom_command(
 )
 set_source_files_properties(gdalconst_wrap PROPERTIES GENERATED 1)
 add_library(gdalconst_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/const/gdalconst_wrap.cpp)
+gdal_standard_includes(gdalconst_wrap)
 add_custom_command(
 		OUTPUT  gdalconst_csharp.dll
 		COMMAND ${CSHARP_COMPILER} /debug:full /target:library /out:gdalconst_csharp.dll

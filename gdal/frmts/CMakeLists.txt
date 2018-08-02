@@ -25,7 +25,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-add_library(gdalallregister OBJECT gdalallregister.cpp)
+add_library(gdal_frmts OBJECT gdalallregister.cpp)
 ###############################################
 include(MacroGdalDrivers)
 include(CMakeDependentOption)
@@ -110,7 +110,6 @@ gdal_optional_format(usgsdem "USGSDEM")
 gdal_optional_format(bmp "BMP")
 gdal_optional_format(airsar "AirSAR")
 gdal_optional_format(netcdf "NetCDF")
-gdal_optional_format(pcidsk "PCIDSK")
 gdal_optional_format(ozi "OZI")
 gdal_optional_format(eeda "Earth Engine Data API")
 gdal_optional_format(rda "RDA")
@@ -136,6 +135,7 @@ gdal_dependent_format(openjpeg "OpenJPEG" "HAVE_OPENJPEG")
 gdal_dependent_format(rik "RIK" "GDAL_ENABLE_FRMT_ZLIB")
 gdal_dependent_format(jpegls "JPEG LS" "HAVE_CHARLS")
 gdal_dependent_format(jpeg2000 "Jpeg2000" "HAVE_JASPER")
+gdal_dependent_format(pcidsk "PCIDSK" "HAVE_PCIDSK")
 
 # for circulate dependency, grass is NOT always compiled in.
 gdal_optional_format(grass "GRASS")
@@ -172,13 +172,11 @@ endif()
 
 ###############################################################
 # Register all frmt drivers according to FRMT_<driver> flags
-gdal_standard_includes(gdalallregister)
-target_include_directories(gdalallregister PRIVATE
+gdal_standard_includes(gdal_frmts)
+target_include_directories(gdal_frmts PRIVATE
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
                            )
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:gdalallregister>)
+target_sources(gdal PRIVATE $<TARGET_OBJECTS:gdal_frmts>)
 #---------------------------------------------
-# send formats for gdal-config generation in apps/CMakeLists.txt
-set(GDAL_FORMATS ${GDAL_FORMATS} PARENT_SCOPE)

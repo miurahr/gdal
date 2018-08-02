@@ -9,6 +9,7 @@ ADD_GDAL_DRIVER(TARGET ogr_GeoPackage SOURCES
         ogrgeopackagetablelayer.cpp
         ogrgeopackageutility.cpp
         gdalgeopackagerasterband.cpp
+                BUILTIN
 )
 gdal_driver_standard_includes(ogr_GeoPackage)
 

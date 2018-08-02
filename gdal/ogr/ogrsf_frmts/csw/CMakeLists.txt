@@ -1,3 +1,5 @@
-GDAL_DRIVER(TARGET ogr_CSW SOURCES ogrcswdataset.cpp
-    INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/gml>
-             $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/wfs>)
+ADD_GDAL_DRIVER(TARGET ogr_CSW SOURCES ogrcswdataset.cpp)
+gdal_standard_includes(ogr_CSW)
+target_include_directories(ogr_CSW PRIVATE
+                           $<TARGET_PROPERTY:ogr_GML,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_WFS,SOURCE_DIR>)

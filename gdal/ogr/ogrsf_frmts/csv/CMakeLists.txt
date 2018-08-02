@@ -1,4 +1,5 @@
-GDAL_DRIVER(TARGET ogr_CSV
-    SOURCES ogr_csv.h ogrcsvdatasource.cpp ogrcsvdriver.cpp ogrcsvlayer.cpp
-    INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-    DEFINITIONS -DTAB_ENABLED)
+ADD_GDAL_DRIVER(TARGET ogr_CSV
+    SOURCES ogr_csv.h ogrcsvdatasource.cpp ogrcsvdriver.cpp ogrcsvlayer.cpp)
+gdal_standard_includes(ogr_CSV)
+target_include_directories(ogr_CSV PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)
+target_compile_definitions(ogr_CSV PRIVATE -DTAB_ENABLED)

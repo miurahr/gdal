@@ -24,72 +24,76 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-FIND_PACKAGE(SWIG REQUIRED)
 find_package(Perl REQUIRED)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/GDAL)
-set(SWIG_ARGS -DPERL_CPAN_NAMESPACE -outdir ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo)
-set(GDAL_PERL_SWIG_OUTPUT
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/GDAL.pm
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/Const.pm
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/OGR.pm
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/OSR.pm
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL)
+include(GdalSwigBindings)
+gdal_swig_bindings(
+		BINDING perl
+		ARGS
+            -DPERL_CPAN_NAMESPACE -outdir ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL.pm
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/Const.pm
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/OGR.pm
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/OSR.pm
 )
-include(MacroSwigBindings)
-MACRO_SWIG_BINDINGS(perl SWIG_ARGS GDAL_PERL_SWIG_OUTPUT)
 #------------------------------------------------------------
 # HACK to compile interface source
 #   this should do by Makefile.PL
 find_package(PerlLibs)
 add_library(swig_perl_wrap OBJECT
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/extensions/gdal_wrap.cpp
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/extensions/gdalconst_wrap.c
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/extensions/gnm_wrap.cpp
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/extensions/ogr_wrap.cpp
-        ${GDAL_ROOT_BINARY_DIR}/swig/perl/extensions/osr_wrap.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_wrap.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdalconst_wrap.c
+        ${CMAKE_CURRENT_BINARY_DIR}/extensions/gnm_wrap.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/extensions/ogr_wrap.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/extensions/osr_wrap.cpp
 )
 set_target_properties(swig_perl_wrap PROPERTIES CXX_STANDARD 98)
 gdal_standard_includes(swig_perl_wrap)
-target_include_directories(swig_perl_wrap PRIVATE ${PERL_INCLUDE_PATH})
+target_include_directories(swig_perl_wrap PRIVATE
+						   ${PERL_INCLUDE_PATH}
+                           $<TARGET_PROPERTY:gnm,SOURCE_DIR>
+                           )
 target_compile_definitions(swig_perl_wrap PRIVATE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE)
 set(GDAL_PERL_WRAP_OBJ_DIR "CMakeFiles/swig_perl_wrap.dir/extensions")
-configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Makefile.PL.in ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile.PL @ONLY)
+configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Makefile.PL.in ${CMAKE_CURRENT_BINARY_DIR}/Makefile.PL @ONLY)
 #--------------------------------------------------------------
 add_custom_command(
         OUTPUT
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/GDAL/Const.pm
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL/Const.pm
         COMMAND ${CMAKE_COMMAND} -E copy
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/Const.pm
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/GDAL/
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/Const.pm
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL/
         )
 
 add_custom_command(
         OUTPUT
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile_Geo__GDAL
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile_Geo__GDAL__Const
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile_Geo__OSR
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile_Geo__OGR
+            ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GDAL
+            ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GDAL__Const
+            ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OSR
+            ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OGR
         COMMAND ${PERL_EXECUTABLE} Makefile.PL INSTALL_BASE=${CMAKE_INSTALL_PREFIX}
-        WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS gdal_perl_wrappers swig_perl_wrap
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/lib/Geo/GDAL/Const.pm
-            ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile.PL
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL/Const.pm
+            ${CMAKE_CURRENT_BINARY_DIR}/Makefile.PL
 )
 
 add_custom_target(perl_binding
 				  COMMAND
                       make -f Makefile_Geo__GDAL && make -f Makefile_Geo__GDAL__Const &&
                       make -f Makefile_Geo__OSR && make -f Makefile_Geo__OGR
-				  WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl
-				  DEPENDS ${GDAL_ROOT_BINARY_DIR}/swig/perl/Makefile_Geo__GDAL gdal
+				  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GDAL gdal
 				  COMMENT "generating perl binding..."
 )
 
 #------------------------------------------------------------
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__GDAL install WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl)\n")
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__GDAL__Const install WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl)\n")
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__OSR install  WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl)\n")
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__OGR install  WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl)\n")
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__GNM install  WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/perl)\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__GDAL install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__GDAL__Const install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__OSR install  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__OGR install  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake "execute_process(COMMAND make -f Makefile_Geo__GNM install  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})\n")
 install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/cmake_perl_install.cmake COMPONENT runtime)
 
 # vim: ts=4 sw=4 sts=4 et
