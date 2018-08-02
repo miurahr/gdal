@@ -69,7 +69,7 @@ add_library(gcore OBJECT
 )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore>)
 
-install(FILES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/gdal/gcore/gdal_version.h>
+install(FILES $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/gdal_version.h>
         DESTINATION include/gdal)
 install(FILES
         gdal.h
@@ -88,26 +88,17 @@ install(FILES
         gdalsse_priv.h
         DESTINATION include/gdal)
 
+gdal_standard_includes(gcore)
 target_include_directories(gcore PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/alg>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm>
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm/gnm_frmts>
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/gtiff>
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>
                            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
                            )
 if(GDAL_USE_LIBJSONC_INTERNAL)
-    target_include_directories(gcore PRIVATE
-							   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson/libjson>
-							   )
+    target_include_directories(gcore PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
     target_include_directories(gcore PRIVATE ${JSONC_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARIES})

@@ -1,18 +1,15 @@
-set(LIB_CSOURCES
+gdal_add_driver(TARGET gdal_MRSID SOURCES
     mrsidstream.h
     mrsidstream.cpp
-    mrsiddataset.cpp
-    )
-
+    mrsiddataset.cpp)
+target_include_directories(gdal_MRSID PRIVATE ${MRSID_INCLUDE_DIRS})
+gdal_target_link_libraries(TARGET gdal_MRSID LIBRARIES ${MRSID_LIBRARIES})
 if(GDAL_USE_LIBGEOTIFF_INTERNAL)
     if(RENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
-        add_definitions(-DRENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
+        target_compile_definitions(gdal_MRSID PRIVATE -DRENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
     endif()
-    GDAL_DRIVER(TARGET gdal_MRSID SOURCES ${LIB_CSOURCES}
-           INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/gtiff/libgeotiff>
-           LIBRARIES ${MRSID_LIBRARIES})
+    target_include_directories(gdal_MRSID PRIVATE $<TARGET_PROPERTY:libgeotiff,SOURCE_DIR>)
 else()
-    GDAL_DRIVER(TARGET gdal_MRSID SOURCES ${LIB_CSOURCES}
-           INCLUDES ${LIBGEOTIFF_INCLUDE_DIR}
-           LIBRARIES ${MRSID_LIBRARIES} ${LIBGEOTIFF_LIBRARY})
+    target_include_directories(gdal_MRSID PRIVATE ${LIBGEOTIFF_INCLUDE_DIR})
+    gdal_target_link_libraries(TARGET gdal_MRSID LIBRARIES ${LIBGEOTIFF_LIBRARY})
 endif()

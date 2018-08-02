@@ -1,6 +1,6 @@
 ADD_GDAL_DRIVER(TARGET gdal_DODS
                 SOURCES libdap_headers.h dodsdataset2.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_DODS)
+GDAL_STANDARD_INCLUDES(gdal_DODS)
 target_include_directories(gdal_DODS PRIVATE
                            ${DAP_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR})
 GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_DODS

@@ -5,9 +5,10 @@ gdalwmscache.cpp    minidriver_arcgis_server.cpp  minidriver_mrf.cpp  minidriver
 gdalwmsdataset.cpp  minidriver_arcgis_server.h    minidriver_mrf.h    minidriver_tileservice.h    minidriver_virtualearth.h    minidriver_worldwind.h    wmsmetadataset.h
             BUILTIN
 )
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_WMS)
-target_include_directories(gdal_WMS PRIVATE ${CURL_INCLUDE_DIRS}
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/alg>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/raw>)
+GDAL_STANDARD_INCLUDES(gdal_WMS)
+target_include_directories(gdal_WMS PRIVATE
+                           ${CURL_INCLUDE_DIRS}
+                           $<TARGET_PROPERTY:alg,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_raw,SOURCE_DIR>)
 target_compile_definitions(gdal_WMS PRIVATE -DHAVE_CURL)
-GDAL_target_link_libraries(TARGET gdal_WMS LIBRARIES ${CURL_LIBRARIES})
+gdal_target_link_libraries(TARGET gdal_WMS LIBRARIES CURL::libcurl)

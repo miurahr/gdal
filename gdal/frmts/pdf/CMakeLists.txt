@@ -14,11 +14,11 @@ ADD_GDAL_DRIVER(TARGET gdal_PDF SOURCES
         ogrpdflayer.cpp
         pdfwritabledataset.cpp
 )
-gdal_driver_standard_includes(gdal_PDF)
+gdal_standard_includes(gdal_PDF)
 target_include_directories(gdal_PDF PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>)
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>)
 
 if(HAVE_POPPLER OR HAVE_PODOFO OR HAVE_PDFIUM)
     if(HAVE_POPPLER)

@@ -1,1 +1,2 @@
-GDAL_DRIVER(TARGET gdal_Leveller SOURCES levellerdataset.cpp)
+ADD_GDAL_DRIVER(TARGET gdal_Leveller SOURCES levellerdataset.cpp)
+gdal_standard_includes(gdal_Leveller)

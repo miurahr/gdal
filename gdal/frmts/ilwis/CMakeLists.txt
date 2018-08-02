@@ -1,2 +1,2 @@
 ADD_GDAL_DRIVER(TARGET gdal_ILWIS SOURCES ilwisdataset.h ilwisdataset.cpp ilwiscoordinatesystem.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_ILWIS)
+GDAL_STANDARD_INCLUDES(gdal_ILWIS)

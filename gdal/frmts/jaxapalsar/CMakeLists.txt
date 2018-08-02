@@ -1,1 +1,2 @@
-GDAL_DRIVER(TARGET gdal_PALSARJaxa SOURCES jaxapalsardataset.cpp)
+ADD_GDAL_DRIVER(TARGET gdal_PALSARJaxa SOURCES jaxapalsardataset.cpp)
+gdal_standard_includes(gdal_PALSARJaxa)

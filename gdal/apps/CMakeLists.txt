@@ -43,15 +43,13 @@ add_library(appslib OBJECT
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:appslib>)
 gdal_standard_includes(appslib)
 target_include_directories(appslib PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
-						   )
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
+                           )
 if(GDAL_USE_LIBJSONC_INTERNAL)
-    target_include_directories(appslib PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson/libjson>
-							   )
+    target_include_directories(appslib PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
     target_include_directories(appslib PRIVATE ${JSONC_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARIES})
@@ -89,18 +87,17 @@ if(BUILD_APPS)
             gdalenhance gdalmanage gdaltransform gdaltindex
             gdaldem nearblack ogrlineref ogrtindex gnmanalyse gnmmanage
             gdalwarp gdal_contour gdallocationinfo ogrinfo ogr2ogr)
+    add_custom_target(gdalapps DEPENDS ${APPS_TARGETS})
     foreach(UTILCMD IN ITEMS ${APPS_TARGETS})
         gdal_standard_includes(${UTILCMD})
         target_include_directories(${UTILCMD} PRIVATE
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
                                    )
         if(GDAL_USE_LIBJSONC_INTERNAL)
-            target_include_directories(${UTILCMD} PRIVATE
-                                       $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson/libjson>
-                                       )
+            target_include_directories(${UTILCMD} PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
         else()
             target_include_directories(${UTILCMD} PRIVATE ${JSONC_INCLUDE_DIRS})
             target_link_libraries(${UTILCMD} PRIVATE ${JSONC_LIBRARIES})
@@ -117,10 +114,8 @@ if(BUILD_APPS)
                 FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
     endforeach()
-    target_include_directories(gnmanalyse PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm>)
-    target_include_directories(gnmmanage PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm>)
-
-    add_custom_target(gdalapps DEPENDS ${APPS_TARGETS})
+    target_include_directories(gnmanalyse PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
+    target_include_directories(gnmmanage PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
 
     # NON-Default Apps
     add_executable(dumpoverviews EXCLUDE_FROM_ALL dumpoverviews.cpp)
@@ -139,15 +134,15 @@ if(BUILD_APPS)
             gdalflattenmask gdalwarpsimple
             multireadtest test_ogrsf testepsg testreprojmulti)
         gdal_standard_includes(${UTILCMD})
+        target_link_libraries(${UTILCMD} PRIVATE ${GDAL_LINK_LIBRARY})
         ## Windows(Mingw/MSVC) link libraries
         if (CMAKE_SYSTEM_NAME MATCHES "Windows")
             target_link_libraries(${UTILCMD} PRIVATE wsock32 ws2_32 psapi)
         endif()
-        target_include_directories(${UTILCMD} PRIVATE
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>
-                                    $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
+        target_include_directories(${UTILCMD} PRIVATE $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
+                                   $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+                                   $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
+                                   $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
                                    )
         target_link_libraries(${UTILCMD} PRIVATE $<TARGET_NAME:gdal>)
     endforeach()

@@ -24,6 +24,11 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 #
+#  target_name should be as same as plugin name.
+#      name gdal_* as recognized as raster driver and
+#      name ogr_* as vector one.
+#  and lookup register function from filename.
+#
 #  Symptoms ADD_GDAL_DRIVER( TARGET <target_name>
 #                            [SOURCES <source file> [<source file>[...]]]
 #                            [BUILTIN]
@@ -117,41 +122,55 @@ function(ADD_GDAL_DRIVER)
     set(_oneValueArgs TARGET)
     set(_multiValueArgs SOURCES)
     cmake_parse_arguments(_DRIVER "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
+    # Check mandatory arguments
     if(NOT _DRIVER_TARGET)
         message(FATAL_ERROR "ADD_GDAL_DRIVER(): TARGET is a mandatory argument.")
     endif()
     if(NOT _DRIVER_SOURCES)
         message(FATAL_ERROR "ADD_GDAL_DRIVER(): SOURCES is a mandatory argument.")
     endif()
-    set(_DRIVER_PLUGIN_BUILD TRUE)
-    if(_DRIVER_BUILTIN)
+    # Determine whether plugin or built-in
+    if((NOT GDAL_ENABLE_PLUGIN) OR _DRIVER_BUILTIN)
         set(_DRIVER_PLUGIN_BUILD FALSE)
-    elseif(GDAL_ENABLE_PLUGIN)
-        set(_DRIVER_PLUGIN_BUILD TRUE)
     else()
-        set(_DRIVER_PLUGIN_BUILD FALSE)
+        set(_DRIVER_PLUGIN_BUILD TRUE)
     endif()
+    # Set *_FORMATS properties for summary and gdal_config utility
     string(FIND "${_DRIVER_TARGET}" "ogr" IS_OGR)
+    if(IS_OGR EQUAL -1) # raster
+        string(REPLACE "gdal_" "" _FORMAT ${_DRIVER_TARGET})
+        set_property(GLOBAL APPEND PROPERTY GDAL_FORMATS ${_FORMAT})
+    else() # vector
+        string(REPLACE "ogr_" "" _FORMAT ${_DRIVER_TARGET})
+        set_property(GLOBAL APPEND PROPERTY OGR_FORMATS ${_FORMAT})
+    endif()
+    # target configuration
     if(_DRIVER_PLUGIN_BUILD)
         # target become *.so *.dll or *.dylib
         add_library(${_DRIVER_TARGET} MODULE ${_DRIVER_SOURCES})
-        set_target_properties(${_DRIVER_TARGET} PROPERTIES PREFIX "")
+        get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
+        set_target_properties(${_DRIVER_TARGET}
+                              PROPERTIES
+                                PREFIX ""
+                                LIBRARY_OUTPUT_DIRECTORY ${PLUGIN_OUTPUT_DIR}
+                              )
+        target_link_libraries(${_DRIVER_TARGET} PRIVATE $<TARGET_NAME:gdal>)
         install(FILES $<TARGET_LINKER_FILE:${_DRIVER_TARGET}> DESTINATION ${INSTALL_PLUGIN_DIR}
                 RENAME "${_DRIVER_TARGET}${CMAKE_SHARED_LIBRARY_SUFFIX}" NAMELINK_SKIP)
+        set_property(GLOBAL APPEND PROPERTY PLUGIN_MODULES ${_DRIVER_TARGET})
     else()
         add_library(${_DRIVER_TARGET} OBJECT ${_DRIVER_SOURCES})
-        target_sources(gdal PUBLIC $<TARGET_OBJECTS:${_DRIVER_TARGET}>)
-        if(IS_OGR EQUAL -1) # gdal driver
+        target_sources(gdal PRIVATE $<TARGET_OBJECTS:${_DRIVER_TARGET}>)
+        if(IS_OGR EQUAL -1) # raster
             string(TOLOWER ${_DRIVER_TARGET} _FORMAT)
             string(REPLACE "gdal" "FRMT" _DEF ${_FORMAT})
-            target_compile_definitions(gdalallregister PRIVATE -D${_DEF})
-        else() # ogr driver
+            target_compile_definitions(gdal_frmts PRIVATE -D${_DEF})
+        else() # vector
             string(REPLACE "ogr_" "" _FORMAT ${_DRIVER_TARGET})
             string(TOUPPER ${_FORMAT} _KEY)
-            target_compile_definitions(ogralldriverregistrar PRIVATE -D${_KEY}_ENABLED)
+            target_compile_definitions(ogrsf_frmts PRIVATE -D${_KEY}_ENABLED)
         endif()
     endif()
-    set_target_properties(${_DRIVER_TARGET} PROPERTIES CXX_STANDARD 11)
 endfunction()
 
 function(GDAL_TARGET_LINK_LIBRARIES)
@@ -169,7 +188,7 @@ function(GDAL_TARGET_LINK_LIBRARIES)
     if(${_DRIVER_TYPE} EQUAL MODULE_LIBRARY)
         target_link_libraries(${_DRIVER_TARGET} PRIVATE ${_DRIVER_LIBRARIES})
     else()
-        target_link_libraries(gdal INTERFACE ${_DRIVER_LIBRARIES})
+        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${_DRIVER_LIBRARIES})
     endif()
 endfunction()
 
@@ -198,7 +217,6 @@ macro(GDAL_DEPENDENT_FORMAT format desc depends)
     CMAKE_DEPENDENT_OPTION(GDAL_ENABLE_FRMT_${key} "Set ON to build ${desc} format" ON
                            "${depends}" OFF)
     if(GDAL_ENABLE_FRMT_${key})
-        set(GDAL_FORMATS ${GDAL_FORMATS} ${format})
         add_subdirectory(${format})
     endif()
 endmacro()
@@ -207,14 +225,12 @@ macro(gdal_format format)
     string(TOUPPER ${format} key)
     set(GDAL_ENABLE_FRMT_${key} ON CACHE BOOL "" FORCE)
     add_subdirectory(${format})
-    set(GDAL_FORMATS ${GDAL_FORMATS} ${format})
 endmacro()
 
 macro(gdal_optional_format format desc)
     string(TOUPPER ${format} key)
     option(GDAL_ENABLE_FRMT_${key} "Set ON to build ${desc} format" OFF)
     if(GDAL_ENABLE_FRMT_${key})
-        set(GDAL_FORMATS ${GDAL_FORMATS} ${format})
         add_subdirectory(${format})
     endif()
 endmacro()
@@ -229,7 +245,6 @@ macro(OGR_DEPENDENT_DRIVER name desc depend)
     CMAKE_DEPENDENT_OPTION(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" ON
                            "${depend}" OFF)
     if (OGR_ENABLE_${key})
-        set(GDAL_FORMATS ${GDAL_FORMATS} ${name})
         add_subdirectory(${name})
     endif()
 endmacro()
@@ -241,7 +256,6 @@ macro(OGR_OPTIONAL_DRIVER name desc)
     string(TOUPPER ${name} key)
     option(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" OFF)
     if (OGR_ENABLE_${key})
-        set(GDAL_FORMATS ${GDAL_FORMATS} ${name})
         add_subdirectory(${name})
     endif()
 endmacro()
@@ -252,6 +266,9 @@ endmacro()
 macro(OGR_DEFAULT_DRIVER name desc)
     string(TOUPPER ${name} key)
     set(OGR_ENABLE_${key} ON CACHE BOOL "${desc}" FORCE)
-    set(GDAL_FORMATS ${GDAL_FORMATS} ${name})
+    add_subdirectory(${name})
+endmacro()
+macro(OGR_DEFAULT_DRIVER2 name key desc)
+    set(OGR_ENABLE_${key} ON CACHE BOOL "${desc}" FORCE)
     add_subdirectory(${name})
 endmacro()

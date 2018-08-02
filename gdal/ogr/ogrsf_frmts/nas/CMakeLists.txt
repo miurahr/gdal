@@ -16,12 +16,10 @@ endif()
 
 if(HAVE_XERCESC)
     foreach(d ${XercesC_INCLUDE_DIRS})
-        TARGET_INCLUDE_DIRECTORIES(ogr_NAS
-                                        PRIVATE ${d}
-                                                 ${d}/xercesc)
+        TARGET_INCLUDE_DIRECTORIES(ogr_NAS PRIVATE
+                                   ${d}
+                                   ${d}/xercesc)
     endforeach()
-    GDAL_TARGET_LINK_LIBRARIES(TARGET ogr_NAS
-            LIBRARIES ${XercesC_LIBRARIES})
-    TARGET_COMPILE_DEFINITIONS(ogr_NAS
-            PRIVATE -DHAVE_XERCES)
+    GDAL_TARGET_LINK_LIBRARIES(TARGET ogr_NAS LIBRARIES XercesC::XercesC)
+    TARGET_COMPILE_DEFINITIONS(ogr_NAS PRIVATE -DHAVE_XERCES)
 endif()

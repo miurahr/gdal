@@ -60,20 +60,9 @@ add_library(alg OBJECT
         thinplatespline.cpp
         gdal_simplesurf.cpp
 )
-target_include_directories(alg PRIVATE
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/apps>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gcore>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/gcore>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/gtiff>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>)
-
-# gdalwarper.cpp try include <gdal/gcore/gdal.h>, it looks strange but hack here.
-target_include_directories(alg PRIVATE ${CMAKE_SOURCE_DIR})
+include(GdalStandardIncludes)
+gdal_standard_includes(alg)
+target_include_directories(alg PRIVATE $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR> $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 
 if(HAVE_GEOS)
 	get_filename_component(GEOS_ROOT ${GEOS_INCLUDE_DIR} PATH)
@@ -99,7 +88,7 @@ endif(PAM_ENABLED)
 
 if (HAVE_OPENCL)
 	target_include_directories(alg PRIVATE ${OpenCL_INCLUDE_DIRS})
-	target_link_libraries(gdal INTERFACE ${OpenCL_LIBRARIES})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${OpenCL_LIBRARIES})
 	target_compile_definitions(alg PRIVATE -DHAVE_OPENCL)
 	target_sources(alg PRIVATE
 		gdalwarpkernel_opencl.h
@@ -124,12 +113,11 @@ if(GDAL_QHULL)
 endif()
 
 if(GEOS_FOUND)
-    target_link_libraries(gdal INTERFACE
-		${GEOS_LIBRARY})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARY})
 endif(GEOS_FOUND)
 
 if(ARMADILLO_FOUND)
-	target_link_libraries(gdal INTERFACE ${ARMADILLO_LIBRARIES})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
 endif(ARMADILLO_FOUND)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
 install(FILES

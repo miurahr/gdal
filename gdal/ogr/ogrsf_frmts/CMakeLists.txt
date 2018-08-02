@@ -29,18 +29,17 @@ include(MacroGdalDrivers)
 
 #############################################
 # register all drivers
-add_library(ogralldriverregistrar OBJECT generic/ogrsfdriverregistrar.cpp)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogralldriverregistrar>)
-gdal_standard_includes(ogralldriverregistrar)
-target_include_directories(ogralldriverregistrar PRIVATE
+add_library(ogrsf_frmts OBJECT generic/ogrregisterall.cpp)
+target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogrsf_frmts>)
+gdal_standard_includes(ogrsf_frmts)
+target_include_directories(ogrsf_frmts PRIVATE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/generic>)
 
 # Obligatory for building GDAL; always compile in.
-set(OGR_FORMATS ${OGR_FORMATS} -DMEM_ENABLED)
-set(OGR_FORMATS ${OGR_FORMATS} -DGEOJSON_ENABLED)
-add_subdirectory(mem)
-add_subdirectory(geojson)
+ogr_default_driver(mem MEMORY)
+ogr_default_driver(geojson "GeoJSON/ESRIJSON/TopoJSON driver")
+ogr_default_driver2(mitab TAB MiTAB)
 
 ###########################################
 #
@@ -52,7 +51,6 @@ ogr_default_driver(bna BNA)
 ogr_default_driver(csv CSV)
 ogr_default_driver(dgn DGN)
 ogr_default_driver(gmt GMT)
-ogr_default_driver(mitab MiTAB)
 ogr_default_driver(ntf NTF)
 ogr_default_driver(rec REC)
 option(ENABLE_S57_BUILTIN_CLASSES "Set ON to build s57 driver with builin classes" OFF)
@@ -86,21 +84,21 @@ ogr_default_driver(kml KML) # when not found EXPAT, it use CPL_MINIXML (ex. andr
 # XML drivers
 ogr_dependent_driver(gml GML "HAVE_XMLPARSER")
 ogr_dependent_driver(gpx GPX "HAVE_EXPAT")
-ogr_dependent_driver(gmlas GMLAS "HAVE_XERCESC;HAVE_JSONC;OGR_ENABLE_PGDUMP")
+ogr_dependent_driver(gmlas GMLAS "HAVE_XERCESC;HAVE_JSONC")
 ogr_dependent_driver(svg SVG "HAVE_EXPAT")
-ogr_dependent_driver(csw CSW "OGR_ENABLE_WFS;OGR_ENABLE_GML;GDAL_USE_CURL")
+ogr_dependent_driver(csw CSW "HAVE_CURL")
 ogr_dependent_driver(dods DODS "HAVE_DAP;HAVE_LIBXML2")
-ogr_dependent_driver(dwg DWG "OGR_ENABLE_DXF;HAVE_TEIGHA")
-ogr_dependent_driver(elastic ELASTIC "OGR_ENABLE_GEOJSON")
+ogr_dependent_driver(dwg DWG "HAVE_TEIGHA")
 ogr_dependent_driver(filegdb FileGDB "HAVE_FGDB")
-ogr_dependent_driver(gft GFT "GDAL_USE_CURL")
-ogr_dependent_driver(idrisi IDRISI "GDAL_ENABLE_FRMT_IDRISI")
+ogr_dependent_driver(gft GFT "HAVE_CURL")
 ogr_dependent_driver(libkml LibKML "HAVE_LIBKML;HAVE_BOOST")
 ogr_dependent_driver(nas "NAS/ALKIS" "HAVE_XERCESC")
-ogr_dependent_driver(pds PDS "GDAL_ENABLE_FRMT_PDS")
-ogr_dependent_driver(plscenes PLSCENES "GDAL_USE_CURL")
+ogr_dependent_driver(plscenes PLSCENES "HAVE_CURL")
 ogr_dependent_driver(sosi "SOSI:Systematic Organization of Spatial Information" "HAVE_SOCI")
-ogr_dependent_driver(wfs WFS "GDAL_ENABLE_FRMT_WMS;GDAL_USE_CURL")
+ogr_dependent_driver(wfs WFS "HAVE_CURL")
+ogr_optional_driver(elastic ELASTIC)
+ogr_optional_driver(idrisi IDRISI)
+ogr_optional_driver(pds PDS)
 
 ogr_dependent_driver(sqlite "SQLite3" "HAVE_SQLITE3")
 # GeoPacage is a part of sqlite driver.
@@ -112,17 +110,17 @@ ogr_dependent_driver(osm OSM "OGR_ENABLE_SQLITE")
 ogr_dependent_driver(vfk VFK "HAVE_SQLITE3")
 
 # ODBC/POSTGRES/MYSQL/INGRESS/COUCHDB
-ogr_dependent_driver(amigocloud AMIGOCLOUD "OGR_ENABLE_GEOJSON;OGR_ENABLE_PGDUMP;GDAL_USE_CURL")
-ogr_dependent_driver(cloudant Cloudant "GDAL_USE_CURL;HAVE_COUCHDB")
-ogr_dependent_driver(couchdb CouchDB "OGR_ENABLE_GEOJSON;GDAL_USE_CURL;HAVE_COUCHDB")
+ogr_dependent_driver(amigocloud AMIGOCLOUD "HAVE_CURL")
+ogr_dependent_driver(cloudant Cloudant "HAVE_CURL")
+ogr_dependent_driver(couchdb CouchDB "HAVE_CURL")
+ogr_optional_driver(carto CARTO)
 ogr_dependent_driver(ingress INGRESS "HAVE_INGRESS")
 ogr_dependent_driver(ili ILI "HAVE_XERCESC")
-ogr_dependent_driver(carto CARTO "OGR_ENABLE_GEOJSON;OGR_ENABLE_PGDUMP")
 ogr_dependent_driver(mysql MySQL "HAVE_MYSQL")
 ogr_dependent_driver(pg PostGIS "HAVE_POSTGRES")
 ogr_dependent_driver(geomedia GEOMEDIA "HAVE_ODBC")
 ogr_dependent_driver(mssqlspatial MSSQLSPATIAL "HAVE_ODBC")
-ogr_dependent_driver(odbc ODBC "OGR_GEOJSON;HAVE_ODBC")
+ogr_dependent_driver(odbc ODBC "HAVE_ODBC")
 ogr_dependent_driver(walk WALK "HAVE_ODBC")
 ogr_dependent_driver(pgeo PGEO "HAVE_ODBC")
 

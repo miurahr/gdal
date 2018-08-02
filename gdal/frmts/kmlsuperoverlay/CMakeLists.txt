@@ -1,1 +1,2 @@
-GDAL_DRIVER(TARGET gdal_KMLSUPEROVERLAY SOURCES kmlsuperoverlaydataset.cpp kmlsuperoverlaydataset.h)
+ADD_GDAL_DRIVER(TARGET gdal_KMLSUPEROVERLAY SOURCES kmlsuperoverlaydataset.cpp kmlsuperoverlaydataset.h)
+gdal_standard_includes(gdal_KMLSUPEROVERLAY)

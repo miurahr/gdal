@@ -8,6 +8,8 @@ add_library(libcsf OBJECT
             attravai.c  csfsup.c    gattridx.c  gminval.c   ismv.c      pgisfid.c   pvalscal.c  rrowcol.c   trackmm.c
             attrsize.c  csftypes.h  gcellrep.c  gnrcols.c   kernlcsf.c  pmaxval.c   rattrblk.c  ruseas.c    vs2.c
             )
+target_include_directories(libcsf PRIVATE
+                           $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+                           $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 target_compile_definitions(libcsf PRIVATE -DUSE_IN_GDAL)
-target_include_directories(libcsf PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port> $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libcsf>)

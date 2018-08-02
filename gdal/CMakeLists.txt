@@ -25,30 +25,30 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-################################################################################
-# configure
-# retrieve gdal version and set GDAL_VERSION variable
-include(GdalVersion)
-
+# Switches to control build targets(cached)
 option(USE_CPL "Set ON to use cpl" ON)
 option(ENABLE_GNM "Build GNM module" ON)
 option(PAM_ENABLED "Set ON to enable pam" ON)
 option(BUILD_APPS "Build command utilities" ON)
 option(GDAL_ENABLE_PLUGIN "Set ON prefer to build drivers as plugin" OFF)
 
-set(GDAL_SOVERSION 20)
-
+# Default definitions during build
 add_definitions(-DGDAL_COMPILATION)
 if(UNIX AND USE_CPL)
     add_definitions(-DCPL_LSB)
 endif()
 
+################################################################################
+# generate ${GDAL_ROOT_BINARY_DIR}/gcore/gdal_version.h
+# and set GDAL_VERSION variable
+include(GdalVersion)
+set(GDAL_SOVERSION 20 CACHE STRING "")
+
 ################################################################
 # find 3rd party libraries
 include(CheckDependentLibraries)
 
-################################################################################
-#  generate ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h
+# generate ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h
 include(configure)
 
 ################################################################################
@@ -111,23 +111,39 @@ endif()
 option(BUILD_SHARED_LIBS "Set ON to build shared library" ON)
 add_library(gdal gcore/gdal.h)
 add_library(GDAL_LINK_LIBRARY INTERFACE)
-target_link_libraries(gdal PRIVATE GDAL_LINK_LIBRARY)
+target_link_libraries(gdal PRIVATE $<TARGET_NAME:GDAL_LINK_LIBRARY>)
+set_property(TARGET gdal PROPERTY PLUGIN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/gdalplugins)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gdalplugins)
+
+# Set project and C++ Standard properties
+set_target_properties(gdal PROPERTIES
+                      PROJECT_LABEL ${PROJECT_NAME}
+                      VERSION ${GDAL_VERSION}
+                      SOVERSION ${GDAL_SOVERSION}
+                      ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                      LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                      CXX_STANDARD 11
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO
+)
 
 # detect portability libs and set, so it should add at first
 # Common Portability layer
 add_subdirectory(port)
 
 # Configure internal libraries
-option(GDAL_QHULL "use qhull" OFF)
+option(GDAL_QHULL "use qhull" ON)
 if(GDAL_QHULL AND GDAL_USE_QHULL_INTERNAL)
     add_subdirectory(alg/internal_libqhull)
 endif()
 if(GDAL_USE_LIBZ_INTERNAL)
     add_subdirectory(frmts/zlib)
 endif()
-option(LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal sdk" OFF)
-if(LIBPCIDSK_INTERNAL)
+option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal sdk" OFF)
+if(GDAL_USE_LIBPCIDSK_INTERNAL)
     add_subdirectory(frmts/pcidsk/sdk)
+    set(HAVE_PCIDSK ON)
 endif()
 if(GDAL_USE_LIBJSONC_INTERNAL)
     add_subdirectory(ogr/ogrsf_frmts/geojson/libjson)
@@ -174,19 +190,13 @@ add_subdirectory(swig)
 
 # Utilities
 add_subdirectory(apps)
+add_subdirectory(fuzzers)
 
 # Document/Manuals
 option(BUILD_DOCS "Build documents" ON)
 if(BUILD_DOCS)
     add_subdirectory(doc)
 endif()
-
-# Set C++ Standard properties
-set_target_properties(gdal PROPERTIES
-                      CXX_STANDARD 11
-                      CXX_STANDARD_REQUIRED YES
-                      CXX_EXTENSIONS NO
-)
 
 # OSX Framework specific properties
 if(OSX_FRAMEWORK)
@@ -205,6 +215,7 @@ endif()
 if(MSVC)
     target_sources(gdal PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gcore/Version.rc)
     source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/gcore/Version.rc)
+    target_include_directories(gdal PRIVATE $<TARGET_PROPERTY:gcore,BINARY_DIR>)
     if(CMAKE_CL_64)
 		set_target_properties(gdal
                               PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
@@ -217,17 +228,6 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     target_link_libraries(gdal PRIVATE wsock32 ws2_32 psapi)
 endif()
 
-## libgdal version and installation preparation
-set_target_properties(gdal
-	PROPERTIES PROJECT_LABEL ${PROJECT_NAME}
-    VERSION ${GDAL_VERSION}
-    SOVERSION ${GDAL_SOVERSION}
-	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-add_subdirectory(fuzzers)
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
                ${GDAL_ROOT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
@@ -286,7 +286,5 @@ add_custom_target(uninstall
 ################################################################################
 ## Print summry
 include(summary)
-set(GDAL_FORMATS ${GDAL_FORMATS} PARENT_SCOPE)
-################################################################################
-# EOL
+
 # vim: ts=4 sw=4 sts=4 et

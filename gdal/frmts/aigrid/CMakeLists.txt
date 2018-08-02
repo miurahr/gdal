@@ -6,6 +6,6 @@ ADD_GDAL_DRIVER(TARGET gdal_AIGrid SOURCES
         gridlib.c)
 GDAL_DRIVER_STANDARD_INCLUDES(gdal_AIGrid)
 target_include_directories(gdal_AIGrid PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/avc>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/shape>)
+                           $<TARGET_PROPERTY:ogr_AVCBin,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_Shape,SOURCE_DIR>)
 add_executable(aitest EXCLUDE_FROM_ALL aitest.c)

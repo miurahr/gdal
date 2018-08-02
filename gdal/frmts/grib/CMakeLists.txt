@@ -86,13 +86,12 @@ ADD_GDAL_DRIVER(TARGET gdal_GRIB SOURCES
         degrib/g2clib/enc_jpeg2000.c
         degrib/g2clib/dec_jpeg2000.cpp
 )
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_GRIB)
+GDAL_STANDARD_INCLUDES(gdal_GRIB)
 target_include_directories(gdal_GRIB PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/grib/degrib/degrib>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/grib/degrib/g2clib>)
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/degrib/degrib>
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/degrib/g2clib>)
 if(GDAL_USE_LIBPNG_INTERNAL)
-    target_include_directories(gdal_GRIB PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/png/libpng>)
+    target_include_directories(gdal_GRIB PRIVATE $<TARGET_PROPERTY:libpng,SOURCE_DIR>)
     target_compile_definitions(gdal_GRIB PRIVATE -DUSE_PNG)
     target_sources(gdal_GRIB PRIVATE degrib/g2clib/pngpack.c degrib/g2clib/pngunpack.c
                    degrib/g2clib/enc_png.c degrib/g2clib/dec_png.c)
@@ -103,7 +102,7 @@ else()
     target_sources(gdal_GRIB PRIVATE degrib/g2clib/pngpack.c degrib/g2clib/pngunpack.c degrib/g2clib/enc_png.c degrib/g2clib/dec_png.c)
 endif()
 if(GDAL_USE_LIBZ_INTERNAL)
-    target_include_directories(gdal_GRIB PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+    target_include_directories(gdal_GRIB PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
     target_include_directories(gdal_GRIB PRIVATE ${ZLIB_INCLUDE_DIRS})
     gdal_target_link_libraries(TARGET gdal_GRIB LIBRARIES ZLIB::ZLIB)

@@ -27,22 +27,22 @@
 
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
-find_package(SWIG REQUIRED)
-include(MacroSwigBindings)
+include(GdalSwigBindings)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/)
 
-set(SWIG_ARGS -I${GDAL_ROOT_SOURCE_DIR}/swig/include/python/docs -threads -outdir ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo)
-set(GDAL_SWIG_OUTPUT
-        ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdal.py
-        ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdalconst.py
-        ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdalnumeric.py
-        ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gnm.py
-        ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/ogr.py
-        ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/osr.py
-        )
-MACRO_SWIG_BINDINGS(python SWIG_ARGS GDAL_SWIG_OUTPUT)
+GDAL_SWIG_BINDINGS(
+        BINDING python
+        ARGS -I${GDAL_ROOT_SOURCE_DIR}/swig/include/python/docs -threads -outdir ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo
+        OUTPUT
+            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdal.py
+            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdalconst.py
+            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdalnumeric.py
+            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gnm.py
+            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/ogr.py
+            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/osr.py
+)
 
 # for gdal_array_wrap.cpp
 set(ARRAY_INPUT  ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdal_array.i )
@@ -76,22 +76,16 @@ macro(py_ext name source)
     add_library(${name} SHARED extensions/${source})
     set_target_properties(${name} PROPERTIES PREFIX ""
                           DEPENS ${GDAL_SWIG_OUTPUT} ${ARRAY_OUTPUT})
+    gdal_standard_includes(${name})
     target_include_directories(${name} PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/alg>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gcore>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/gcore>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/apps>
+                               $<TARGET_PROPERTY:appslib,SOURCE_DIR>
+                               $<TARGET_PROPERTY:gnm,SOURCE_DIR>
                                )
     if(WIN32 AND NOT CYGWIN)
         set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
-        target_link_libraries(${name} "-L${PYTHON_LIBRARIES}/libs/" "-lpython27")
+        target_link_libraries(${name} PRIVATE "-L${PYTHON_LIBRARIES}/libs/" "-lpython27")
     endif()
-    target_link_libraries(${name} ${GDAL_LIB_NAME})
+    target_link_libraries(${name} PRIVATE gdal)
     add_custom_command(
             OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/${name}.${PY_SUFFIX}
             COMMAND ${CMAKE_COMMAND} -E copy

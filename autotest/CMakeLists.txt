@@ -38,26 +38,31 @@ if(NOT CMAKE_CROSSCOMPILING OR MINGW)
     find_package(PythonInterp)
     find_package(PythonLibs)
     if(PythonInterp_FOUND)
-        set(OPYTHONPATH ENV{PYTHONPATH})
-        add_test(gcore-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
-        add_test(gdrivers-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
-        add_test(alg-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
-        add_test(osr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
-        add_test(ogr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
-        add_test(utilities-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
-        add_test(pyscripts-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
+        add_test(gcore-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
+        add_test(gdrivers-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
+        add_test(alg-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
+        add_test(osr-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
+        add_test(ogr-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
+        add_test(utilities-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
+        add_test(pyscripts-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
+        get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
         set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
-                PROPERTIES
-                ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal
-                ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod:${OPYTHONPATH}
-                #ENVIRONMENT GDAL_DOWNLOAD_TEST_DATA=1
-                #ENVIRONMENT GDAL_SLOW_TESTSA=1
-                # FIXME only run in-source currently.
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                TIMEOUT 300
-                DEPENDS python_binding)
-        add_custom_target(autotest_py COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7)
-    endif()
+                             PROPERTIES
+                             #ENVIRONMENT GDAL_DOWNLOAD_TEST_DATA=1
+                             #            GDAL_SLOW_TESTSA=1
+                             # FIXME: only run in-source currently.
+                             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                             TIMEOUT 300)
+         add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7
+                           DEPENDS
+                           testblockcache
+                           testperfcopywords
+                           test_include_from_c_file
+                           test_c_include_from_cpp_file
+                           testsse1
+                           testsse2
+                           testsse3)
+     endif()
 
     add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*|^block-.*'
                   DEPENDS

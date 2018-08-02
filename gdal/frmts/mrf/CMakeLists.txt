@@ -6,40 +6,39 @@ ADD_GDAL_DRIVER(TARGET gdal_MRF SOURCES
                 Packer.h Packer_RLE.cpp Packer_RLE.h JPNG_band.cpp
                 Tif_band.cpp Raw_band.cpp
                 BUILTIN)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_MRF)
+GDAL_STANDARD_INCLUDES(gdal_MRF)
 
 if(GDAL_JPEG12_SUPPORTED)
-    GDAL_TARGET_SOURCES(TARGET gdal_MRF SOURCES JPEG12_band.cpp)
-    TARGET_COMPILE_DEFINITIONS(gdal_MRF PRIVATE -DJPEG12_SUPPORTED)
+    target_sources(gdal_MRF PRIVATE JPEG12_band.cpp)
+    target_compile_definitions(gdal_MRF PRIVATE -DJPEG12_SUPPORTED)
 endif()
 
 if(GDAL_USE_LIBJPEG_INTERNAL)
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/jpeg/libjpeg>)
+    target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE JPEG::JPEG)
+    target_include_directories(gdal_MRF PRIVATE JPEG::JPEG)
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES JPEG::JPEG)
 endif()
 
 if(GDAL_USE_LIBPNG_INTERNAL)
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/png/libpng>)
+    target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libpng,SOURCE_DIR>)
     TARGET_COMPILE_DEFINITIONS(gdal_MRF PRIVATE -DINTERNAL_PNG)
 else()
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE ${PNG_INCLUDE_DIRS})
+    target_include_directories(gdal_MRF PRIVATE ${PNG_INCLUDE_DIRS})
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES ${PNG_LIBRARIES})
 endif()
 
 if(GDAL_USE_LIBZ_INTERNAL)
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+    target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_include_directories(gdal_MRF PRIVATE ${ZLIB_INCLUDE_DIRS})
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES ${ZLIB_LIBRARIES})
 endif()
 
 if(GDAL_USE_LIBLERC_INTERNAL)
     target_sources(gdal_MRF PRIVATE LERC_band.cpp)
-    TARGET_INCLUDE_DIRECTORIES(gdal_MRF PRIVATE
+    target_include_directories(gdal_MRF PRIVATE
                                $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mrf/libLERC>
                                $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/third_party/LercLib>)
-    TARGET_COMPILE_DEFINITIONS(gdal_MRF PRIVATE -DLERC)
+    target_compile_definitions(gdal_MRF PRIVATE -DLERC)
 endif()
-
