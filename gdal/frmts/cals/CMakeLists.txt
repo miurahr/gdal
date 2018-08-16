@@ -1,5 +1,5 @@
-ADD_GDAL_DRIVER(TARGET gdal_CALS SOURCES calsdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_CALS)
+add_gdal_driver(TARGET gdal_CALS SOURCES calsdataset.cpp)
+gdal_standard_includes(gdal_CALS)
 
 if(GDAL_USE_LIBTIFF_INTERNAL)
     target_include_directories(gdal_CALS PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)

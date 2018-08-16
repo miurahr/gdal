@@ -1,2 +1,2 @@
 ADD_GDAL_DRIVER(TARGET gdal_COASP SOURCES coasp_dataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_COASP)
+gdal_standard_includes(gdal_COASP)
