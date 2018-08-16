@@ -78,11 +78,11 @@ ogr_default_driver(selafin OSELAFIN)
 ogr_default_driver(jml JML)
 ogr_default_driver(vdv VDV)
 ogr_default_driver(kml KML) # when not found EXPAT, it use CPL_MINIXML (ex. android)
+ogr_default_driver(gml GML) # when not found both EXPAT/XercesC, return error in driver, referenced by WCS
 
 ######################################
 #
 # XML drivers
-ogr_dependent_driver(gml GML "HAVE_XMLPARSER")
 ogr_dependent_driver(gpx GPX "HAVE_EXPAT")
 ogr_dependent_driver(gmlas GMLAS "HAVE_XERCESC;HAVE_JSONC")
 ogr_dependent_driver(svg SVG "HAVE_EXPAT")
