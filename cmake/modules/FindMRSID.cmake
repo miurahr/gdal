@@ -1,6 +1,6 @@
 # Find the MRSID library - Multi-resolution Seamless Image Database.
 #
-# Copyright (C) 2017 Hiroshi Miura
+# Copyright (C) 2017,2018 Hiroshi Miura
 # Copyright (c) 2015 NextGIS <info@nextgis.com>
 #
 # Sets
@@ -44,15 +44,28 @@ if(MRSID_INCLUDE_DIR AND MRSID_LIBRARIES)
 endif()
 mark_as_advanced(MRSID_INCLUDE_DIR MRSID_LIBRARY_LTI MRSID_LIBRARY_LTI_LIDAR MRSID_VERSION_STRING)
 
-# Handle the QUIETLY and REQUIRED arguments and set ECW_FOUND to TRUE
+# Handle the QUIETLY and REQUIRED arguments and set MRSID_FOUND to TRUE
 # if all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(MRSID FOUND_VAR MRSID_FOUND
-                                  REQUIRED_VARS MRSID_LIBRARIES MRSID_INCLUDE_DIR
+                                  REQUIRED_VARS MRSID_LIBRARY_LTI MRSID_LIBRARY_LTI_LIDAR MRSID_INCLUDE_DIR
                                   VERSION_VAR MRSID_VERSION_STRING)
 
 # Copy the results to the output variables.
 if(MRSID_FOUND)
   set(MRSID_LIBRARY ${MRSID_LIBRARIES})
   set(MRSID_INCLUDE_DIRS ${MRSID_INCLUDE_DIR})
+  if(NOT TARGET MRSID::MRSID)
+    add_library(MRSID::MRSID UNKNOWN IMPORTED)
+    set_target_properties(MRSID::MRSID PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${MRSID_INCLUDE_DIRS}"
+                          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                          IMPORTED_LOCATION "${MRSID_LIBRARY_LTI}")
+  endif()
+  if(NOT TARGET MRSID::LIDAR)
+    add_library(MRSID::LIDAR UNKNOWN IMPORTED)
+    set_target_properties(MRSID::LIDAR PROPERTIES
+                          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                          IMPORTED_LOCATION "${MRSID_LIBRARY_LTI_LIDAR}")
+  endif()
 endif()
