@@ -165,7 +165,12 @@ else()
 endif()
 
 option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build PCIDSK sdk" ON)
-option(GDAL_USE_LIBCSF_INTERNAL "Set ON to build pcraster driver with internal libcdf" ON)
+gdal_find_package(LIBCSF csf.h csf)
+if(NOT HAVE_LIBCSF)
+    set(GDAL_USE_LIBCSF_INTERNAL ON CACHE BOOL "Set ON to build pcraster driver with internal libcdf")
+else()
+    set(GDAL_USE_LIBCSF_INTERNAL OFF CACHE BOOL "Set ON to build pcraster driver with internal libcdf")
+endif()
 option(GDAL_USE_LIBLERC_INTERNAL "Set ON to build mrf driver with internal libLERC" ON)
 
 find_package(SQLite3)
