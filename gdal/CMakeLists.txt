@@ -30,6 +30,7 @@ option(USE_CPL "Set ON to use cpl" ON)
 option(ENABLE_GNM "Build GNM module" ON)
 option(PAM_ENABLED "Set ON to enable pam" ON)
 option(BUILD_APPS "Build command utilities" ON)
+option(BUILD_DOCS "Build documents" ON)
 option(GDAL_ENABLE_PLUGIN "Set ON prefer to build drivers as plugin" OFF)
 
 # Default definitions during build
@@ -51,60 +52,6 @@ include(CheckDependentLibraries)
 # generate ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h
 include(configure)
 
-################################################################################
-# Install properties
-if(OSX_FRAMEWORK)
-    # same as nextgis-borsch/lib_gdal
-    # set(CMAKE_INSTALL_PREFIX "/Library/Application Support/GDAL/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}")
-    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin"
-            CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
-            CACHE INTERNAL "Installation directory for libraries" FORCE)
-    set(SKIP_INSTALL_EXECUTABLES OFF)
-    set(SKIP_INSTALL_EXPORT ON)
-    set(SKIP_INSTALL_DOCS ON)
-    set(CMAKE_MACOSX_RPATH ON)
-
-    # Use, i.e. don't skip the full RPATH for the build tree
-    #set(CMAKE_SKIP_BUILD_RPATH  TRUE)
-
-    # When building, don't use the install RPATH already
-    # (but later on when installing)
-    #set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-    # The RPATH to be used when installing
-    #set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
-    #set(CMAKE_INSTALL_RPATH "@loader_path/../../../../Library/Frameworks")
-
-    # Don't add the automatically determined parts of the RPATH
-    # which point to directories outside the build tree to the install RPATH
-    #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-
-    set(BUILD_DOCS OFF CACHE INTERNAL "Don't build docs on Mac OS X" FORCE)
-
-    # special place for plugin install
-    set(INSTALL_PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/PlugIns"
-            CACHE INTERNAL "Installation direcotry for plugins" FORCE)
-else()
-    include(GNUInstallDirs)
-    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}"
-            CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}"
-            CACHE INTERNAL "Installation directory for libraries" FORCE)
-    set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
-            CACHE INTERNAL "Installation directory for headers" FORCE)
-    set(INSTALL_SHARE_DIR "${CMAKE_INSTALL_DATADIR}/gdal"
-            CACHE INTERNAL "Installation directory for share data" FORCE)
-    set(INSTALL_PKGCONFIG_DIR "${INSTALL_LIB_DIR}/pkgconfig"
-            CACHE INTERNAL "Installation directory for pkgconfig (.pc) files" FORCE)
-    set(INSTALL_MAN_DIR ${CMAKE_INSTALL_MANDIR} CACHE INTERNAL
-            "Installation directory for manual pages" FORCE)
-    set(INSTALL_DOC_DIR ${CMAKE_INSTALL_DOCDIR} CACHE INTERNAL
-            "Installation directory for doc pages" FORCE)
-    set(INSTALL_PLUGIN_DIR
-            "${CMAKE_INSTALL_PREFIX}/lib/gdalplugins/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}"
-            CACHE INTERNAL "Installation direcotry for plugins" FORCE)
-endif()
 
 ################################################################################
 ## libgdal shared/satic library generation
@@ -125,9 +72,35 @@ set_target_properties(gdal PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       CXX_STANDARD 11
                       CXX_STANDARD_REQUIRED YES
-                      CXX_EXTENSIONS NO
 )
 
+################################################################################
+# Install properties
+if(OSX_FRAMEWORK)
+    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin"
+            CACHE INTERNAL "Installation directory for executables" FORCE)
+    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
+            CACHE INTERNAL "Installation directory for libraries" FORCE)
+    set(INSTALL_PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/PlugIns"
+            CACHE INTERNAL "Installation direcotry for plugins" FORCE)
+    set(CMAKE_MACOSX_RPATH ON)
+else()
+    include(GNUInstallDirs)
+    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}"
+            CACHE INTERNAL "Installation directory for executables" FORCE)
+    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}"
+            CACHE INTERNAL "Installation directory for libraries" FORCE)
+    set(INSTALL_PLUGIN_DIR
+        "${CMAKE_INSTALL_PREFIX}/lib/gdalplugins/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}"
+        CACHE INTERNAL "Installation direcotry for plugins" FORCE)
+endif()
+
+set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/gdal"
+        CACHE INTERNAL "Installation directory for headers" FORCE)
+set(INSTALL_SHARE_DIR "${CMAKE_INSTALL_DATADIR}/gdal"
+        CACHE INTERNAL "Installation directory for share data" FORCE)
+
+###############################################################################
 # detect portability libs and set, so it should add at first
 # Common Portability layer
 add_subdirectory(port)
@@ -148,7 +121,7 @@ endif()
 if(GDAL_USE_LIBJSONC_INTERNAL)
     add_subdirectory(ogr/ogrsf_frmts/geojson/libjson)
 endif()
-if(GDAL_USE_OPENCAD_INTERNAL)
+if(GDAL_USE_OPENCAD_INTERNAL AND OGR_ENABLE_CAD)
     add_subdirectory(ogr/ogrsf_frmts/cad/libopencad)
 endif()
 if(GDAL_USE_LIBTIFF_INTERNAL)
@@ -193,7 +166,6 @@ add_subdirectory(apps)
 add_subdirectory(fuzzers)
 
 # Document/Manuals
-option(BUILD_DOCS "Build documents" ON)
 if(BUILD_DOCS)
     add_subdirectory(doc)
 endif()
@@ -235,9 +207,9 @@ configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
 # gdal-config utility command generation
 include(GenerateGdalConfig)
 generate_gdal_config()
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${INSTALL_INC_DIR})
 
-# data resource
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${INSTALL_INC_DIR})
 install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
         DESTINATION ${INSTALL_SHARE_DIR}/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
         COMPONENT libraries FILES_MATCHING PATTERN "*.*")
@@ -246,15 +218,15 @@ install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
 if(UNIX AND NOT OSX_FRAMEWORK)
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
                    ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${INSTALL_PKGCONFIG_DIR}
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${INSTALL_LIB_DIR}/pkgconfig
             COMPONENT libraries)
 endif()
 
 install(TARGETS gdal
         EXPORT gdal-export
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+        ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
+        LIBRARY DESTINATION ${INSTALL_LIB_DIR}
         FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
@@ -263,7 +235,7 @@ export(EXPORT gdal-export
        FILE gdal-export.cmake)
 install(EXPORT gdal-export
         FILE GdalConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/
+        DESTINATION ${INSTALL_LIB_DIR}/cmake/gdal/
         EXPORT_LINK_INTERFACE_LIBRARIES)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(GdalConfigVersion.cmake
@@ -273,7 +245,7 @@ write_basic_package_version_file(GdalConfigVersion.cmake
                                  # COMPATIBILITY SameMinorVersion)
                                  COMPATIBILITY ExactVersion)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GdalConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
+        DESTINATION ${INSTALL_LIB_DIR}/cmake/gdal/)
 
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/uninstall.cmake.in

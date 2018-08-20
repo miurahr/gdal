@@ -135,13 +135,7 @@ endif()
 
 ogr_dependent_driver(xlsx "Microsoft Office Excel(xlsx)" "HAVE_EXPAT")
 ogr_optional_driver(mongodb MongoDB)
-
-if(GDAL_USE_OPENCAD_INTERNAL OR HAVE_OPENCAD)
-    set(WITH_OPENCAD ON CACHE INTERNAL "")
-else()
-    set(WITH_OPENCAD OFF CACHE INTERNAL "")
-endif()
-ogr_dependent_driver(cad "OpenCAD" "WITH_OPENCAD")
+ogr_optional_driver(cad "OpenCAD")
 
 #############################################
 # proprietary libraries

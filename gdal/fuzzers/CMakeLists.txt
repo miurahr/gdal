@@ -1,14 +1,11 @@
 include(GdalStandardIncludes)
 
-add_library(FuzzingEngine STATIC fuzzingengine.cpp)
 add_executable(gdal_fuzzer gdal_fuzzer.cpp fuzzingengine.cpp)
-target_include_directories(gdal_fuzzer PRIVATE
-                           $<TARGET_PROPERTY:ogr_SQLite,SOURCE_DIR>)
 add_executable(gdal_translate_fuzzer gdal_translate_fuzzer.cpp fuzzingengine.cpp)
 add_executable(gdal_vector_translate_fuzzer gdal_vector_translate_fuzzer.cpp fuzzingengine.cpp)
 add_executable(ogr_fuzzer ogr_fuzzer.cpp fuzzingengine.cpp)
-#add_executable(aig_fuzzer gdal_fuzzer.cpp fuzzingengine.cpp)
-#target_compile_definitions(aig_fuzzer PRIVATE
+#add_executable(alg_fuzzer gdal_fuzzer.cpp fuzzingengine.cpp)
+#target_compile_definitions(alg_fuzzer PRIVATE
 #	-DREGISTER_FUNC=GDALRegister_AIGrid -DMEM_FILENAME="\"/vsimem/test.tar\"" -DGDAL_FILENAME="\"/vsitar//vsimem/test.tar/hdr.adf\"")
 #add_executable(ogr_sdts_fuzzer ogr_fuzzer.cpp fuzzingengine.cpp)
 #target_compile_definitions(ogr_sdts_fuzzer PRIVATE -DREGISTER_FUNC=RegisterOGRSDTS -DMEM_FILENAME="\"/vsimem/test.tar\"" -DGDAL_FILENAME="\"/vsitar//vsimem/test.tar/TR01CATD.DDF\"")
