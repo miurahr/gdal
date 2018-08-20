@@ -75,41 +75,31 @@ set_target_properties(gdal PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       CXX_STANDARD 11
                       CXX_STANDARD_REQUIRED YES)
-set_target_properties(gdal PROPERTIES
+if(APPLE)
+    set_target_properties(gdal PROPERTIES
         FRAMEWORK TRUE
         FRAMEWORK_VERSION A
         MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION}
         MACOSX_FRAMEWORK_BUNDLE_VERSION ${GDAL_VERSION}
         MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
-        XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+        #XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
         #PUBLIC_HEADER ""
-)
+    )
+endif()
 
 ################################################################################
 # Install properties
 if(APPLE)
-    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin"
-            CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
-            CACHE INTERNAL "Installation directory for libraries" FORCE)
+    include(OSXInstallDirs)
     set(INSTALL_PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/PlugIns"
-            CACHE INTERNAL "Installation direcotry for plugins" FORCE)
+            CACHE PATH "Installation direcotry for plugins")
     set(CMAKE_MACOSX_RPATH ON)
 else()
     include(GNUInstallDirs)
-    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}"
-            CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}"
-            CACHE INTERNAL "Installation directory for libraries" FORCE)
     set(INSTALL_PLUGIN_DIR
         "${CMAKE_INSTALL_PREFIX}/lib/gdalplugins/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}"
-        CACHE INTERNAL "Installation direcotry for plugins" FORCE)
+        CACHE PATH "Installation direcotry for plugins")
 endif()
-
-set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/gdal"
-        CACHE INTERNAL "Installation directory for headers" FORCE)
-set(INSTALL_SHARE_DIR "${CMAKE_INSTALL_DATADIR}/gdal"
-        CACHE INTERNAL "Installation directory for share data" FORCE)
 
 ###############################################################################
 # detect portability libs and set, so it should add at first
@@ -206,8 +196,7 @@ configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
 include(GenerateGdalConfig)
 generate_gdal_config()
 
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${INSTALL_INC_DIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
         DESTINATION ${INSTALL_SHARE_DIR}/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
         COMPONENT libraries FILES_MATCHING PATTERN "*.*")
@@ -216,15 +205,15 @@ install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
 if(UNIX AND NOT OSX_FRAMEWORK)
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
                    ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${INSTALL_LIB_DIR}/pkgconfig
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
             COMPONENT libraries)
 endif()
 
 install(TARGETS gdal
         EXPORT gdal-export
-        RUNTIME DESTINATION ${INSTALL_BIN_DIR}
-        ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-        LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
@@ -233,7 +222,7 @@ export(EXPORT gdal-export
        FILE gdal-export.cmake)
 install(EXPORT gdal-export
         FILE GdalConfig.cmake
-        DESTINATION ${INSTALL_LIB_DIR}/cmake/gdal/
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/
         EXPORT_LINK_INTERFACE_LIBRARIES)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(GdalConfigVersion.cmake
@@ -243,7 +232,7 @@ write_basic_package_version_file(GdalConfigVersion.cmake
                                  # COMPATIBILITY SameMinorVersion)
                                  COMPATIBILITY ExactVersion)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GdalConfigVersion.cmake
-        DESTINATION ${INSTALL_LIB_DIR}/cmake/gdal/)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
 
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/uninstall.cmake.in
