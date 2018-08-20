@@ -448,16 +448,4 @@ else(MSVC)
 endif()
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/cpl_config.h.in ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h @ONLY)
 
-if(UNIX)
-    if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-        set(MACOSX_FRAMEWORK TRUE)
-    else()
-        set(MACOSX_FRAMEWORK FALSE)
-    endif()
-
-    add_definitions(-DCPL_LSB)
-    add_definitions(-D_FORTIFY_SOURCE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
-
 # vim: ts=4 sw=4 sts=4 et

@@ -35,8 +35,12 @@ option(GDAL_ENABLE_PLUGIN "Set ON prefer to build drivers as plugin" OFF)
 
 # Default definitions during build
 add_definitions(-DGDAL_COMPILATION)
-if(UNIX AND USE_CPL)
-    add_definitions(-DCPL_LSB)
+if(UNIX)
+    add_definitions(-D_FORTIFY_SOURCE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    if(USE_CPL)
+        add_definitions(-DCPL_LSB)
+    endif()
 endif()
 
 ################################################################################
@@ -51,7 +55,6 @@ include(CheckDependentLibraries)
 
 # generate ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h
 include(configure)
-
 
 ################################################################################
 ## libgdal shared/satic library generation
@@ -71,12 +74,20 @@ set_target_properties(gdal PROPERTIES
                       LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       CXX_STANDARD 11
-                      CXX_STANDARD_REQUIRED YES
+                      CXX_STANDARD_REQUIRED YES)
+set_target_properties(gdal PROPERTIES
+        FRAMEWORK TRUE
+        FRAMEWORK_VERSION A
+        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION}
+        MACOSX_FRAMEWORK_BUNDLE_VERSION ${GDAL_VERSION}
+        MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
+        XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+        #PUBLIC_HEADER ""
 )
 
 ################################################################################
 # Install properties
-if(OSX_FRAMEWORK)
+if(APPLE)
     set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin"
             CACHE INTERNAL "Installation directory for executables" FORCE)
     set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
@@ -168,19 +179,6 @@ add_subdirectory(fuzzers)
 # Document/Manuals
 if(BUILD_DOCS)
     add_subdirectory(doc)
-endif()
-
-# OSX Framework specific properties
-if(OSX_FRAMEWORK)
-    set_target_properties(gdal PROPERTIES
-        FRAMEWORK TRUE
-        FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
-        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION}
-        MACOSX_FRAMEWORK_BUNDLE_VERSION ${VERSION}
-        MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
-        XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
-        PUBLIC_HEADER "${INST_HEADER}"
-    )
 endif()
 
 ## MSVC spefific resource preparation
