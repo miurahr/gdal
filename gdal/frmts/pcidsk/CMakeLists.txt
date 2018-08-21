@@ -6,7 +6,7 @@ gdal_standard_includes(gdal_PCIDSK)
 if(GDAL_USE_LIBJPEG_INTERNAL)
 	target_include_directories(gdal_PCIDSK PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
-	target_include_directories(gdal_PCIDSK PRIVATE JPEG::JPEG)
+	target_include_directories(gdal_PCIDSK PRIVATE ${JPEG_INCLUDE_DIRS})
 	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_PCIDSK LIBRARIES JPEG::JPEG)
 endif()
 

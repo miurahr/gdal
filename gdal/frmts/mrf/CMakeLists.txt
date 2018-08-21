@@ -16,7 +16,7 @@ endif()
 if(GDAL_USE_LIBJPEG_INTERNAL)
     target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
-    target_include_directories(gdal_MRF PRIVATE JPEG::JPEG)
+    target_include_directories(gdal_MRF PRIVATE ${JPEG_INCLUDE_DIRS})
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES JPEG::JPEG)
 endif()
 
