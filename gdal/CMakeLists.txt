@@ -76,15 +76,15 @@ set_target_properties(gdal PROPERTIES
                       CXX_STANDARD 11
                       CXX_STANDARD_REQUIRED YES)
 if(APPLE)
-    set_target_properties(gdal PROPERTIES
-        FRAMEWORK TRUE
-        FRAMEWORK_VERSION A
-        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION}
-        MACOSX_FRAMEWORK_BUNDLE_VERSION ${GDAL_VERSION}
-        MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
-        #XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
-        #PUBLIC_HEADER ""
-    )
+   set_target_properties(gdal PROPERTIES
+       FRAMEWORK TRUE
+       FRAMEWORK_VERSION A
+       MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
+       MACOSX_FRAMEWORK_BUNDLE_VERSION ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
+       MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
+       XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+       #PUBLIC_HEADER ""
+   )
 endif()
 
 ################################################################################
@@ -202,7 +202,7 @@ install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
         COMPONENT libraries FILES_MATCHING PATTERN "*.*")
 
 # pkg-config resource
-if(UNIX AND NOT OSX_FRAMEWORK)
+if(UNIX AND NOT APPLE)
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
                    ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig

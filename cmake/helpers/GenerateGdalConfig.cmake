@@ -52,7 +52,7 @@ function(generate_gdal_config)
             DESTINATION ${GDAL_ROOT_BINARY_DIR}/apps/
             FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-    if(UNIX AND NOT OSX_FRAMEWORK)
+    if(UNIX AND NOT MACOSX_FRAMEWORK)
         install(PROGRAMS ${GDAL_ROOT_BINARY_DIR}/apps/gdal-config
                 DESTINATION bin
                 COMPONENT applications)
