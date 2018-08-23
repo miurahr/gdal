@@ -4,7 +4,7 @@ target_include_directories(ogr_XLSX PRIVATE $<TARGET_PROPERTY:ogr_geojson,SOURCE
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)
 if(HAVE_EXPAT)
-        gdal_target_link_libraries(TARGET ogr_XLSX   LIBRARIES ${EXPAT_LIBRARY})
-        target_include_directories(ogr_XLSX PRIVATE ${EXPAT_INCLUDE_DIRS})
-        target_compile_definitions(ogr_XLSX PRIVATE -DHAVE_EXPAT)
+    target_include_directories(ogr_XLSX PRIVATE ${EXPAT_INCLUDE_DIRS})
+    target_compile_definitions(ogr_XLSX PRIVATE -DHAVE_EXPAT)
+    gdal_target_link_libraries(TARGET ogr_XLSX LIBRARIES EXPAT::EXPAT)
 endif()

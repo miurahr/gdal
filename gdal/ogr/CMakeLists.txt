@@ -5,7 +5,7 @@
 # ******************************************************************************
 # * Copyright (C) 2012,2013 Bishop
 # * Copyright (C) 2017,2018 Hiroshi Miura
-# * 
+# *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
 # * to deal in the Software without restriction, including without limitation
@@ -146,7 +146,7 @@ endif()
 if(HAVE_EXPAT)
     target_include_directories(ogr PRIVATE ${EXPAT_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_EXPAT)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${EXPAT_LIBRARIES})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE EXPAT::EXPAT)
 endif()
 
 if(HAVE_XERCESC)

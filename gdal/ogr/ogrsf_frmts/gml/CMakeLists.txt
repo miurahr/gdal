@@ -9,7 +9,7 @@ gdal_driver_standard_includes(ogr_GML)
 if(HAVE_EXPAT)
     target_include_directories(ogr_GML PRIVATE ${EXPAT_INCLUDE_DIRS})
     target_compile_definitions(ogr_GML PRIVATE -DHAVE_EXPAT)
-    GDAL_TARGET_LINK_LIBRARIES(TARGET ogr_GML LIBRARIES ${EXPAT_LIBRARIES})
+    GDAL_TARGET_LINK_LIBRARIES(TARGET ogr_GML LIBRARIES EXPAT::EXPAT)
 endif()
 
 if(HAVE_XERCESC)

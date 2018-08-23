@@ -9,7 +9,7 @@ target_include_directories(ogr_OSM PRIVATE
 if(HAVE_EXPAT)
     target_compile_definitions(ogr_OSM PRIVATE -DHAVE_EXPAT=1)
     target_include_directories(ogr_OSM PRIVATE ${EXPAT_INCLUDE_DIRS})
-    gdal_target_link_libraries(TARGET ogr_OSM LIBRARIES ${EXPAT_LIBRARIES})
+    gdal_target_link_libraries(TARGET ogr_OSM LIBRARIES EXPAT::EXPAT)
 endif()
 if(HAVE_SQLITE3)
     target_include_directories(ogr_OSM PRIVATE ${SQLITE3_INCLUDE_DIR})
