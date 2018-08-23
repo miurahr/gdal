@@ -5,7 +5,7 @@
 # ******************************************************************************
 # * Copyright (C) 2012,2013 Bishop
 # * Copyright (C) 2017,2018 Hiroshi Miura
-# * 
+# *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
 # * to deal in the Software without restriction, including without limitation
@@ -117,7 +117,7 @@ ogr_optional_driver(carto CARTO)
 ogr_dependent_driver(ingress INGRESS "HAVE_INGRESS")
 ogr_dependent_driver(ili ILI "HAVE_XERCESC")
 ogr_dependent_driver(mysql MySQL "HAVE_MYSQL")
-ogr_dependent_driver(pg PostGIS "HAVE_POSTGRES")
+ogr_dependent_driver(pg PostGIS "HAVE_POSTGRESQL")
 ogr_dependent_driver(geomedia GEOMEDIA "HAVE_ODBC")
 ogr_dependent_driver(mssqlspatial MSSQLSPATIAL "HAVE_ODBC")
 ogr_dependent_driver(odbc ODBC "HAVE_ODBC")
@@ -127,7 +127,7 @@ ogr_dependent_driver(pgeo PGEO "HAVE_ODBC")
 # for dependency problem, grass is not always compiled in.
 ogr_optional_driver(grass GRASS)
 if(OGR_ENABLE_GRASS)
-    if(HAVE_GRASS AND HAVE_POSTGRES)
+    if(HAVE_GRASS AND HAVE_POSTGRESQL)
     else()
         message(FATAL_ERROR "Dependency error on GRASS driver")
     endif()

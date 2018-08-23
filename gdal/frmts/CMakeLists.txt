@@ -5,7 +5,7 @@
 # ******************************************************************************
 # * Copyright (C) 2012 Bishop
 # * Copyright (C) 2017,2018 Hiroshi Miura
-# * 
+# *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
 # * to deal in the Software without restriction, including without limitation
@@ -126,7 +126,7 @@ gdal_dependent_format(hdf4 "HDF4" "HAVE_HDF4")
 gdal_dependent_format(pdf "PDF" "WITH_PDFLIB")
 gdal_dependent_format(rasterlite "RasterLite" "HAVE_SQLITE3;OGR_SQLITE")
 gdal_dependent_format(mbtiles "MBTile" "OGR_ENABLE_GPKG;HAVE_SQLITE3")
-gdal_dependent_format(postgisraster "PostGIS raster" "HAVE_POSTGRES")
+gdal_dependent_format(postgisraster "PostGIS raster" "HAVE_POSTGRESQL")
 gdal_dependent_format(bpg "BPG" "HAVE_BPG")
 gdal_dependent_format(dods "DODS" "HAVE_DAP")
 gdal_dependent_format(dds "DirectDraw Surface" "HAVE_CRNLIB")
@@ -140,7 +140,7 @@ gdal_dependent_format(pcidsk "PCIDSK" "HAVE_PCIDSK")
 # for circulate dependency, grass is NOT always compiled in.
 gdal_optional_format(grass "GRASS")
 if(GDAL_ENABLE_FRMT_GRASS)
-    if(HAVE_GRASS AND HAVE_POSTGRES)
+    if(HAVE_GRASS AND HAVE_POSTGRESQL)
     else()
         message(FATAL_ERROR "Dependency error on GRASS driver")
     endif()

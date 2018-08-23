@@ -5,9 +5,9 @@ GDAL_DRIVER(TARGET ogr_GRASS
                 -DGRASS_VERSION_MAJOR=${GRASS_VERSION}
                 -DUSE_CPL
     INCLUDES ${GRASS_INCLUDE_DIR${GRASS_VERSION}}
-             ${POSTGRES_INCLUDE_DIR}
+             ${PostgreSQL_INCLUDE_DIRS}
     LIBRARIES -L${GRASS_PREFIX${GRASS_VERSION}}/lib
               -lgrass_vector -lgrass_dig2 -lgrass_dgl -lgrass_rtree
               -lgrass_linkm -lgrass_dbmiclient -lgrass_dbmibase
               -lgrass_gproj -lgrass_gmath -lgrass_gis -lgrass_datetime
-              ${POSTGRES_LIBRARY})
+              ${PostgreSQL_LIBRARIES})
