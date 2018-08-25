@@ -33,67 +33,73 @@ enable_testing()
 
 set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# not support test on cross compiling, but mingw support with wine
-if(NOT CMAKE_CROSSCOMPILING OR MINGW)
-    add_subdirectory(cpp)
+add_subdirectory(cpp)
 
-    find_package(PythonInterp)
-    find_package(PythonLibs)
-    if(PythonInterp_FOUND)
-        add_test(gcore-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
-        add_test(gdrivers-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
-        add_test(alg-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
-        add_test(osr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
-        add_test(ogr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
-        add_test(utilities-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
-        add_test(pyscripts-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
-        get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
-        set(TEST_ENV)
-        list(APPEND TEST_ENV
-                    PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod
-                    LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal
-                    GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data
-                    GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
-                    #GDAL_DOWNLOAD_TEST_DATA=1
+find_package(PythonInterp)
+find_package(PythonLibs)
+if(PythonInterp_FOUND)
+    add_test(gcore-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
+    add_test(gdrivers-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
+    add_test(alg-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
+    add_test(osr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
+    add_test(ogr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
+    add_test(utilities-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
+    add_test(pyscripts-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
+    get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
+    set(TEST_ENV)
+    list(APPEND TEST_ENV
+                PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod
+                LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal
+                GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data
+                GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
+                #GDAL_DOWNLOAD_TEST_DATA=1
 #                   #GDAL_SLOW_TESTSA=1
-            )
-        set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
-                             PROPERTIES
-                             ENVIRONMENT "${TEST_ENV}"
-                             # run_all.py enforce us to run on a directory where script exist.
-                             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                             TIMEOUT 300)
-        add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7
-                           DEPENDS
-                           testblockcache
-                           testperfcopywords
-                           test_include_from_c_file
-                           test_c_include_from_cpp_file
-                           testsse1
-                           testsse2
-                           testsse3)
-     endif()
-
-    add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*|^block-.*'
-                  DEPENDS
-                    gdal_unit_test
-                    testblockcache
-                    testcopywords
-                    testclosedondestroydm
-                    testthreadcond
-                    testvirtualmem
-                    testblockcachewrite
-                    testblockcachelimits
-                    testmultithreadedwriting
-                    testdestroy)
-    add_custom_target(test_misc COMMAND ${CMAKE_CTEST_COMMAND} -R '^testa-.*'
-            DEPENDS
-                test_include_from_c_file
-                test_c_include_from_cpp_file
-                testperfcopywords)
-    add_custom_target(test_sse COMMAND ${CMAKE_CTEST_COMMAND} -R '^testsse.*'
-            DEPENDS
-                testsse1
-                testsse2
-                testsse3)
+        )
+    set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
+                         PROPERTIES
+                         ENVIRONMENT "${TEST_ENV}"
+                         # run_all.py enforce us to run on a directory where script exist.
+                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                         TIMEOUT 300)
+    add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7
+                       DEPENDS
+                       testblockcache
+                       testperfcopywords
+                       test_include_from_c_file
+                       test_c_include_from_cpp_file
+                       testsse1
+                       testsse2
+                       testsse3)
 endif()
+
+if(ANDROID)
+find_program(ADB adb)
+add_custom_command(TARGET android_unit_test POST_BUILD
+                   COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
+                   COMMAND ${ADB} push $<TARGET_FILE:gdal> /data/local/tmp/${ANDROID_ABI}/
+                   COMMAND ${ADB} push $<TARGET_FILE:gdal_unit_test> /data/local/tmp/${ANDROID_ABI}/
+                   COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/gdal_unit_test\")
+endif()
+
+add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*|^block-.*'
+              DEPENDS
+                gdal_unit_test
+                testblockcache
+                testcopywords
+                testclosedondestroydm
+                testthreadcond
+                testvirtualmem
+                testblockcachewrite
+                testblockcachelimits
+                testmultithreadedwriting
+                testdestroy)
+add_custom_target(test_misc COMMAND ${CMAKE_CTEST_COMMAND} -R '^testa-.*'
+        DEPENDS
+            test_include_from_c_file
+            test_c_include_from_cpp_file
+            testperfcopywords)
+add_custom_target(test_sse COMMAND ${CMAKE_CTEST_COMMAND} -R '^testsse.*'
+        DEPENDS
+            testsse1
+            testsse2
+            testsse3)
