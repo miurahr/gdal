@@ -110,15 +110,15 @@ endif()
 
 project(gdal LANGUAGES C CXX)
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules # CMake generic modules
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers # GDAL specific helpers
-    ${CMAKE_MODULE_PATH})
+# setup cmake modules paths
+include(cmake/modules/init.cmake)
+
+# cotire cmake speedup addon
 include(cotire)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
 
-###########################################################
+################################################################
 # set common variables
 # WARN: these will be deprecated in future
 set(GDAL_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gdal)
