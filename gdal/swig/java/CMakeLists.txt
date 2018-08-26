@@ -64,8 +64,10 @@ function(GDAL_JAVA_WRAP)
         add_library(${_SWIG_TARGET}jni MODULE ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
     endif()
     gdal_standard_includes(${_SWIG_TARGET}jni)
-    target_include_directories(${_SWIG_TARGET}jni PRIVATE ${JNI_INCLUDE_DIRS})
-    target_include_directories(${_SWIG_TARGET}jni PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(${_SWIG_TARGET}jni PRIVATE
+                               ${JNI_INCLUDE_DIRS}
+                               $<TARGET_PROPERTY:gnm,SOURCE_DIR>
+                               ${CMAKE_CURRENT_BINARY_DIR})
 endfunction()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/org/gdal)
