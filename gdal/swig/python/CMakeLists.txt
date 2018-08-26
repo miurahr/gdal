@@ -83,10 +83,13 @@ add_custom_command(
             ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
 )
 
-set(PY_SUFFIX so)
+set(PY_LIB_SUFFIX so)
 if(WIN32 AND NOT CYGWIN)
-    set(PY_SUFFIX pyd)
+    set(PY_LIB_SUFFIX pyd)
     add_definitions(-D__MSVCRT_VERSION__=0x0601)
+endif()
+if(APPLE)
+    set(PY_LIB_SUFFIX dylib)
 endif()
 
 macro(py_ext name source)
@@ -103,33 +106,33 @@ macro(py_ext name source)
     endif()
     target_link_libraries(${name} PRIVATE ${Python_LIBRARIES} $<TARGET_NAME:gdal>)
     add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/${name}.${PY_SUFFIX}
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/${name}.${PY_LIB_SUFFIX}
             COMMAND ${CMAKE_COMMAND} -E copy
-               ${name}.${PY_SUFFIX} osgeo/
+               ${name}.${PY_LIB_SUFFIX} osgeo/
             DEPENDS ${name}
     )
 endmacro()
 
 py_ext(_gdal gdal_wrap.cpp)
-if(NumPy_FOUND)
-    py_ext(_gdal_array gdal_array_wrap.cpp)
-endif()
 py_ext(_gdalconst gdalconst_wrap.c)
 py_ext(_gnm gnm_wrap.cpp)
 py_ext(_ogr ogr_wrap.cpp)
 py_ext(_osr osr_wrap.cpp)
+if(NumPy_FOUND)
+    py_ext(_gdal_array gdal_array_wrap.cpp)
+endif()
 
 if(NumPy_FOUND)
     add_custom_target(python_binding ALL
-                  DEPENDS osgeo/_gdal.${PY_SUFFIX}
-                          osgeo/_gdal_array.${PY_SUFFIX}
-                          osgeo/_gdalconst.${PY_SUFFIX}
-                          osgeo/_gnm.${PY_SUFFIX} osgeo/_ogr.${PY_SUFFIX} osgeo/_osr.${PY_SUFFIX}
+                  DEPENDS osgeo/_gdal.${PY_LIB_SUFFIX}
+                          osgeo/_gdal_array.${PY_LIB_SUFFIX}
+                          osgeo/_gdalconst.${PY_LIB_SUFFIX}
+                          osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
                           osgeo/__init__.py)
 else()
     add_custom_target(python_binding ALL
-                  DEPENDS osgeo/_gdal.${PY_SUFFIX}
-                          osgeo/_gdalconst.${PY_SUFFIX}
-                          osgeo/_gnm.${PY_SUFFIX} osgeo/_ogr.${PY_SUFFIX} osgeo/_osr.${PY_SUFFIX}
+                  DEPENDS osgeo/_gdal.${PY_LIB_SUFFIX}
+                          osgeo/_gdalconst.${PY_LIB_SUFFIX}
+                          osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
                           osgeo/__init__.py)
 endif()
