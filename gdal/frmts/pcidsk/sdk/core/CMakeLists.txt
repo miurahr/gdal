@@ -12,9 +12,12 @@ target_include_directories(pcidsk_sdk_core PRIVATE
                            $<TARGET_PROPERTY:cpl,BINARY_DIR>
                            )
 
-if(HAVE_JPEG)
-    target_include_directories(pcidsk_sdk_core PRIVATE ${JPEG_INCLUDE_DIRS})
+if(GDAL_USE_LIBJPEG_INTERNAL)
+	target_include_directories(pcidsk_sdk_core PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
     target_compile_definitions(pcidsk_sdk_core PRIVATE -DHAVE_LIBJPEG)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE JPEG::JPEG)
+else()
+	target_include_directories(pcidsk_sdk_core PRIVATE ${JPEG_INCLUDE_DIRS})
+    target_compile_definitions(pcidsk_sdk_core PRIVATE -DHAVE_LIBJPEG)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE JPEG::JPEG)
 endif()
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk_core>)
