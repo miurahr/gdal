@@ -25,90 +25,15 @@
 # ******************************************************************************
 #
 # Default configuration for building with Mingw-w64
-#
-# Load the configuration by specifying
-#`set SDK_PREFIX=c:\release-1911 && cmake -C <project root>\cmake\init\mingw.cmake <project root>`
-# from build folder.
-#
-# If you use GISINTERNALS SDK distribution, please set environment variable
-# SDK_PREFIX to point 'release-19xx' folder which has include/lib/bin
-#
-SET(SDK_PREFIX "$ENV{SDK_PREFIX}")
-
-SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 
 #SET(CMAKE_RULE_MESSAGES OFF CACHE BOOL "")
 #SET(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "")
-#
+
 # you are recommended to install ccache for mingw on msys2
 # `pacman --needed -S mingw-w64-x86_64-ccache`
 #
 #SET(CMAKE_CXX_COMPILER_LAUNCHER "\msys64\mingw64\bin\ccache.exe" CACHE PATH "")
 #SET(CMAKE_C_COMPILER_LAUNCHER "\msys64\mingw64\bin\ccache.exe" CACHE PATH "")
-
-# BINDINGS
-SET(SWIG_PYTHON ON CACHE BOOL "")
-SET(SWIG_PERL OFF CACHE BOOL "")
-SET(SWIG_PHP OFF CACHE BOOL "")
-SET(SWIG_JAVA OFF CACHE BOOL "")
-
-#DISABLE PLUGIN
-SET(GDAL_ENABLE_PLUGIN OFF CACHE BOOL "")
-
-#THIRDPARTY LIBRARIES
-if(NOT SDK_PREFIX STREQUAL "")
-    SET(SDK_INC_DIR        "${SDK_PREFIX}\\include")
-    SET(SDK_LIB_DIR        "${SDK_PREFIX}\\lib")
-    SET(BOOST_INCLUDE_DIR  "${SDK_INC_DIR}\\boost" CACHE PATH "")
-    SET(BOOST_LIBRARY      "" CACHE PATH "")
-    SET(CURL_INCLUDE_DIR   "${SDK_INC_DIR}" CACHE PATH "")
-    SET(CURL_LIBRARY       "${SDK_LIB_DIR}\\libcurl_imp.lib" CACHE PATH "")
-    SET(ECW_INCLUDE_DIR    "${SDK_INC_DIR}" CACHE PATH "")
-    SET(ECW_LIBRARY        "${SDK_LIB_DIR}\\libecwj2.lib" CACHE PATH "")
-    SET(EXPAT_INCLUDE_DIR  "${SDK_INC_DIR}" CACHE PATH "")
-    SET(EXPAT_LIBRARY      "${SDK_LIB_DIR}\\expat.lib" CACHE PATH "")
-    SET(GEOS_INCLUDE_DIR   "${SDK_INC_DIR}" CACHE PATH "")
-    SET(GEOS_LIBRARY       "${SDK_LIB_DIR}\\geos.lib;${SDK_LIB_DIR}\\geos_c.lib" CACHE PATH "")
-    SET(HDF4_INCLUDE_DIR   "${SDK_INC_DIR}\\hdf4" CACHE PATH "")
-    SET(HDF4_LIBRARY       "${SDK_LIB_DIR}\\hdfdll.lib;${SDK_LIB_DIR}\\mfhdfdll.lib;${SDK_LIB_DIR}\\xdrdll.lib" CACHE PATH "")
-    SET(HDF5_CXX_INCLUDE_DIRS      "${SDK_INC_DIR}" CACHE PATH "")
-    SET(HDF5_CXX_LIBRARIES "${SDK_LIB_DIR}\\hdf5.lib;${SDK_LIB_DIR}\\hdf5_cpp.lib")
-    SET(HDF5_CXX_HL_LIBRARIES "${SDK_LIB_DIR}\\hdf5_hl.lib;${SDK_LIB_DIR}\\hdf5_hl_cpp.lib;${SDK_LIB_DIR}\\hdf5.lib;${SDK_LIB_DIR}\\hdf5_cpp.lib")
-    SET(Iconv_INCLUDE_DIR  "${SDK_INC_DIR}" CACHE PATH "")
-    SET(Iconv_LIBRARY      "${SDK_LIB_DIR}\\iconv.lib" CACHE PATH "")
-    SET(JPEG_INCLUDE_DIR   "${SDK_INC_DIR}" CACHE PATH "")
-    SET(JPEG_LIBRARY       "${SDK_LIB_DIR}\\libjpeg.lib" CACHE PATH "")
-    SET(KEA_INCLUDE_DIR    "${SDK_INC_DIR}" CACHE PATH "")
-    SET(KEA_LIBRARY        "${SDK_LIB_DIR}\\libkea.lib" CACHE PATH "")
-    SET(LIBKML_INCLUDE_DIR "${SDK_INC_DIR}" CACHE PATH "")
-    SET(LIBKML_BASE_LIBRARY        "${SDK_LIB_DIR}\\libkmlbase.lib" CACHE PATH "")
-    SET(LIBKML_CONVENIENCE_LIBRARY "${SDK_LIB_DIR}\\libkmlconvenience.lib" CACHE PATH "")
-    SET(LIBKML_DOM_LIBRARY         "${SDK_LIB_DIR}\\libkmldom.lib" CACHE PATH "")
-    SET(LIBKML_ENGINE_LIBRARY      "${SDK_LIB_DIR}\\libkmlengine.lib" CACHE PATH "")
-    SET(LIBKML_XSD_LIBRARY         "${SDK_LIB_DIR}\\libkmlxsd.lib" CACHE PATH "")
-    SET(LIBKML_REGIONATOR_LIBRARY  "${SDK_LIB_DIR}\\libkmlregionator.lib" CACHE PATH "")
-    SET(LIBXML_INCLUDE_DIR     "${SDK_INC_DIR}" CACHE PATH "")
-    SET(LIBXML_LIBRARY         "${SDK_LIB_DIR}\\libxml2.lib" CACHE PATH "")
-    SET(OPENJPEG_INCLUDE_DIR   "${SDK_INC_DIR}\\openjpeg-2.1" CACHE PATH "")
-    SET(OPENJPEG_LIBRARY       "${SDK_LIB_DIR}\\openjp2.lib" CACHE PATH "")
-    SET(PNG_INCLUDE_DIR        "${SDK_INC_DIR}" CACHE PATH "")
-    SET(PNG_LIBRARY            "${SDK_LIB_DIR}\\libpng.lib" CACHE PATH "")
-    SET(POPPLER_INCLUDE_DIR    "${SDK_INC_DIR}" CACHE PATH "")
-    SET(POPPLER_GLIB_INCLUDE_DIR    "${SDK_INC_DIR}\\poppler" CACHE PATH "")
-    SET(POPPLER_LIBRARY        "${SDK_LIB_DIR}\\poppler.lib" CACHE PATH "")
-    SET(SPATIALITE_INCLUDE_DIR "${SDK_INC_DIR}" CACHE PATH "")
-    SET(SPATIALITE_LIBRARY     "${SDK_LIB_DIR}\\spatialite.lib;${SDK_LIB_DIR}\\spatialite_i.lib" CACHE PATH "")
-    SET(JPEG_INCLUDE_DIR       "${SDK_INC_DIR}" CACHE PATH "")
-    SET(JPEG_LIBRARY           "${SDK_LIB_DIR}\\libjpeg.lib" CACHE PATH "")
-    SET(SQLITE3_INCLUDE_DIR    "${SDK_INC_DIR}" CACHE PATH "")
-    SET(SQLITE3_LIBRARY        "${SDK_LIB_DIR}\\sqlite3_i.lib" CACHE PATH "")
-    SET(TIFF_INCLUDE_DIR       "${SDK_INC_DIR}" CACHE PATH "")
-    SET(TIFF_LIBRARY           "${SDK_LIB_DIR}\\libtiff_i.lib" CACHE PATH "")
-    SET(XercesC_INCLUDE_DIR    "${SDK_INC_DIR}" CACHE PATH "")
-    SET(XercesC_LIBRARY        "${SDK_LIB_DIR}\\xerces-c_3.lib" CACHE PATH "")
-    SET(ZLIB_INCLUDE_DIR       "${SDK_INC_DIR}" CACHE PATH "")
-    SET(ZLIB_LIBRARY           "${SDK_LIB_DIR}\\zlib.lib" CACHE PATH "")
-endif()
 
 #DRIVERS
 SET(GDAL_ENABLE_FRMT_ADRG ON CACHE BOOL "")
