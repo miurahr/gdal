@@ -6,16 +6,17 @@
 #   ECW_INCLUDE_DIR
 #   ECW_LIBRARY
 #   ECW_VERSION
+#
+#   Imported target
+#   ECW::libecwj2
+#
 # Author:   Alexander Lisovenko, alexander.lisovenko@gmail.com
 # Author:   Dmitry Baryshnikov, bishop.dev@gmail.com, Hiroshi Miura
 # Copyright (C) 2016, NextGIS <info@nextgis.com>
-# Copyright (C) 2017, Hiroshi Miura
+# Copyright (C) 2017,2018 Hiroshi Miura
 ################################################################################
 
-
-find_path(ECW_INCLUDE_DIR NCSECWClient.h
-        /usr/include
-        /usr/local/include)
+find_path(ECW_INCLUDE_DIR NCSECWClient.h)
 
 if (ECW_INCLUDE_DIR)
     set(MAJOR_VERSION 0)
@@ -47,24 +48,46 @@ if (ECW_INCLUDE_DIR)
     endif()
 endif()
 
-find_library(ECW_LIBRARY NCSEcw libecwj2
-        /usr/lib
-         /usr/local/lib
-         /usr/lib64
-         /usr/local/lib64)
+find_library(ECW_LIBRARY NCSEcw)
+find_library(ECWnet_LIBRARY NCSCnet)
+find_library(ECWC_LIBRARY NCSEcwC)
+find_library(NCSUtil_LIBRARY NCSUtil)
+mark_as_advanced(ECW_INCLUDE_DIR ECW_LIBRARY)
 
 # Handle the QUIETLY and REQUIRED arguments and set ECW_FOUND to TRUE
 # if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(ECW
-                                  REQUIRED_VARS ECW_LIBRARY ECW_INCLUDE_DIR
+                                  REQUIRED_VARS ECW_LIBRARY ECWnet_LIBRARY ECWC_LIBRARY NCSUtil_LIBRARY ECW_INCLUDE_DIR
                                   VERSION_VAR ECW_VERSION_STRING)
 
-if (ECW_FOUND)
-  set(ECW_LIBRARIES ${ECW_LIBRARY})
-  set(ECW_INCLUDE_DIRS ${ECW_INCLUDE_DIR})
-endif ()
-
-# Hide internal variables
-mark_as_advanced(ECW_INCLUDE_DIR ECW_LIBRARY)
+if(ECW_FOUND)
+    set(ECW_LIBRARIES ${ECW_LIBRARY} ${ECWnet_LIBRARY} ${ECWC_LIBRARY} ${NCSUtil_LIBRARY})
+    set(ECW_INCLUDE_DIRS ${ECW_INCLUDE_DIR})
+    if(NOT TARGET ECW::ECW)
+        add_library(ECW::ECW UNKNOWN IMPORTED)
+        set_target_properties(ECW::ECW PROPERTIES
+                            INTERFACE_INCLUDE_DIRECTORIES "${ECW_INCLUDE_DIRS}"
+                            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                            IMPORTED_LOCATION "${ECW_LIBRARY}")
+    endif()
+    if(NOT TARGET ECW::ECWC)
+        add_library(ECW::ECWC UNKNOWN IMPORTED)
+        set_target_properties(ECW::ECWC PROPERTIES
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION "${ECWC_LIBRARY}")
+    endif()
+    if(NOT TARGET ECW::ECWnet)
+        add_library(ECW::ECWnet UNKNOWN IMPORTED)
+        set_target_properties(ECW::ECWnet PROPERTIES
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION "${ECWnet_LIBRARY}")
+    endif()
+    if(NOT TARGET ECW::NCSUtil)
+        add_library(ECW::NCSUtil UNKNOWN IMPORTED)
+        set_target_properties(ECW::NCSUtil PROPERTIES
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION "${NCSUtil_LIBRARY}")
+    endif()
+endif()
 
