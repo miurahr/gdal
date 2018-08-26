@@ -25,11 +25,24 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-find_package(PythonInterp REQUIRED)
-find_package(PythonLibs REQUIRED)
+if(CMAKE_VERSION VERSION_LESS 3.12)
+    find_package(PythonLibs)
+    if(PythonLibs_FOUND)
+        set(Python_FOUND ON)
+        set(Python_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+        set(Python_LIBRARIES ${PYTHON_LIBRARIES})
+    endif()
+else()
+    find_package(Python COMPONENTS Development)
+endif()
+
+if(NOT Python_FOUND)
+    return()
+endif()
+
 include(GdalSwigBindings)
 
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/osgeo/)
 
 GDAL_SWIG_BINDINGS(
@@ -44,21 +57,25 @@ GDAL_SWIG_BINDINGS(
             ${CMAKE_CURRENT_BINARY_DIR}/osgeo/osr.py
 )
 
-# for gdal_array_wrap.cpp
-set(ARRAY_INPUT  ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdal_array.i )
-set(ARRAY_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_array_wrap.cpp )
-set(GDAL_SWIG_DEPENDS
-        ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/typemaps_python.i
-)
-set(SWIG_ARGS -Wall  -I${GDAL_ROOT_SOURCE_DIR}/swig/include
-            -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs
-            -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}/osgeo)
-add_custom_command(
-    OUTPUT  ${ARRAY_OUTPUT}
-    COMMAND ${SWIG_EXECUTABLE} ${SWIG_ARGS} ${SWIG_DEFINES} -I${CMAKE_SOURCE_DIR}/gdal -c++ -python -o ${ARRAY_OUTPUT} ${ARRAY_INPUT}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gdal/swig/${binding}
-    DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${GDAL_SWIG_DEPENDS} ${ARRAY_INPUT}
-)
+# gdal_array_wrap.cpp when NumPy exist
+find_package(NumPy)
+if(NumPy_FOUND)
+    set(ARRAY_INPUT  ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdal_array.i )
+    set(ARRAY_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_array_wrap.cpp )
+    set(GDAL_SWIG_DEPENDS
+            ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/typemaps_python.i
+    )
+    set(SWIG_ARGS -Wall  -I${GDAL_ROOT_SOURCE_DIR}/swig/include
+                -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs
+                -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}/osgeo)
+    add_custom_command(
+        OUTPUT  ${ARRAY_OUTPUT}
+        COMMAND ${SWIG_EXECUTABLE} ${SWIG_ARGS} ${SWIG_DEFINES} -I${CMAKE_SOURCE_DIR}/gdal -c++ -python -o ${ARRAY_OUTPUT} ${ARRAY_INPUT}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gdal/swig/python
+        DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${GDAL_SWIG_DEPENDS} ${ARRAY_INPUT}
+    )
+endif()
+
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py
          COMMAND ${CMAKE_COMMAND} -E copy
@@ -74,18 +91,17 @@ endif()
 
 macro(py_ext name source)
     add_library(${name} SHARED extensions/${source})
-    set_target_properties(${name} PROPERTIES PREFIX ""
-                          DEPENS ${GDAL_SWIG_OUTPUT} ${ARRAY_OUTPUT})
+    set_target_properties(${name} PROPERTIES PREFIX "")
     gdal_standard_includes(${name})
     target_include_directories(${name} PRIVATE
-                               ${PYTHON_INCLUDE_DIRS}
+                               ${Python_INCLUDE_DIRS}
                                $<TARGET_PROPERTY:appslib,SOURCE_DIR>
                                $<TARGET_PROPERTY:gnm,SOURCE_DIR>
                                )
     if(WIN32 AND NOT CYGWIN)
         set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
     endif()
-    target_link_libraries(${name} PRIVATE ${PYTHON_LIBRARIES} $<TARGET_NAME:gdal>)
+    target_link_libraries(${name} PRIVATE ${Python_LIBRARIES} $<TARGET_NAME:gdal>)
     add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/${name}.${PY_SUFFIX}
             COMMAND ${CMAKE_COMMAND} -E copy
@@ -95,13 +111,25 @@ macro(py_ext name source)
 endmacro()
 
 py_ext(_gdal gdal_wrap.cpp)
-py_ext(_gdal_array gdal_array_wrap.cpp)
+if(NumPy_FOUND)
+    py_ext(_gdal_array gdal_array_wrap.cpp)
+endif()
 py_ext(_gdalconst gdalconst_wrap.c)
 py_ext(_gnm gnm_wrap.cpp)
 py_ext(_ogr ogr_wrap.cpp)
 py_ext(_osr osr_wrap.cpp)
 
-add_custom_target(python_binding ALL
-                  DEPENDS osgeo/_gdal.${PY_SUFFIX} osgeo/_gdal_array.${PY_SUFFIX} osgeo/_gdalconst.${PY_SUFFIX}
+if(NumPy_FOUND)
+    add_custom_target(python_binding ALL
+                  DEPENDS osgeo/_gdal.${PY_SUFFIX}
+                          osgeo/_gdal_array.${PY_SUFFIX}
+                          osgeo/_gdalconst.${PY_SUFFIX}
                           osgeo/_gnm.${PY_SUFFIX} osgeo/_ogr.${PY_SUFFIX} osgeo/_osr.${PY_SUFFIX}
                           osgeo/__init__.py)
+else()
+    add_custom_target(python_binding ALL
+                  DEPENDS osgeo/_gdal.${PY_SUFFIX}
+                          osgeo/_gdalconst.${PY_SUFFIX}
+                          osgeo/_gnm.${PY_SUFFIX} osgeo/_ogr.${PY_SUFFIX} osgeo/_osr.${PY_SUFFIX}
+                          osgeo/__init__.py)
+endif()
