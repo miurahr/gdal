@@ -4,6 +4,24 @@ CMake build system internals for developers
 CMake is a cross platform tool to beherate build script for
 the platform, aka build tool for build system.
 
+Modern CMake
+------------
+
+"Modern CMake" style is introduced in CMake3.x version.
+In old cmake (2.8.x), definitions are similar to GNU Makefile.
+That means sub directories scripts inherit parent definitions.
+It is difficult to manage in large project about implicit definitions.
+
+Other than previous cmake versions, modern cmake style controls scope.
+
+Here is a modern cmake guide.
+
+* https://rix0r.nl/blog/2015/08/13/cmake-guide/
+
+* https://cliutils.gitlab.io/modern-cmake/
+
+* https://unclejimbo.github.io/2018/06/08/Modern-CMake-for-Library-Developers/
+
 Directory structure
 -------------------
 
@@ -91,14 +109,14 @@ Configuration parameters
 You can configure build process with  parameters you added to `cmake` command.
 Typical usage is as follows;
 
-``
-# current is a top of source
+```
+$ cd gdal_project_directory
 $ mkdir cmake-build-gcc4.8-debug
 $ cd cmake-build-gcc4.8-debug
 $ cmake .. -G Ninja -DENABLE_GNM -DGDAL_ENABLE_FRMTS_PDF=ON
 $ cmake --build .
 $ cmake --build . --target quicktest
-``
+```
 
 There are several good example in `gdal/scripts/vagrant` directory.
 For example, `gdal-clang.sh` is a build script with CLang and configured to generate gdal plugins for drivers.
@@ -204,7 +222,7 @@ Default toolchain for mingw defines WINE as an emulator for cross compiling.
 Please see https://cmake.org/cmake/help/latest/variable/CMAKE_CROSSCOMPILING_EMULATOR.html for details.
 
 
-WIndows
+Windows
 --------
 
 CMake build script support Windows platform with both MS Visual Stidio(VC) and MSYS2/Mingw.
@@ -248,6 +266,9 @@ build script.
 CI tests
 --------
 
+Using out-of-source capability, we can reduce test patterns
+and run multiple build and test on same environment.
+
 ### Travis-CI test cases
 
 - GCC on Ubuntu Trusty
@@ -262,7 +283,7 @@ CI tests
 
 - Mac OS X
 
-### Appveyor test cases
+### AppVeyor CI test cases
 
 - MSVC 2017 for Win32
 
@@ -274,7 +295,6 @@ Configuration parameters
 ### CMake standard options
 
 - BUILD_SHARED_LIBS: build target as shared library
-
 
 
 ### Custom options
@@ -452,7 +472,7 @@ This is not normal driver but internal library.
 
 ### gdal_geotiff (gdal/frmts/gtiff)
 
-These are reffered from other drivers so it should be built into libgdal
+These are referred from other drivers so it should be built into libgdal
 to resolve plugins dependencies.
 
 
