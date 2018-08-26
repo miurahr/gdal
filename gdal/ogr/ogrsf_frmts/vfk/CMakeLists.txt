@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET ogr_VFK SOURCES
+add_gdal_driver(TARGET ogr_VFK SOURCES
         ogr_vfk.h
         vfkreader.h
         vfkreaderp.h
@@ -14,9 +14,9 @@ ADD_GDAL_DRIVER(TARGET ogr_VFK SOURCES
         vfkfeature.cpp
         vfkfeaturesqlite.cpp
 )
-gdal_driver_standard_includes(ogr_VFK)
+gdal_standard_includes(ogr_VFK)
 if(HAVE_SQLITE3)
-    TARGET_INCLUDE_DIRECTORIES(ogr_VFK  PRIVATE ${SQLITE3_INCLUDE_DIR})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET  ogr_VFK LIBRARIES ${SQLITE3_LIBRARY})
-    TARGET_COMPILE_DEFINITIONS(ogr_VFK PRIVATE -DHAVE_SQLITE)
+    target_include_directories(ogr_VFK  PRIVATE ${SQLITE3_INCLUDE_DIR})
+    gdal_target_link_libraries(TARGET  ogr_VFK LIBRARIES SQLITE3::SQLITE3)
+    target_compile_definitions(ogr_VFK PRIVATE -DHAVE_SQLITE)
 endif()

@@ -9,34 +9,48 @@ add_library(libtiff OBJECT
 			tif_config.h                  tif_extension.c  tif_luv.c       tif_predict.c   tif_version.c  tiffio.h
 			)
 target_include_directories(libtiff PRIVATE
-						   $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-						   )
+						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+						   $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 if(GDAL_USE_LIBZ_INTERNAL)
 	target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
 	target_include_directories(libtiff PRIVATE ZLIB::ZLIB)
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
 endif()
-target_compile_definitions(libtiff PRIVATE -DPIXARLOG_SUPPORT -DZIP_SUPPORT  -DJPEG_SUPPORT -DOJPEG_SUPPORT)
+target_compile_definitions(libtiff PRIVATE -DPIXARLOG_SUPPORT -DZIP_SUPPORT)
+
 if(GDAL_USE_LIBJPEG_INTERNAL)
 	target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
-	target_include_directories(libtiff PRIVATE JPEG::JPEG)
+	target_include_directories(libtiff PRIVATE ${JPEG_INCLUDE_DIRS})
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE JPEG::JPEG)
 endif()
 if(TIFF_JPEG12_ENABLED)
     target_compile_definitions(libtiff PRIVATE -DJPEG_DUAL_MODE_8_12)
 endif()
+target_compile_definitions(libtiff PRIVATE -DJPEG_SUPPORT -DOJPEG_SUPPORT)
+
 if(HAVE_LIBLZMA)
     target_compile_definitions(libtiff PRIVATE -DLZMA_SUPPORT)
     target_include_directories(libtiff PRIVATE ${LIBLZMA_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${LIBLZMA_LIBRARIES})
 endif()
 
+if(HAVE_ZSTD)
+    target_compile_definitions(libtiff PRIVATE -DZSTD_SUPPORT)
+	target_include_directories(libtiff PRIVATE ${ZSTD_INCLUDE_DIRS})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ZSTD_LIBRARIES})
+endif()
+
 if(RENAME_INTERNAL_LIBTIFF_SYMBOLS)
     target_compile_definitions(libtiff PRIVATE -DRENAME_INTERNAL_LIBTIFF_SYMBOLS)
     target_sources(libtiff PRIVATE gdal_libtiff_symbol_rename.h)
 endif()
+if(MSVC)
+    if(CMAKE_CL_64)
+		target_compile_definitions(libtiff PRIVATE -D_WIN64)
+    endif()
+endif()
+
 set_target_properties(libtiff PROPERTIES CXX_STANDARD 11)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libtiff>)

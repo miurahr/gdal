@@ -25,10 +25,6 @@
 # ******************************************************************************
 
 
-if(NOT GDAL_ROOT_TEST_DIR)
-    set(GDAL_ROOT_TEST_DIR "${CMAKE_SOURCE_DIR}")
-endif()
-
 if(NOT CMAKE_CROSSCOMPILING)
     if(LINUX)
         add_library(vsipreload MODULE
@@ -70,40 +66,44 @@ add_dependencies(gdal_unit_test gdal)
 gdal_standard_includes(gdal_unit_test)
 target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
 target_include_directories(gdal_unit_test PRIVATE
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/autotest/cpp>
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/autotest/cpp/tut>
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/gdal/apps>
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/gdal/frmts/vrt>
-)
+                           ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/tut
+                           $<TARGET_PROPERTY:appslib,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
-add_test(NAME test-unit
-         COMMAND gdal_unit_test)
-set_tests_properties(test-unit PROPERTIES
-                     ENVIRONMENT GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_test(NAME test-unit  COMMAND gdal_unit_test)
+set(TEST_ENV)
+if(MINGW)
+    list(APPEND TEST_ENV SKIP_MEM_INTENSIVE_TEST=YES)
+endif()
+list(APPEND TEST_ENV
+            LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal:$ENV{LD_LIBRARY_PATH}
+            GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
+            GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data)
+set_tests_properties(test-unit PROPERTIES ENVIRONMENT "${TEST_ENV}")
 
 macro(gdal_test_target _target _source)
     add_executable(${_target} EXCLUDE_FROM_ALL ${_source})
     target_link_libraries(${_target} PRIVATE $<TARGET_NAME:gdal>)
     gdal_standard_includes(${_target})
-    target_include_directories(${_target} PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/apps>)
+    target_include_directories(${_target} PRIVATE $<TARGET_PROPERTY:appslib,SOURCE_DIR>)
     target_compile_definitions(${_target} PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
     add_dependencies(${_target} gdal)
 endmacro()
 
 gdal_test_target(testblockcache testblockcache.cpp)
 
-add_test(NAME block-cache-1
+add_test(NAME test-block-cache-1
                 COMMAND testblockcache -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES)
-add_test(NAME block-cache-2
+add_test(NAME test-block-cache-2
                 COMMAND testblockcache -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES --config GDAL_RB_LOCK_TYPE SPIN)
-add_test(NAME block-cache-3
+add_test(NAME test-block-cache-3
                 COMMAND testblockcache -check -co TILED=YES -migrate)
-add_test(NAME block-cache-4
+add_test(NAME test-block-cache-4
                 COMMAND testblockcache -check -memdriver)
-add_test(NAME block-cache-5
+add_test(NAME test-block-cache-5
                 COMMAND testblockcache --config GDAL_BAND_BLOCK_CACHE HASHSET -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES)
-add_test(NAME block-cache-6
+add_test(NAME test-block-cache-6
                 COMMAND testblockcache --config GDAL_BAND_BLOCK_CACHE HASHSET -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES --config GDAL_RB_LOCK_TYPE SPIN)
 
 gdal_test_target(testsse1 testsse.cpp)
@@ -114,17 +114,16 @@ gdal_test_target(testsse3 testsse.cpp)
 add_test(NAME testsse1 COMMAND testsse1)
 add_test(NAME testsse2 COMMAND testsse2)
 add_test(NAME testsse3 COMMAND testsse3)
-foreach(tgt IN ITEMS block-cache-1 block-cache-2 block-cache-3 block-cache-4 block-cache-5 testsse1 testsse2 testsse3)
-    set_tests_properties(${tgt} PROPERTIES WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+foreach(tgt IN ITEMS test-block-cache-1 test-block-cache-2 test-block-cache-3 test-block-cache-4 test-block-cache-5
+                     testsse1 testsse2 testsse3)
+    set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 macro(gdal_autotest_target _target testlabel _source options)
-    if(NOT CMAKE_CROSSCOMPILING)
+    if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
         gdal_test_target(${_target} ${_source})
         add_test(NAME ${testlabel}
             COMMAND ${_target} ${options})
-        set_tests_properties(${testlabel} PROPERTIES
-                             ENVIRONMENT GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
-                             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+        set_tests_properties(${testlabel} PROPERTIES ENVIRONMENT "${TEST_ENV}")
     endif()
 endmacro()
 

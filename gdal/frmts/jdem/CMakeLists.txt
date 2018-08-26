@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_JDEM SOURCES jdemdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_JDEM)
+add_gdal_driver(TARGET gdal_JDEM SOURCES jdemdataset.cpp)
+gdal_standard_includes(gdal_JDEM)

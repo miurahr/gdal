@@ -8,6 +8,8 @@ FindHDF4
 
 Find the HDF4 includes and get all installed hdf4 library settings
 
+Component supported:  XDR FORTRAN
+
 The following vars are set if hdf4 is found.
 
 .. variable:: HDF4_FOUND
@@ -45,7 +47,6 @@ The following boolean vars will be defined
 .. variable:: HDF4_BUILD_FORTRAN
 
   1 if HDF4 was compiled with fortran on
-  (Not yet implemented)
 
 .. variable:: HDF4_BUILD_CPP_LIB
 
@@ -76,19 +77,9 @@ mfhdf_fortran    : Fortran multi-file library
 include(FindPackageHandleStandardArgs)
 include(SelectLibraryConfigurations)
 
-# seed the initial lists of libraries to find with items we know we need
-set( HDF4_C_LIBRARY_NAMES_INIT hdf )
-set( HDF4_F90_LIBRARY_NAMES_INIT hdf_f90cstub ${HDF4_C_LIBRARY_NAMES_INIT} )
-set( HDF4_FORTRAN_LIBRARY_NAMES_INIT df_fortran ${HDF4_F90_LIBRARY_NAMES_INIT} )
-set( HDF4_MFHDF_LIBRARY_NAMES_INIT mfhdf ${HDF4_C_LIBRARY_NAMES_INIT})
-set( HDF4_XDR_LIBRARY_NAMES_INIT xdr ${HDF4_MFHDF_LIBRARY_NAMES_INIT})
-set( HDF4_FORTRAN_MF_90_LIBRARY_NAMES_INIT mfhdf_f90cstub ${HDF4_FORTRAN_LIBRARY_NAMES_INIT} )
-set( HDF4_FORTRAN_MF_LIBRARY_NAMES_INIT mfhdf_fortran ${HDF4_FORTRAN_MF_90_LIBRARY_NAMES_INIT} )
-set( HDF4_C_LIB ${HDF4_XDR_LIBRARY_NAMES_INIT})
-
 # Hard-coded guesses should still go in PATHS. This ensures that the user
 # environment can always override hard guesses.
-set(_HDF4_PATHS
+set(HDF4_PATHS
     /usr/lib/hdf4
     /usr/share/hdf4
     /usr/local/hdf4
@@ -96,7 +87,7 @@ set(_HDF4_PATHS
 )
 
 find_path(HDF4_INCLUDE_DIR hdf.h
-    PATHS ${_HDF4_PATHS}
+    PATHS ${HDF4_PATHS}
     PATH_SUFFIXES
         include
         Include
@@ -104,37 +95,64 @@ find_path(HDF4_INCLUDE_DIR hdf.h
         hdf4
 )
 
-if(HDF4_INCLUDE_DIR)
-    if(NOT HDF_LIBRARY)
-        foreach(LIB ${HDF4_C_LIB})
-            if(UNIX AND HDF4_USE_STATIC_LIBRARIES)
-                # According to bug 1643 on the CMake bug tracker, this is the
-                # preferred method for searching for a static library.
-                # See http://www.cmake.org/Bug/view.php?id=1643.  We search
-                # first for the full static library name, but fall back to a
-                # generic search on the name if the static search fails.
-                set( THIS_LIBRARY_SEARCH_DEBUG lib${LIB}d.a ${LIB}d )
-                set( THIS_LIBRARY_SEARCH_RELEASE lib${LIB}.a ${LIB} )
-            else()
-                set( THIS_LIBRARY_SEARCH_DEBUG ${LIB}d )
-                set( THIS_LIBRARY_SEARCH_RELEASE ${LIB} )
-            endif()
-            find_library(_HDF4_${LIB}_LIBRARY_DEBUG
-                NAMES ${THIS_LIBRARY_SEARCH_DEBUG}
-                HINTS ${HDF4_${LANGUAGE}_LIBRARY_DIRS}
-                PATH_SUFFIXES lib Lib )
-            find_library(_HDF4_${LIB}_LIBRARY_RELEASE
-                NAMES ${THIS_LIBRARY_SEARCH_RELEASE}
-                HINTS ${HDF4_${LANGUAGE}_LIBRARY_DIRS}
-                PATH_SUFFIXES lib Lib )
-            select_library_configurations( HDF4_${LIB} )
-            if(HDF4_${LIB}_LIBRARY)
-                list(APPEND HDF4_LIBRARY ${HDF4_${LIB}_LIBRARY})
-            endif()
-        endforeach()
+function(find_hdf4_lib)
+    set(_options)
+    set(_oneValueArgs TARGET)
+    set(_multiValueArgs NAMES HINTS)
+    cmake_parse_arguments(_LIB "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
+    set(HDF4_${_LIB_TARGET}_LIBRARY)
+    foreach(tgt IN ITEMS ${_LIB_NAMES})
+        find_library(HDF4_${tgt}_LIBRARY_DEBUG
+                     NAMES ${tgt}d
+                     HINTS ${_LIB_HINTS}
+                     )
+        find_library(HDF4_${tgt}_LIBRARY_RELEASE
+                     NAMES ${tgt}
+                     HINTS ${_LIB_HINSTS}
+                     )
+        select_library_configurations(HDF4_${tgt})
+        list(APPEND HDF4_${_LIB_TARGET}_LIBRARY ${HDF4_${tgt}_LIBRARY})
+        mark_as_advanced(HDF4_${tgt}_LIBRARY HDF4_${tgt}_LIBRARY_RELEASE HDF4_${tgt}_LIBRARY_DEBUG )
+    endforeach()
+    set(HDF4_${_LIB_TARGET}_LIBRARY ${HDF4_${_LIB_TARGET}_LIBRARY} PARENT_SCOPE)
+endfunction()
+
+if(HDF4_INCLUDE_DIR AND NOT HDF4_LIBRARY)
+    set(HDF4_LIBRARY)
+    # Debian supplies the HDF4 library which does not conflict with NetCDF.
+    # Test for Debian flavor first. Hint: install the libhdf4-alt-dev package.
+    find_hdf4_lib(TARGET C
+                  NAMES dfalt mfhdfalt
+                  HINTS ${HDF4_PATHS}/lib)
+    if(HDF4_C_LIBRARY)
+        set(HDF4_LIBRARY ${HDF4_C_LIBRARY})
+    else()
+        # next looking for standard names.
+        find_hdf4_lib(TARGET C
+                  NAMES df mfhdf
+                  HINTS ${HDF4_PATHS}/lib)
+        if(HDF4_C_LIBRARY)
+            set(HDF4_LIBRARY ${HDF4_C_LIBRARY})
+        else()
+            find_hdf4_lib(TARGET C
+                          NAMES hdf4
+                          HINTS ${HDF4_PATHS}/lib)
+            set(HDF4_LIBRARY ${HDF4_C_LIBRARY})
+        endif()
     endif()
+    list (FIND HDF4_FIND_COMPONENTS "XDR" _nextcomp)
+    if (_nextcomp GREATER -1)
+        set(_HDF4_XDR 1)
+    endif()
+   if (_HDF4_XDR)
+        find_hdf4_lib(TARGET XDR
+                      NAMES xdr
+                      HINTS ${HDF4_PATHS}/lib)
+        list(APPEND HDF4_LIBRARY ${HDF4_XDR_LIBRARY})
+    endif()
+    unset(_HDF4_XDR)
 endif()
-mark_as_advanced(HDF4_INCLUDE_DIR HDF4_LIBRARY)
+mark_as_advanced(HDF4_INCLUDE_DIR HDF4_C_LIBRARY HDF4_XDR_LIBRARY HDF4_LIBRARY)
 
 if(HDF4_INCLUDE_DIR AND EXISTS "${HDF4_INCLUDE_DIR}/hfile.h")
     file(STRINGS "${HDF4_INCLUDE_DIR}/hfile.h" hdf4_version_string
@@ -151,15 +169,71 @@ if(HDF4_INCLUDE_DIR AND EXISTS "${HDF4_INCLUDE_DIR}/hfile.h")
     endif()
 endif()
 
+if(HDF4_INCLUDE_DIR AND HDF4_LIBRARY)
+    list (FIND HDF4_FIND_COMPONENTS "FORTRAN" _nextcomp)
+    if (_nextcomp GREATER -1)
+        find_path(HDF4_FORTRAN_INCLUDE_DIR hdf.f90
+            PATHS ${HDF4_PATHS}
+            PATH_SUFFIXES
+                include
+                Include
+                hdf
+                hdf4
+        )
+        if(HDF4_FORTRAN_INCLUDE_DIR)
+            find_hdf4_lib(TARGET FORTRAN
+                          NAMES df_fortran
+                          HINTS ${HDF4_PATHS}/lib)
+            find_hdf4_lib(TARGET FORTRAN_MF
+                          NAMES mfhdf_fortran
+                          HINTS ${HDF4_PATHS}/lib)
+            if(HDF4_FORTRAN_LIBRARY AND HDF4_FORTRAN_MF_LIBRARY)
+                list(APPEND HDF4_FORTRAN_LIBRARY ${HDF4_FORTRAN_MF_LIBRARY})
+                list(APPEND HDF4_LIBRARY ${HDF4_FORTRAN_LIBRARY})
+            else()
+                set(HDF4_FORTRAN_LIBRARY HDF4_FORTRAN_LIBRARY-NOTFOUND)
+            endif()
+
+            find_hdf4_lib(TARGET F90
+                          NAMES hdf_f90cstub
+                          HINTS ${HDF4_PATHS}/lib)
+            find_hdf4_lib(TARGET FORTRAN_MF_90
+                          NAMES mfhdf_f90cstub
+                          HINTS ${HDF4_PATHS}/lib)
+            if(HDF4_F90_LIBRARY AND HDF4_FORTRAN_MF_90_LIBRARY)
+                list(APPEND HDF4_F90_LIBRARY ${HDF4_FORTRAN_MF_90_LIBRARY})
+                list(APPEND HDF4_LIBRARY ${HDF4_F90_LIBRARY})
+            endif()
+            unset(HDF4_FORTRAN_MF_90_LIBRARY)
+
+            if(HDF4_F90_LIBRARY AND HDF4_FORTRAN_LIBRARY)
+                list(APPEND HDF4_FORTRAN_LIBRARY ${HDF4_F90_LIBRARY})
+            endif()
+            unset(HDF4_F90_LIBRARY)
+        endif()
+    endif()
+    mark_as_advanced(HDF4_FORTRAN_INCLUDE_DIR HDF4_FORTRAN_LIBRARY )
+endif()
+
 find_package_handle_standard_args(HDF4
                                   FOUND_VAR HDF4_FOUND
                                   REQUIRED_VARS HDF4_LIBRARY HDF4_INCLUDE_DIR
                                   VERSION_VAR HDF4_VERSION
+                                  HANDLE_COMPONENTS
                                   )
 
 # set output variables
 IF(HDF4_FOUND)
-  set(HDF4_LIBRARIES ${HDF4_LIBRARY})
-  set(HDF4_INCLUDE_DIRS ${HDF4_INCLUDE_DIR})
+    set(HDF4_LIBRARIES ${HDF4_LIBRARY})
+    set(HDF4_INCLUDE_DIRS ${HDF4_INCLUDE_DIR})
+    if(NOT TARGET HDF4::HDF4)
+    endif()
+    if(HDF4_XDR_LIBRAY AND NOT TARGET HDF4::XDR)
+    endif()
+    if(HDF4_FORTRAN_FOUND)
+        set(HDF4_FORTRAN_LIBRARIES ${HDF4_FORTRAN_LIBRARY})
+        set(HDF4_FORTRAN_INCLUDE_DIRS ${HDF4_FORTRAN_INCLUDE_DIR})
+        if(NOT TARGET HDF4::FORTRAN)
+        endif()
+    endif()
 ENDIF()
-

@@ -1,5 +1,6 @@
-ADD_GDAL_DRIVER(TARGET ogr_VRT SOURCES
-                ogr_vrt.h ogrvrtdatasource.cpp ogrvrtdriver.cpp ogrvrtlayer.cpp)
-gdal_driver_standard_includes(ogr_VRT)
-target_include_directories(ogr_VRT PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>)
+
+# Depend from ogr_gpkg
+add_gdal_driver(TARGET ogr_VRT SOURCES
+                ogr_vrt.h ogrvrtdatasource.cpp ogrvrtdriver.cpp ogrvrtlayer.cpp BUILTIN)
+gdal_standard_includes(ogr_VRT)
+target_include_directories(ogr_VRT PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)

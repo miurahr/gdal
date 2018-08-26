@@ -52,8 +52,5 @@ add_library(gcore_mdreader  OBJECT
         reader_spot.cpp
         )
 gdal_standard_includes(gcore_mdreader)
-target_include_directories(gcore_mdreader PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-                           )
+target_include_directories(gcore_mdreader PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore_mdreader>)
-

@@ -1,4 +1,4 @@
-GDAL_DRIVER(TARGET ogr_FME SOURCES
+add_gdal_driver(TARGET ogr_FME SOURCES
         fme2ogr.h
         ogrfmecacheindex.cpp
         ogrfmedatasource.cpp
@@ -6,9 +6,9 @@ GDAL_DRIVER(TARGET ogr_FME SOURCES
         ogrfmelayer.cpp
         ogrfmelayercached.cpp
         ogrfmelayerdb.cpp
-        fme2ogr_utils.cpp
-    INCLUDES ${FME_INCLUDE_DIR}
-             $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-    DEFINITIONS -DSUPPORT_INDIRECT_FMEDLL -DSUPPORT_PERSISTENT_CACHE
-    LIBRARIES ${FME_LIBRARY})
-gdal_driver_standard_includes(ogr_FME)
+        fme2ogr_utils.cpp)
+gdal_standard_includes(ogr_FME)
+target_include_directories(ogr_FME PRIVATE ${FME_INCLUDE_DIR}
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)
+target_compile_definitions(ogr_FME PRIVATE -DSUPPORT_INDIRECT_FMEDLL -DSUPPORT_PERSISTENT_CACHE)
+gdal_target_link_libraries(TARGET ogr_FME LIBRARIES ${FME_LIBRARY})

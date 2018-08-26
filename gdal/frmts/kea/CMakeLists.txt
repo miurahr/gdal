@@ -4,5 +4,5 @@ ADD_GDAL_DRIVER(TARGET gdal_KEA SOURCES
                 keamaskband.cpp keamaskband.h keaoverview.cpp keaoverview.h
                 kearat.cpp kearat.h libkea_headers.h)
 gdal_standard_includes(gdal_KEA)
-target_link_libraries(gdal_KEA ${KEA_INCLUDE_DIRS})
-GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_KEA LIBRARIES ${KEA_LIBRARIES})
+target_include_directories(gdal_KEA PRIVATE ${KEA_INCLUDE_DIRS})
+GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_KEA LIBRARIES KEA::KEA)

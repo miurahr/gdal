@@ -16,4 +16,6 @@ ADD_GDAL_DRIVER(TARGET gdal_HFA SOURCES
 				BUILTIN
 )
 gdal_standard_includes(gdal_HFA)
+
 add_executable(hfatest EXCLUDE_FROM_ALL hfatest.cpp)
+gdal_standard_includes(hfatest)

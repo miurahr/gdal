@@ -16,7 +16,7 @@ endif()
 if(GDAL_USE_LIBJPEG_INTERNAL)
     target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
-    target_include_directories(gdal_MRF PRIVATE JPEG::JPEG)
+    target_include_directories(gdal_MRF PRIVATE ${JPEG_INCLUDE_DIRS})
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES JPEG::JPEG)
 endif()
 
@@ -38,7 +38,7 @@ endif()
 if(GDAL_USE_LIBLERC_INTERNAL)
     target_sources(gdal_MRF PRIVATE LERC_band.cpp)
     target_include_directories(gdal_MRF PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mrf/libLERC>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/third_party/LercLib>)
+                               $<TARGET_PROPERTY:liblerc,SOURCE_DIR>
+                               $<TARGET_PROPERTY:lerc,SOURCE_DIR>)
     target_compile_definitions(gdal_MRF PRIVATE -DLERC)
 endif()

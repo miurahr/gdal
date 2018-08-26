@@ -1,15 +1,14 @@
-GDAL_DRIVER(TARGET ogr_SOSI SOURCES
+add_gdal_driver(TARGET ogr_SOSI SOURCES
         ogr_sosi.h
         ogrsosidatatypes.h
         fyba_melding.cpp
         ogrsosidatasource.cpp
         ogrsosidatatypes.cpp
         ogrsosidriver.cpp
-        ogrsosilayer.cpp
-    INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-              ${SOSI_INCLUDE_DIR}
-    LIBRARIES ${SOSI_LIBRARIES}
-)
+        ogrsosilayer.cpp)
+target_include_directories(ogr_SOSI $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+              ${SOSI_INCLUDE_DIR})
+gdal_target_link_libraries(TARGET ogr_SOSI LIBRARIES ${SOSI_LIBRARIES})
 
 if(CMAKE_HOST_UNIX)
     target_compile_definitions(ogr_SOSI PRIVATE -DUNIX)

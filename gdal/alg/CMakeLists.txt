@@ -65,28 +65,33 @@ gdal_standard_includes(alg)
 target_include_directories(alg PRIVATE $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR> $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 
 if(HAVE_GEOS)
-	get_filename_component(GEOS_ROOT ${GEOS_INCLUDE_DIR} PATH)
-    target_include_directories(alg PRIVATE
-							   ${GEOS_INCLUDE_DIR}
-							   ${GEOS_ROOT}/capi
-							   ${GEOS_ROOT})
+    target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS}
+							   ${GEOS_INCLUDE_DIRS}/capi)
 	target_compile_definitions(alg PRIVATE -DHAVE_GEOS=1)
-endif(HAVE_GEOS)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE GEOS::GEOS)
+endif()
+
+if(HAVE_SFCGAL)
+	target_include_directories(alg PRIVATE ${SFCGAL_INCLUDE_DIRS})
+	target_compile_definitions(alg PRIVATE -DHAVE_SFCGAL=1)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${SFCGAL_LIBRARIES})
+endif()
 
 if(HAVE_ARMADILLO)
 	target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS})
 	target_compile_definitions(alg PRIVATE -DHAVE_ARMADILLO)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
 endif()
 
 if(USE_CPL)
 	target_compile_definitions(alg PRIVATE -DUSE_CPL)
-endif(USE_CPL)
+endif()
 
-if(PAM_ENABLED)
+if(ENABLE_PAM)
 	target_compile_definitions(alg PRIVATE -DPAM_ENABLED)
-endif(PAM_ENABLED)
+endif()
 
-if (HAVE_OPENCL)
+if(HAVE_OPENCL)
 	target_include_directories(alg PRIVATE ${OpenCL_INCLUDE_DIRS})
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${OpenCL_LIBRARIES})
 	target_compile_definitions(alg PRIVATE -DHAVE_OPENCL)
@@ -96,7 +101,12 @@ if (HAVE_OPENCL)
 	)
 endif()
 
-if(GDAL_QHULL)
+if(HAVE_PROJ4)
+    target_include_directories(alg PRIVATE ${PROJ4_INCLUDE_DIRS})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${PROJ4_LIBRARYES})
+endif()
+
+if(GDAL_ENABLE_QHULL)
     if(GDAL_USE_QHULL_INTERNAL)
         target_compile_definitions(alg PRIVATE -DINTERNAL_QHULL)
         target_sources(alg PRIVATE internal_qhull_headers.h)
@@ -112,13 +122,6 @@ if(GDAL_QHULL)
     endif()
 endif()
 
-if(GEOS_FOUND)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARY})
-endif(GEOS_FOUND)
-
-if(ARMADILLO_FOUND)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
-endif(ARMADILLO_FOUND)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
 install(FILES
 		gdalgrid.h

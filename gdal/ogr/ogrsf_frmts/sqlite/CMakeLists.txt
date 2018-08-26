@@ -1,4 +1,4 @@
-# depends from gpkg
+# depends from gpkg, osm
 ADD_GDAL_DRIVER(TARGET ogr_SQLite BUILTIN SOURCES
         ogr_sqlite.h
         ogrsqlite3ext.h
@@ -18,16 +18,18 @@ ADD_GDAL_DRIVER(TARGET ogr_SQLite BUILTIN SOURCES
         ogrsqlitevirtualogr.cpp
         ogrsqliteutility.cpp
         ogrsqliteapiroutines.c
-)
-gdal_driver_standard_includes(ogr_SQLite)
+        rasterlite2_header.h
+        rasterlite2.cpp)
+gdal_standard_includes(ogr_SQLite)
 
 if(HAVE_SQLITE3)
     target_include_directories(ogr_SQLite PRIVATE ${SQLITE3_INCLUDE_DIR})
     target_compile_definitions(ogr_SQLite PRIVATE -DHAVE_SQLITE)
     gdal_target_link_libraries(TARGET ogr_SQLite LIBRARIES SQLITE3::SQLITE3)
-    if(HAVE_SQLITE3_PCRE)
-        gdal_target_link_libraries(TARGET ogr_SQLite LIBRARIES SQLITE3::PCRE)
+    if(HAVE_SQLITE3_PCRE AND HAVE_PCRE)
+        target_include_directories(ogr_SQLite PRIVATE ${PCRE_INCLUDE_DIRS})
         target_compile_definitions(ogr_SQLite PRIVATE -DHAVE_PCRE)
+        gdal_target_link_libraries(TARGET ogr_SQLite LIBRARIES PCRE::PCRE)
     endif()
     if(SQLITE_HAS_COLUMN_METADATA)
         target_compile_definitions(ogr_SQLite PRIVATE -DSQLITE_HAS_COLUMN_METADATA)
@@ -43,10 +45,11 @@ if(HAVE_SPATIALITE)
     endif()
 endif()
 if(HAVE_RASTERLITE2)
-    target_sources(ogr_SQLite PRIVATE rasterlite2_header.h rasterlite2.cpp)
     target_include_directories(ogr_SQLite PRIVATE ${RASTERLITE2_INCLUDE_DIRS})
     target_compile_definitions(ogr_SQLite PRIVATE -DHAVE_RASTERLITE2)
     gdal_target_link_libraries(TARGET ogr_SQLite LIBRARIES RASTERLITE2::RASTERLITE2)
 endif()
 
-add_executable(test_load_virtual_ogr EXCLUDE_FROM_ALL test_load_virtual_ogr.c)
+add_executable(test_load_virtual_ogr test_load_virtual_ogr.c)
+gdal_standard_includes(test_load_virtual_ogr)
+target_link_libraries(test_load_virtual_ogr PRIVATE SQLITE3::SQLITE3)

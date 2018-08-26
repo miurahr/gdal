@@ -1,5 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_BPG
-            SOURCES bpgdataset.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_BPG)
+add_gdal_driver(TARGET gdal_BPG  SOURCES bpgdataset.cpp)
+gdal_standard_includes(gdal_BPG)
 target_include_directories(gdal_BPG PRIVATE ${BPG_INCLUDE_DIR})
 GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_BPG LIBRARIES ${BPG_LIBRARY})

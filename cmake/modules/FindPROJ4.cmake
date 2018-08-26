@@ -16,20 +16,23 @@
 #
 ###############################################################################
 
-# Try to use OSGeo4W installation
-IF(WIN32)
+# Search OSGeo4W path when MSVC build
+if(MSVC)
     SET(PROJ4_OSGEO4W_HOME "C:/OSGeo4W") 
-
     IF($ENV{OSGEO4W_HOME})
-        SET(PROJ4_OSGEO4W_HOME "$ENV{OSGEO4W_HOME}") 
+        SET(PROJ4_OSGEO4W_HOME "$ENV{OSGEO4W_HOME}")
     ENDIF()
-ENDIF(WIN32)
+    set(PROJ4_NAMES proj proj_i)
+elseif(MINGW OR CYGWIN)
+    set(PROJ4_NAMES proj libproj-9)
+else()
+    set(PROJ4_NAMES proj)
+endif()
 
 FIND_PATH(PROJ4_INCLUDE_DIR proj_api.h
     PATHS ${PROJ4_OSGEO4W_HOME}/include
     DOC "Path to PROJ.4 library include directory")
 
-SET(PROJ4_NAMES ${PROJ4_NAMES} proj proj_i)
 FIND_LIBRARY(PROJ4_LIBRARY
     NAMES ${PROJ4_NAMES}
     PATHS ${PROJ4_OSGEO4W_HOME}/lib

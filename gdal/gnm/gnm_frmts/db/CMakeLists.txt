@@ -4,14 +4,8 @@ add_library(gnm_frmts_db OBJECT
         gnmdbdriver.cpp
         gnmdbnetwork.cpp
 )
-
+gdal_standard_includes(gnm_frmts_db)
 target_include_directories(gnm_frmts_db PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/gcore>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm/gnm_frmts>)
+                           $<TARGET_PROPERTY:gnm,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gnm_frmts,SOURCE_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gnm_frmts_db>)

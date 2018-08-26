@@ -1,8 +1,8 @@
-ADD_GDAL_DRIVER(TARGET gdal_ARG SOURCES argdataset.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_ARG)
+add_gdal_driver(TARGET gdal_ARG SOURCES argdataset.cpp)
+gdal_standard_includes(gdal_ARG)
 target_include_directories(gdal_ARG PRIVATE
                            $<TARGET_PROPERTY:gdal_raw,SOURCE_DIR>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>)
+                           $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>)
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gdal_ARG PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()

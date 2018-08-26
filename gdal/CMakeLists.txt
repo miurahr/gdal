@@ -28,83 +28,34 @@
 # Switches to control build targets(cached)
 option(USE_CPL "Set ON to use cpl" ON)
 option(ENABLE_GNM "Build GNM module" ON)
-option(PAM_ENABLED "Set ON to enable pam" ON)
+option(ENABLE_PAM "Set ON to enable pam" ON)
 option(BUILD_APPS "Build command utilities" ON)
+option(BUILD_DOCS "Build documents" ON)
 option(GDAL_ENABLE_PLUGIN "Set ON prefer to build drivers as plugin" OFF)
+option(GDAL_ENABLE_QHULL "use qhull" ON)
+option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal sdk" OFF)
 
 # Default definitions during build
 add_definitions(-DGDAL_COMPILATION)
-if(UNIX AND USE_CPL)
-    add_definitions(-DCPL_LSB)
+if(UNIX)
+    add_definitions(-D_FORTIFY_SOURCE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    if(USE_CPL)
+        add_definitions(-DCPL_LSB)
+    endif()
 endif()
 
 ################################################################################
-# generate ${GDAL_ROOT_BINARY_DIR}/gcore/gdal_version.h
+# generate ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_version.h
 # and set GDAL_VERSION variable
 include(GdalVersion)
-set(GDAL_SOVERSION 20 CACHE STRING "")
 
 ################################################################
 # find 3rd party libraries
 include(CheckDependentLibraries)
 
-# generate ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h
+# generate ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h
 include(configure)
-
-################################################################################
-# Install properties
-if(OSX_FRAMEWORK)
-    # same as nextgis-borsch/lib_gdal
-    # set(CMAKE_INSTALL_PREFIX "/Library/Application Support/GDAL/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}")
-    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin"
-            CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
-            CACHE INTERNAL "Installation directory for libraries" FORCE)
-    set(SKIP_INSTALL_EXECUTABLES OFF)
-    set(SKIP_INSTALL_EXPORT ON)
-    set(SKIP_INSTALL_DOCS ON)
-    set(CMAKE_MACOSX_RPATH ON)
-
-    # Use, i.e. don't skip the full RPATH for the build tree
-    #set(CMAKE_SKIP_BUILD_RPATH  TRUE)
-
-    # When building, don't use the install RPATH already
-    # (but later on when installing)
-    #set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-    # The RPATH to be used when installing
-    #set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
-    #set(CMAKE_INSTALL_RPATH "@loader_path/../../../../Library/Frameworks")
-
-    # Don't add the automatically determined parts of the RPATH
-    # which point to directories outside the build tree to the install RPATH
-    #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-
-    set(BUILD_DOCS OFF CACHE INTERNAL "Don't build docs on Mac OS X" FORCE)
-
-    # special place for plugin install
-    set(INSTALL_PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/PlugIns"
-            CACHE INTERNAL "Installation direcotry for plugins" FORCE)
-else()
-    include(GNUInstallDirs)
-    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}"
-            CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}"
-            CACHE INTERNAL "Installation directory for libraries" FORCE)
-    set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
-            CACHE INTERNAL "Installation directory for headers" FORCE)
-    set(INSTALL_SHARE_DIR "${CMAKE_INSTALL_DATADIR}/gdal"
-            CACHE INTERNAL "Installation directory for share data" FORCE)
-    set(INSTALL_PKGCONFIG_DIR "${INSTALL_LIB_DIR}/pkgconfig"
-            CACHE INTERNAL "Installation directory for pkgconfig (.pc) files" FORCE)
-    set(INSTALL_MAN_DIR ${CMAKE_INSTALL_MANDIR} CACHE INTERNAL
-            "Installation directory for manual pages" FORCE)
-    set(INSTALL_DOC_DIR ${CMAKE_INSTALL_DOCDIR} CACHE INTERNAL
-            "Installation directory for doc pages" FORCE)
-    set(INSTALL_PLUGIN_DIR
-            "${CMAKE_INSTALL_PREFIX}/lib/gdalplugins/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}"
-            CACHE INTERNAL "Installation direcotry for plugins" FORCE)
-endif()
 
 ################################################################################
 ## libgdal shared/satic library generation
@@ -124,23 +75,45 @@ set_target_properties(gdal PROPERTIES
                       LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       CXX_STANDARD 11
-                      CXX_STANDARD_REQUIRED YES
-                      CXX_EXTENSIONS NO
-)
+                      CXX_STANDARD_REQUIRED YES)
+if(APPLE)
+   set_target_properties(gdal PROPERTIES
+       FRAMEWORK TRUE
+       FRAMEWORK_VERSION A
+       MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
+       MACOSX_FRAMEWORK_BUNDLE_VERSION ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
+       MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
+       XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+       #PUBLIC_HEADER ""
+   )
+endif()
 
+################################################################################
+# Install properties
+if(APPLE)
+    include(OSXInstallDirs)
+    set(INSTALL_PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/PlugIns"
+            CACHE PATH "Installation direcotry for plugins")
+    set(CMAKE_MACOSX_RPATH ON)
+else()
+    include(GNUInstallDirs)
+    set(INSTALL_PLUGIN_DIR
+        "${CMAKE_INSTALL_PREFIX}/lib/gdalplugins/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}"
+        CACHE PATH "Installation direcotry for plugins")
+endif()
+
+###############################################################################
 # detect portability libs and set, so it should add at first
 # Common Portability layer
 add_subdirectory(port)
 
 # Configure internal libraries
-option(GDAL_QHULL "use qhull" ON)
-if(GDAL_QHULL AND GDAL_USE_QHULL_INTERNAL)
+if(GDAL_ENABLE_QHULL AND GDAL_USE_QHULL_INTERNAL)
     add_subdirectory(alg/internal_libqhull)
 endif()
 if(GDAL_USE_LIBZ_INTERNAL)
     add_subdirectory(frmts/zlib)
 endif()
-option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal sdk" OFF)
 if(GDAL_USE_LIBPCIDSK_INTERNAL)
     add_subdirectory(frmts/pcidsk/sdk)
     set(HAVE_PCIDSK ON)
@@ -148,7 +121,7 @@ endif()
 if(GDAL_USE_LIBJSONC_INTERNAL)
     add_subdirectory(ogr/ogrsf_frmts/geojson/libjson)
 endif()
-if(GDAL_USE_OPENCAD_INTERNAL)
+if(GDAL_USE_OPENCAD_INTERNAL AND OGR_ENABLE_CAD)
     add_subdirectory(ogr/ogrsf_frmts/cad/libopencad)
 endif()
 if(GDAL_USE_LIBTIFF_INTERNAL)
@@ -178,7 +151,9 @@ endif()
 # Core components
 add_subdirectory(alg)
 add_subdirectory(ogr)
-add_subdirectory(gnm)
+if(ENABLE_GNM)
+    add_subdirectory(gnm)
+endif()
 add_subdirectory(gcore)
 
 # Raster/Vector drivers (built-in and plugins)
@@ -190,36 +165,22 @@ add_subdirectory(swig)
 
 # Utilities
 add_subdirectory(apps)
+
+# Google OSS-Fuzz project utilities
 add_subdirectory(fuzzers)
 
 # Document/Manuals
-option(BUILD_DOCS "Build documents" ON)
 if(BUILD_DOCS)
     add_subdirectory(doc)
-endif()
-
-# OSX Framework specific properties
-if(OSX_FRAMEWORK)
-    set_target_properties(gdal PROPERTIES
-        FRAMEWORK TRUE
-        FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
-        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION}
-        MACOSX_FRAMEWORK_BUNDLE_VERSION ${VERSION}
-        MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
-        XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
-        PUBLIC_HEADER "${INST_HEADER}"
-    )
 endif()
 
 ## MSVC spefific resource preparation
 if(MSVC)
     target_sources(gdal PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gcore/Version.rc)
     source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/gcore/Version.rc)
-    target_include_directories(gdal PRIVATE $<TARGET_PROPERTY:gcore,BINARY_DIR>)
+    gdal_standard_includes(gdal)
     if(CMAKE_CL_64)
-		set_target_properties(gdal
-                              PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
-		add_definitions(-D_WIN64)
+		set_target_properties(gdal PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
     endif()
 endif()
 
@@ -228,27 +189,29 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     target_link_libraries(gdal PRIVATE wsock32 ws2_32 psapi)
 endif()
 
+get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
+add_custom_target(gdal_plugins DEPENDS ${_plugins})
+
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
-               ${GDAL_ROOT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
+               ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
 
 ################################################################################
 #
 # gdal-config utility command generation
 include(GenerateGdalConfig)
 generate_gdal_config()
-install(FILES ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h DESTINATION ${INSTALL_INC_DIR})
 
-# data resource
-install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/"
         DESTINATION ${INSTALL_SHARE_DIR}/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
         COMPONENT libraries FILES_MATCHING PATTERN "*.*")
 
 # pkg-config resource
-if(UNIX AND NOT OSX_FRAMEWORK)
+if(UNIX AND NOT APPLE)
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
-                   ${GDAL_ROOT_BINARY_DIR}/gdal.pc @ONLY)
-    install(FILES ${GDAL_ROOT_BINARY_DIR}/gdal.pc DESTINATION ${INSTALL_PKGCONFIG_DIR}
+                   ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
             COMPONENT libraries)
 endif()
 
@@ -274,7 +237,7 @@ write_basic_package_version_file(GdalConfigVersion.cmake
                                  ## so use ExactVersion instead.
                                  # COMPATIBILITY SameMinorVersion)
                                  COMPATIBILITY ExactVersion)
-install(FILES ${GDAL_ROOT_BINARY_DIR}/GdalConfigVersion.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GdalConfigVersion.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
 
 ################################################################################
@@ -285,6 +248,12 @@ add_custom_target(uninstall
 
 ################################################################################
 ## Print summry
-include(summary)
+include(SystemSummary)
+system_summary(DESCRIPTION "GDAL is now configured on;")
+include(FeatureSummary)
+feature_summary(DESCRIPTION "Enabled drivers and features and found dependency packages"
+                WHAT ALL
+                VAR packagesAndFeaturesText)
+message(STATUS "${packagesAndFeaturesText}")
 
 # vim: ts=4 sw=4 sts=4 et

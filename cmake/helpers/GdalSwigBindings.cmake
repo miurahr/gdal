@@ -31,8 +31,8 @@ function(gdal_swig_bindings)
     set(_oneValueArgs BINDING)
     set(_multiValueArgs "ARGS;DEPENDS;OUTPUT")
     cmake_parse_arguments(_SWIG "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
-    file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/${_SWIG_BINDING}/extensions )
-    set(SWIG_ARGS -Wall ${_SWIG_ARGS} -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_BINDING})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/gdal/swig/${_SWIG_BINDING}/extensions )
+    set(SWIG_ARGS -Wall ${_SWIG_ARGS} -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_BINDING})
     # for gdalconst.i
     gdal_swig_binding_target(
             TARGET gdalconst
@@ -40,8 +40,8 @@ function(gdal_swig_bindings)
             ARGS ${SWIG_ARGS}
             DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
                     ${_SWIG_DEPENDS}
-                    ${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_BINDING}/typemaps_${_SWIG_BINDING}.i
-                    ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdalconst.i
+                    ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_BINDING}/typemaps_${_SWIG_BINDING}.i
+                    ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdalconst.i
             )
     # for other interfaces
     foreach(tgt IN ITEMS gdal ogr osr gnm)
@@ -51,9 +51,9 @@ function(gdal_swig_bindings)
                 ARGS ${SWIG_ARGS}
                 DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
                     ${_SWIG_DEPENDS}
-                    ${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_BINDING}/typemaps_${_SWIG_BINDING}.i
-                    ${GDAL_ROOT_SOURCE_DIR}/swig/include/${tgt}.i
-                    ${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_BINDING}/${tgt}_${_SWIG_BINDING}.i
+                    ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_BINDING}/typemaps_${_SWIG_BINDING}.i
+                    ${CMAKE_SOURCE_DIR}/gdal/swig/include/${tgt}.i
+                    ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_BINDING}/${tgt}_${_SWIG_BINDING}.i
         )
     endforeach()
 endfunction()
@@ -65,18 +65,16 @@ function(gdal_swig_binding_target)
     set(_multiValueArgs "ARGS;DEPENDS;OUTPUT")
     cmake_parse_arguments(_SWIG "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
     if(_SWIG_CXX)
-        set(_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/${_SWIG_BINDING}/extensions/${_SWIG_TARGET}_wrap.cpp)
+        set(_OUTPUT ${CMAKE_BINARY_DIR}/gdal/swig/${_SWIG_BINDING}/extensions/${_SWIG_TARGET}_wrap.cpp)
     else()
-        set(_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/${_SWIG_BINDING}/extensions/${_SWIG_TARGET}_wrap.c)
+        set(_OUTPUT ${CMAKE_BINARY_DIR}/gdal/swig/${_SWIG_BINDING}/extensions/${_SWIG_TARGET}_wrap.c)
     endif()
     add_custom_command(
         OUTPUT ${_OUTPUT} ${_SWIG_OUTPUT}
-        COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${GDAL_ROOT_SOURCE_DIR}
+        COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${CMAKE_SOURCE_DIR}/gdal
                 $<$<BOOL:${_SWIG_CXX}>:-c++> -${_SWIG_BINDING}
                 -o ${_OUTPUT}
-                ${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_TARGET}.i
-        WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/swig/${_SWIG_BINDING}
-        DEPENDS ${_SWIG_DEPENDS}
-    )
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_TARGET}.i
+        DEPENDS ${_SWIG_DEPENDS})
     set_source_files_properties(${SWIG_OUTPUT} PROPERTIES GENERATED 1)
  endfunction()

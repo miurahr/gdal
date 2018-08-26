@@ -35,7 +35,7 @@ if(APPLE)
     endif()
 endif(APPLE)
 
-find_path(OGDI_INCLUDE_DIR ecs.h PATH_SUFFIX ogdi)
+find_path(OGDI_INCLUDE_DIR ecs.h PATH_SUFFIXES ogdi)
 find_library(OGDI_LIBRARY NAMES ogdi libogdi vpf libvpf)
 
 if(OGDI_INCLUDE_DIR AND OGDI_LIBRARY)

@@ -1,3 +1,5 @@
-GDAL_DRIVER(TARGET ogr_Geomedia
-            INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/pgeo>
-            )
+add_gdal_driver(TARGET ogr_Geomedia
+                SOURCE ogr_geomedia.h ogrgeomediadatasource.cpp ogrgeomediadriver.cpp
+                       ogrgeomedialayer.cpp ogrgeomediaselectlayer.cpp
+                       ogrgeomediatablelayer.cpp)
+target_include_directories(ogr_Geomedia $<TARGET_PROPERTY:ogr_PGeo,SOURCE_DIR>)

@@ -77,16 +77,19 @@ if(BUILD_APPS)
     add_executable(ogrlineref ogrlineref.cpp)
     add_executable(ogrtindex ogrtindex.cpp)
     add_executable(nearblack nearblack_bin.cpp)
-    add_executable(gnmanalyse gnmanalyse.cpp)
-    add_executable(gnmmanage gnmmanage.cpp)
 
     # Default Apps
     set(APPS_TARGETS
             gdalinfo gdalbuildvrt gdaladdo gdal_grid gdal_translate
             gdalserver gdal_rasterize  gdalsrsinfo
             gdalenhance gdalmanage gdaltransform gdaltindex
-            gdaldem nearblack ogrlineref ogrtindex gnmanalyse gnmmanage
+            gdaldem nearblack ogrlineref ogrtindex
             gdalwarp gdal_contour gdallocationinfo ogrinfo ogr2ogr)
+    if(ENABLE_GNM)
+        add_executable(gnmanalyse gnmanalyse.cpp)
+        add_executable(gnmmanage gnmmanage.cpp)
+        list(APPEND APPS_TARGETS gnmanalyse gnmmanage)
+    endif()
     add_custom_target(gdalapps DEPENDS ${APPS_TARGETS})
     foreach(UTILCMD IN ITEMS ${APPS_TARGETS})
         gdal_standard_includes(${UTILCMD})
@@ -96,6 +99,10 @@ if(BUILD_APPS)
                            $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
                                    )
+        if(HAVE_GEOS)
+            target_include_directories(${UTILCMD} PRIVATE ${GEOS_INCLUDE_DIRS})
+            target_compile_definitions(${UTILCMD} PRIVATE -DHAVE_GEOS=1)
+        endif()
         if(GDAL_USE_LIBJSONC_INTERNAL)
             target_include_directories(${UTILCMD} PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
         else()
@@ -107,13 +114,13 @@ if(BUILD_APPS)
         if (CMAKE_SYSTEM_NAME MATCHES "Windows")
             target_link_libraries(${UTILCMD} PRIVATE wsock32 ws2_32 psapi)
         endif()
-        install(TARGETS ${UTILCMD}
-                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
     endforeach()
+    install(TARGETS ${APPS_TARGETS}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
     target_include_directories(gnmanalyse PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
     target_include_directories(gnmmanage PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
 
@@ -146,4 +153,4 @@ if(BUILD_APPS)
                                    )
         target_link_libraries(${UTILCMD} PRIVATE $<TARGET_NAME:gdal>)
     endforeach()
-endif()
+ endif()

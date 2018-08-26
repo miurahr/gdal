@@ -29,16 +29,16 @@
 add_library(cpl_headers INTERFACE)
 target_sources(cpl_headers	INTERFACE
 			   cpl_alibaba_oss.h
-		cpl_azure.h
-        cplkeywordparser.h
-        cpl_atomic_ops.h
-        cpl_config_extras.h
-        cpl_conv.h
-        cpl_cpu_features.h
-        cpl_csv.h
-        cpl_error.h
-        cpl_hash_set.h
-        cpl_http.h
+               cpl_azure.h
+               cplkeywordparser.h
+               cpl_atomic_ops.h
+               cpl_config_extras.h
+               cpl_conv.h
+               cpl_cpu_features.h
+               cpl_csv.h
+               cpl_error.h
+               cpl_hash_set.h
+               cpl_http.h
 		cpl_json.h
 		cpl_json_header.h
         cpl_list.h
@@ -120,6 +120,12 @@ add_library(cpl OBJECT
 		cpl_md5.cpp
 		cpl_vsil_hdfs.cpp
 		cpl_swift.cpp
+			cpl_vsil_az.cpp
+			cpl_vsil_gs.cpp
+			cpl_vsil_webhdfs.cpp
+			cpl_vsil_s3.cpp
+			cpl_vsil_oss.cpp
+			cpl_vsil_swift.cpp
 )
 set_target_properties(cpl PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
 if(UNIX)
@@ -158,7 +164,7 @@ if(GDAL_USE_LIBZ)
 		cpl_minizip_zip.cpp
 	)
 	if(GDAL_USE_LIBZ_INTERNAL)
-		target_include_directories(cpl PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+		target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 	else()
         target_include_directories(cpl PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_compile_definitions(cpl PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
@@ -216,8 +222,16 @@ target_sources(gdal PRIVATE $<TARGET_OBJECTS:cpl>)
 if(NOT WIN32)
 	set(CMAKE_THREAD_PREFER_PTHREAD ON CACHE BOOL "Prefer pthread")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE Threads::Threads)
+    find_package(Threads)
+    if(Threads_FOUND)
+        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE Threads::Threads)
+    endif()
+endif()
+
+if(MSVC)
+    if(CMAKE_CL_64)
+		target_compile_definitions(cpl PRIVATE -D_WIN64)
+    endif()
 endif()
 
 ## for plugin DLFCN:
@@ -228,3 +242,5 @@ endif()
 #endif()
 
 install(TARGETS cpl_headers DESTINATION include/gdal)
+
+add_executable(xmlreformat EXCLUDE_FROM_ALL xmlreformat.cpp)

@@ -2,12 +2,10 @@ ADD_GDAL_DRIVER(TARGET ogr_GMLAS SOURCES ogr_gmlas.h         ogrgmlasdatasource.
             ogr_gmlas_consts.h  ogrgmlasdriver.cpp        ogrgmlasreader.cpp          ogrgmlaswriter.cpp         ogrgmlasxsdcache.cpp
             ogrgmlasconf.cpp    ogrgmlasfeatureclass.cpp  ogrgmlasschemaanalyzer.cpp  ogrgmlasxlinkresolver.cpp  xercesc_headers.h
             )
-gdal_driver_standard_includes(ogr_GMLAS)
-TARGET_INCLUDE_DIRECTORIES(ogr_GMLAS PRIVATE
-        $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>
-        $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
-        $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/pgdump>
-)
+gdal_standard_includes(ogr_GMLAS)
+target_include_directories(ogr_GMLAS PRIVATE $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_PGDump,SOURCE_DIR>)
 
 if(HAVE_XERCESC)
     target_include_directories(ogr_GMLAS PRIVATE
@@ -18,11 +16,9 @@ if(HAVE_XERCESC)
 endif()
 
 if(GDAL_USE_LIBJSONC_INTERNAL)
-    target_include_directories(ogr_GMLAS PRIVATE
-                $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson/libjson>)
+    target_include_directories(ogr_GMLAS PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
-    target_include_directories(ogr_GMLAS PRIVATE
-                ${JSONC_INCLUDE_DIRS})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET ogr_GMLAS LIBRARIES ${JSONC_LIBRARIES})
+    target_include_directories(ogr_GMLAS PRIVATE   ${JSONC_INCLUDE_DIRS})
+    GDAL_TARGET_LINK_LIBRARIES(TARGET ogr_GMLAS LIBRARIES JSONC::JSONC)
 endif()
 

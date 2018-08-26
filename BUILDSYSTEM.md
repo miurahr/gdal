@@ -4,6 +4,84 @@ CMake build system internals for developers
 CMake is a cross platform tool to beherate build script for
 the platform, aka build tool for build system.
 
+Modern CMake
+------------
+
+"Modern CMake" style is introduced in CMake3.x version.
+In old cmake (2.8.x), definitions are similar to GNU Makefile.
+That means sub directories scripts inherit parent definitions.
+It is difficult to manage in large project about implicit definitions.
+
+Other than previous cmake versions, modern cmake style controls scope.
+
+There are some modern cmake guides.
+* https://rix0r.nl/blog/2015/08/13/cmake-guide/
+* https://cliutils.gitlab.io/modern-cmake/
+* https://unclejimbo.github.io/2018/06/08/Modern-CMake-for-Library-Developers/
+
+Development status
+------------------
+
+- Under active development
+- Support building PLUGIN drivers
+- Successfully build for
+  * GCC4.8 on trusty
+  * Clang5 on trusty
+  * Clang with plugin enable on trusty
+  * Cross compile with android NDK.
+  * Cross compile by mingw-w64
+    * Test mingw binary with wine.
+  * XCode on mac os X
+  * Visual Studio 2015 on Windows 64bit
+  * Visual Studio 2017 on Windows 32bit
+- Implement all OSS drivers.
+- Work on current master branch.
+- Bindings: c#, perl, php and python.
+- All quick tests are passed on all built platforms.
+
+Known issues and ToDo things
+----------------------------
+
+- Issues
+  * Mingw: error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
+  * Python: No installs backward compatibility modules
+    only install files under osgeo folder.
+  * Global variables and definitions still exists;
+    * definitions: -DCPL_LSB -D_FORTIFY_SOURCE
+    * variables: HAVE_*
+  * Cannot generate gdal-config properly.
+    * `gdal-config -libs` returns incorrect list.
+  * Some autotest cases are not passed yet
+    * tiff_ovr_4, tiff_read_one_band_from_two_bands, tiff_srs
+    * hdf5_virtual_file, gdrivers/gpkg(checksums)
+    * ogr_rfc41_7, ogr_gpkg_wal, ogr_gft_read, ogr_mvt_*
+  * Some drivers are always built-in and cannot build as plugin,
+    because of dependency from other components, ex. geojson
+  * GRASS driver cannot build at a same time of libgdal.
+    It is because of circular dependency.
+    
+- ToDo
+  * Test and fix for proprietary drivers
+    * Oracle Spatial
+    * Kakadu
+    * LULA
+    * ESRI ArcSDE
+    * Multi-resolution Seamless Image Database
+    * ERDAS JPEG2000
+    * ogr FME driver
+    * IBM DB2
+    * MSSQL spatial
+    * RASDAMAN
+  * build for iOS
+    * prepare platform configuration file
+    * CI test on Travis
+  * Better documentations.
+  * Add more package/module information for configuration summary.
+  * Improve cmake modules to support better modern cmake style
+    and feedback to upstream cmake project.
+  * Build and install multiple python version bindings
+  * Packaging.
+
 Directory structure
 -------------------
 
@@ -11,8 +89,12 @@ Directory structure
 <root>
  - cmake:   cmake modules and helper scripts
    - helpers:  helpers for gdal compilation
-   - init:  inital cmake cache configuration examples and toolschain files for cross compilation
+   - configurations:  inital cmake cache configuration examples
+   - platforms: toolschain files for cross compilation
    - modules:  generic cmake modules to find dependency libraries
+     - 3.13:
+     - 3.12: backported modules from specified cmake version
+     - 3.9:
    - templates: template source files to generate when configure
  - autotest: test suites
  - gdal: source files
@@ -91,14 +173,14 @@ Configuration parameters
 You can configure build process with  parameters you added to `cmake` command.
 Typical usage is as follows;
 
-``
-# current is a top of source
+```
+$ cd gdal_project_directory
 $ mkdir cmake-build-gcc4.8-debug
 $ cd cmake-build-gcc4.8-debug
 $ cmake .. -G Ninja -DENABLE_GNM -DGDAL_ENABLE_FRMTS_PDF=ON
 $ cmake --build .
 $ cmake --build . --target quicktest
-``
+```
 
 There are several good example in `gdal/scripts/vagrant` directory.
 For example, `gdal-clang.sh` is a build script with CLang and configured to generate gdal plugins for drivers.
@@ -112,6 +194,7 @@ cmake \
   -DCMAKE_C_COMPILER_LAUNCHER=ccache \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DSWIG_PYTHON=ON \
+  -DPYTHON_VERSION=2.7 \  
   -DSWIG_PERL=ON \
   -DSWIG_JAVA=ON \
   -DSWIG_CSHARP=ON \
@@ -204,7 +287,7 @@ Default toolchain for mingw defines WINE as an emulator for cross compiling.
 Please see https://cmake.org/cmake/help/latest/variable/CMAKE_CROSSCOMPILING_EMULATOR.html for details.
 
 
-WIndows
+Windows
 --------
 
 CMake build script support Windows platform with both MS Visual Stidio(VC) and MSYS2/Mingw.
@@ -248,6 +331,9 @@ build script.
 CI tests
 --------
 
+Using out-of-source capability, we can reduce test patterns
+and run multiple build and test on same environment.
+
 ### Travis-CI test cases
 
 - GCC on Ubuntu Trusty
@@ -262,181 +348,48 @@ CI tests
 
 - Mac OS X
 
-### Appveyor test cases
+### AppVeyor CI test cases
 
 - MSVC 2017 for Win32
 
 - MSVC 2015 for Win64
 
-Configuration parameters
-------------------------
+Internal variables
+--------------------
 
-### CMake standard options
+### Dependency check results
 
-- BUILD_SHARED_LIBS: build target as shared library
+- HAVE_*: when exist <library> then set ON to HAVE_<LIB>
 
+### Internal libraries
 
+These libraries are automatically detected and when not exist in system, enables internal one.
 
-### Custom options
+- GDAL_USE_LIBTIFF_INTERNAL
 
-- USE_CPL: set ON to use CPL,Common Portability Library
+- GDAL_USE_LIBPNG_INTERNAL
 
-- ENABLE_GNM: set ON to use GNM driver
+- GDAL_USE_LIBGEOTIFF_INTERNAL
 
-- PAM_ENABLED: set ON to enable PAM
+- GDAL_USE_LIBJPEG_INTERNAL
 
-- BUILD_APPS: set ON to build utility applications
+- GDAL_USE_GIFLIB_INTERNAL
 
-- GDAL_ENABLE_PLUGIN: set ON to build drivers as plugin
+- GDAL_USE_LIBJSONC_INTERNAL
 
-- GDAL_QHULL: set ON to build QHULL support
+- GDAL_USE_OPENCAD_INTERNAL
+
+- GDAL_USE_QHULL_INTERNAL
+
+### Manual options for Internal libraries
 
 - GDAL_USE_LIBPCIDSK_INTERNAL: set ON to enable internal libpcidsk sdk
 
 - RENAME_INTERNAL_LIBTIFF_SYMBOLS: set ON to rename internal symbols in libtiff
 
-- BUILD_DOCS: set ON to build documentations
+- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC 
 
-
-### Drivers
-
-- GDAL_ENABLE_FRMT_ADRG
-- GDAL_ENABLE_FRMT_AIGRID
-- GDAL_ENABLE_FRMT_AAIGRID
-- GDAL_ENABLE_FRMT_AIRSAR
-- GDAL_ENABLE_FRMT_ARG
-- GDAL_ENABLE_FRMT_BMP
-- GDAL_ENABLE_FRMT_BSB
-- GDAL_ENABLE_FRMT_CALS
-- GDAL_ENABLE_FRMT_CEOS
-- GDAL_ENABLE_FRMT_CEOS2
-- GDAL_ENABLE_FRMT_COASP
-- GDAL_ENABLE_FRMT_COSAR
-- GDAL_ENABLE_FRMT_CTG
-- DAL_ENABLE_FRMT_DDS
-- DAL_ENABLE_FRMT_DIMAP
-- GDAL_ENABLE_FRMT_DODS
-- GDAL_ENABLE_FRMT_DTED
-- GDAL_ENABLE_FRMT_E00GRID
-- GDAL_ENABLE_FRMT_EEDA
-- GDAL_ENABLE_FRMT_ELAS
-- GDAL_ENABLE_FRMT_ENVISAT
-- GDAL_ENABLE_FRMT_EPSILON
-- GDAL_ENABLE_FRMT_FIT
-- GDAL_ENABLE_FRMT_FITS
-- GDAL_ENABLE_FRMT_GIF
-- GDAL_ENABLE_FRMT_GTA
-- GDAL_ENABLE_FRMT_GFF
-- GDAL_ENABLE_FRMT_GIF
-- GDAL_ENABLE_FRMT_GRIB
-- GDAL_ENABLE_FRMT_GSG
-- GDAL_ENABLE_FRMT_GTA
-- GDAL_ENABLE_FRMT_GTIFF
-- GDAL_ENABLE_FRMT_GXF
-- GDAL_ENABLE_FRMT_HDF4
-- GDAL_ENABLE_FRMT_HDF5
-- GDAL_ENABLE_FRMT_HF2
-- GDAL_ENABLE_FRMT_HFA
-- GDAL_ENABLE_FRMT_IDRISI
-- GDAL_ENABLE_FRMT_ILWIS
-- GDAL_ENABLE_FRMT_INGR
-- GDAL_ENABLE_FRMT_IRIS
-- GDAL_ENABLE_FRMT_JAXAPALSAR
-- GDAL_ENABLE_FRMT_JDEM
-- GDAL_ENABLE_FRMT_JPEG
-- GDAL_ENABLE_FRMT_JPEG2000
-- GDAL_ENABLE_FRMT_JPEGLS
-- GDAL_ENABLE_FRMT_KMLSUPEROVERLAY
-- GDAL_ENABLE_FRMT_KEA
-- GDAL_ENABLE_FRMT_L1B
-- GDAL_ENABLE_FRMT_LEVELLER
-- GDAL_ENABLE_FRMT_MAP
-- GDAL_ENABLE_FRMT_MBTILES
-- GDAL_ENABLE_FRMT_MEM
-- GDAL_ENABLE_FRMT_MRF
-- GDAL_ENABLE_FRMT_MRSID
-- GDAL_ENABLE_FRMT_MRSID_LIDAR
-- GDAL_ENABLE_FRMT_MSGN
-- GDAL_ENABLE_FRMT_NETCDF
-- GDAL_ENABLE_FRMT_NGSGEOID
-- GDAL_ENABLE_FRMT_NITF
-- GDAL_ENABLE_FRMT_OPENJPEG
-- GDAL_ENABLE_FRMT_OZI
-- GDAL_ENABLE_FRMT_PCIDSK
-- GDAL_ENABLE_FRMT_PCRASTER
-- GDAL_ENABLE_FRMT_POSTGISRASTER)
-- GDAL_ENABLE_FRMT_PDF
-- GDAL_ENABLE_FRMT_PDS
-- GDAL_ENABLE_FRMT_PLMOSAIC
-- GDAL_ENABLE_FRMT_PNG
-- GDAL_ENABLE_FRMT_POSTGISRASTER
-- GDAL_ENABLE_FRMT_PRF
-- GDAL_ENABLE_FRMT_R
-- GDAL_ENABLE_FRMT_RAW
-- GDAL_ENABLE_FRMT_RASTERLITE
-- GDAL_ENABLE_FRMT_RDA
-- GDAL_ENABLE_FRMT_RIK
-- GDAL_ENABLE_FRMT_RMF
-- GDAL_ENABLE_FRMT_RS2
-- GDAL_ENABLE_FRMT_SAFE
-- GDAL_ENABLE_FRMT_SAGA
-- GDAL_ENABLE_FRMT_SDTS
-- GDAL_ENABLE_FRMT_SENTINEL2
-- GDAL_ENABLE_FRMT_SGI
-- GDAL_ENABLE_FRMT_TERRAGEN
-- GDAL_ENABLE_FRMT_TIL
-- GDAL_ENABLE_FRMT_TSX
-- GDAL_ENABLE_FRMT_USGSDEM
-- GDAL_ENABLE_FRMT_VRT
-- GDAL_ENABLE_FRMT_WCS
-- GDAL_ENABLE_FRMT_WEBP
-- GDAL_ENABLE_FRMT_WMS
-- GDAL_ENABLE_FRMT_WMTS
-- GDAL_ENABLE_FRMT_XPM
-- GDAL_ENABLE_FRMT_XYZ
-- GDAL_ENABLE_FRMT_ECW
-- GDAL_ENABLE_FRMT_SDE
-
-- OGR_ENABLE_AMIGOCLOUD
-- OGR_ENABLE_CAD
-- OGR_ENABLE_CARTO
-- OGR_ENABLE_CLOUDANT
-- OGR_ENABLE_CSW
-- OGR_ENABLE_DODS
-- OGR_ENABLE_DWG)
-- OGR_ENABLE_ELASTIC
-- OGR_ENABLE_GEOJSON
-- OGR_ENABLE_GEOMEDIA
-- OGR_ENABLE_GFT
-- OGR_ENABLE_GMLAS
-- OGR_ENABLE_ILI
-- OGR_ENABLE_LIBKML
-- OGR_ENABLE_MITAB
-- OGR_ENABLE_MONGODB
-- OGR_ENABLE_MYSQL
-- OGR_ENABLE_NAS)
-- OGR_ENABLE_PDS
-- OGR_ENABLE_PG
-- OGR_ENABLE_PLSCENES
-- OGR_ENABLE_SOSI
-- OGR_ENABLE_SHAPE
-- OGR_ENABLE_SQLITE
-- OGR_ENABLE_SVG
-- OGR_ENABLE_VFK
-- OGR_ENABLE_WFS
-- OGR_ENABLE_XLSX
-
-- OGR_ENABLE_SDE
-- OGR_ENABLE_FME
-- OGR_ENABLE_OCI
-- OGR_ENABLE_DB2
-- OGR_ENABLE_MSSQLSPATIAL
-- OGR_ENABLE_ODS
-- OGR_ENABLE_OGDI
-
-- GDAL_ENABLE_FRMT_GRASS
-- OGR_ENABLE_GRASS
-
+- SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
 
 Drivers which has special scripts
 ---------------------------------
@@ -452,7 +405,9 @@ This is not normal driver but internal library.
 
 ### gdal_geotiff (gdal/frmts/gtiff)
 
-These are reffered from other drivers so it should be built into libgdal
+These are referred from other drivers so it should be built into libgdal
 to resolve plugins dependencies.
 
+### ogr_ILI (ogr_ILI1 and ogr_ILI2) (ogr/ogrsf_frmts/ili)
 
+These are two drivers in single module.

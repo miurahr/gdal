@@ -3,7 +3,7 @@ add_library(libpng OBJECT
 			png.h  pngerror.c  pngget.c    pngpread.c  pngrio.c   pngrutil.c  pngtrans.c  pngwio.c   pngwtran.c
 			)
 if(GDAL_USE_LIBZ_INTERNAL)
-	target_include_directories(libpng PRIVATE ${GDAL_ROOT_SOURCE_DIR}/frmts/zlib)
+	target_include_directories(libpng PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
 	target_include_directories(libpng PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ZLIB_LIBRARIES})

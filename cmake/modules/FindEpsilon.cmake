@@ -52,4 +52,12 @@ mark_as_advanced(EPSILON_LIBRARY EPSILON_INCLUDE_DIR)
 if(EPSILON_FOUND)
     set(EPSILON_LIBRARIES ${EPSILON_LIBRARY})
     set(EPSILON_INCLUDE_DIRS ${EPSILON_INCLUDE_DIR})
+
+    if (NOT TARGET EPSILON::EPSILON)
+        add_library(EPSILON::EPSILON UNKNOWN IMPORTED)
+        set_target_properties(EPSILON::EPSILON PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES "${EPSILON_INCLUDE_DIR}"
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION "${EPSILON_LIBRARY}")
+    endif()
 endif()

@@ -110,19 +110,13 @@ endif()
 
 project(gdal LANGUAGES C CXX)
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules # CMake generic modules
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers # GDAL specific helpers
-    ${CMAKE_MODULE_PATH})
+# setup cmake modules paths
+include(cmake/modules/init.cmake)
+
+# cotire cmake speedup addon
 include(cotire)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
-
-###########################################################
-# set common variables
-# WARN: these will be deprecated in future
-set(GDAL_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gdal)
-set(GDAL_ROOT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gdal)
 
 # template files path
 set(GDAL_CMAKE_TEMPLATE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/template)
@@ -183,6 +177,9 @@ if(TARGET_CPU MATCHES "x86_64")
         add_definitions(-m64)
     endif()
 endif()
+
+include(FindSSE)
+FindSSE()
 
 ################################################################
 add_subdirectory(gdal)

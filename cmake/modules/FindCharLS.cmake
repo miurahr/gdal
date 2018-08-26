@@ -36,3 +36,9 @@ if(CHARLS_FOUND)
     set(CHARLS_LIBRARIES ${CHARLS_LIBRARY})
     set(CHARLS_INCLUDE_DIRS ${CHARLS_INCLUDE_DIRS})
 endif()
+
+include(FeatureSummary)
+set_package_properties(CHARLS PROPERTIES
+                       DESCRIPTION "C++ JPEG Loss-Less Open SOurce Library Implementation."
+                       URL "https://github.com/team-charls/charls"
+)

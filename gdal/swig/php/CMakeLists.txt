@@ -49,7 +49,7 @@ foreach(tgt IN ITEMS php_gdalconst php_gdal php_gnm php_ogr php_osr)
     target_include_directories(${tgt} PRIVATE $<TARGET_PROPERTY:appslib,SOURCE_DIR>)
     target_include_directories(${tgt} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
-add_custom_target(php_binding
+add_custom_target(php_binding ALL
                   DEPENDS
                   php_gdal php_gnm php_ogr php_osr php_gdalconst
                   )

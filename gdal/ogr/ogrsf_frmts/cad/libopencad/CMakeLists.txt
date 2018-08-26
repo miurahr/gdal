@@ -27,11 +27,10 @@ add_library(libopencad OBJECT
         dwg/io.cpp
         dwg/r2000.cpp
 )
-
 target_include_directories(libopencad PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/cad>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/cad/libopencad>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/cad/libopencad/dwg>)
+                           $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+                           $<TARGET_PROPERTY:cpl,BINARY_DIR>
+                           $<TARGET_PROPERTY:ogr_CAD,SOURCE_DIR>
+                           ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/dwg)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libopencad>)

@@ -1,3 +1,3 @@
-ADD_GDAL_DRIVER(TARGET gdal_AirSAR SOURCES airsardataset.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_AirSAR)
+add_gdal_driver(TARGET gdal_AirSAR SOURCES airsardataset.cpp)
+gdal_standard_includes(gdal_AirSAR)
 

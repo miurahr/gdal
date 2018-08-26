@@ -5,7 +5,7 @@
 # ******************************************************************************
 # * Copyright (C) 2012,2013 Bishop
 # * Copyright (C) 2017,2018 Hiroshi Miura
-# * 
+# *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
 # * to deal in the Software without restriction, including without limitation
@@ -25,7 +25,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-include(MacroGdalDrivers)
+include(GdalDriverHelper)
 
 #############################################
 # register all drivers
@@ -37,9 +37,9 @@ target_include_directories(ogrsf_frmts PRIVATE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/generic>)
 
 # Obligatory for building GDAL; always compile in.
-ogr_default_driver(mem MEMORY)
+ogr_default_driver(mem "Read/write driver for MEMORY virtual files")
 ogr_default_driver(geojson "GeoJSON/ESRIJSON/TopoJSON driver")
-ogr_default_driver2(mitab TAB MiTAB)
+ogr_default_driver2(mitab TAB "MapInfo TAB and MIF/MID")
 
 ###########################################
 #
@@ -57,35 +57,35 @@ option(ENABLE_S57_BUILTIN_CLASSES "Set ON to build s57 driver with builin classe
 ogr_default_driver(s57 S57)
 ogr_default_driver(sdts SDTS ) #depends ISO8211
 ogr_default_driver(shape "ESRI shape-file")
-ogr_default_driver(tiger TIGER)
-ogr_default_driver(vrt VRT)
+ogr_default_driver(tiger "U.S. Census TIGER/Line")
+ogr_default_driver(vrt "VRT - Virtual Format")
 ogr_default_driver(geoconcept GEOCONCEPT)
 ogr_default_driver(xplane XPLANE)
 ogr_default_driver(georss GEORSS)
-ogr_default_driver(gtm GTM)
+ogr_default_driver(gtm "GPS TrackMaker")
 ogr_default_driver(dxf DXF)
 ogr_default_driver(pgdump PGDump)
 ogr_default_driver(gpsbabel GPSBABEL)
-ogr_default_driver(sua SUA)
+ogr_default_driver(sua "Tim Newport-Peace's Special Use Airspace Format")
 ogr_default_driver(openair OPENAIR)
 ogr_default_driver(htf HTF)
 ogr_default_driver(edigeo EDIGEO)
 ogr_default_driver(arcgen ARCGEN)
 ogr_default_driver(sxf SXF)
 ogr_default_driver(openfilegdb OPENFILEGDB)
-ogr_default_driver(wasp WASP)
+ogr_default_driver(wasp "WAsP .map format")
 ogr_default_driver(selafin OSELAFIN)
 ogr_default_driver(jml JML)
-ogr_default_driver(vdv VDV)
+ogr_default_driver(vdv "VDV-451/VDV-452/INTREST Data Format")
 ogr_default_driver(kml KML) # when not found EXPAT, it use CPL_MINIXML (ex. android)
 ogr_default_driver(gml GML) # when not found both EXPAT/XercesC, return error in driver, referenced by WCS
 
 ######################################
 #
 # XML drivers
-ogr_dependent_driver(gpx GPX "HAVE_EXPAT")
+ogr_dependent_driver(gpx "GPX - GPS Exchange Format" "HAVE_EXPAT")
 ogr_dependent_driver(gmlas GMLAS "HAVE_XERCESC;HAVE_JSONC")
-ogr_dependent_driver(svg SVG "HAVE_EXPAT")
+ogr_dependent_driver(svg "Scalable Vector Graphics" "HAVE_EXPAT")
 ogr_dependent_driver(csw CSW "HAVE_CURL")
 ogr_dependent_driver(dods DODS "HAVE_DAP;HAVE_LIBXML2")
 ogr_dependent_driver(dwg DWG "HAVE_TEIGHA")
@@ -95,19 +95,22 @@ ogr_dependent_driver(libkml LibKML "HAVE_LIBKML;HAVE_BOOST")
 ogr_dependent_driver(nas "NAS/ALKIS" "HAVE_XERCESC")
 ogr_dependent_driver(plscenes PLSCENES "HAVE_CURL")
 ogr_dependent_driver(sosi "SOSI:Systematic Organization of Spatial Information" "HAVE_SOCI")
-ogr_dependent_driver(wfs WFS "HAVE_CURL")
+ogr_dependent_driver(wfs "OGC WFS service" "HAVE_CURL")
+
 ogr_optional_driver(elastic ELASTIC)
 ogr_optional_driver(idrisi IDRISI)
-ogr_optional_driver(pds PDS)
+ogr_optional_driver(pds "Planetary Data Systems TABLE")
 
-ogr_dependent_driver(sqlite "SQLite3" "HAVE_SQLITE3")
+ogr_dependent_driver(sqlite "SQLite3 / Spatialite RDBMS" "HAVE_SQLITE3")
 # GeoPacage is a part of sqlite driver.
 # when enable sqlite, automatically add a gpkg
 if(OGR_ENABLE_SQLITE)
     add_subdirectory(gpkg)
 endif()
-ogr_dependent_driver(osm OSM "OGR_ENABLE_SQLITE")
-ogr_dependent_driver(vfk VFK "HAVE_SQLITE3")
+add_feature_info(ogr_GPKG OGR_ENABLE_SQLITE "GeoPackage")
+ogr_dependent_driver(osm "OpenStreetMap XML and PBF" "OGR_ENABLE_SQLITE")
+ogr_dependent_driver(vfk "Czech Cadastral Exchange Data Format" "HAVE_SQLITE3")
+ogr_dependent_driver(mvt "MVT" "HAVE_SQLITE3")
 
 # ODBC/POSTGRES/MYSQL/INGRESS/COUCHDB
 ogr_dependent_driver(amigocloud AMIGOCLOUD "HAVE_CURL")
@@ -117,31 +120,25 @@ ogr_optional_driver(carto CARTO)
 ogr_dependent_driver(ingress INGRESS "HAVE_INGRESS")
 ogr_dependent_driver(ili ILI "HAVE_XERCESC")
 ogr_dependent_driver(mysql MySQL "HAVE_MYSQL")
-ogr_dependent_driver(pg PostGIS "HAVE_POSTGRES")
+ogr_dependent_driver(pg PostGIS "HAVE_POSTGRESQL")
 ogr_dependent_driver(geomedia GEOMEDIA "HAVE_ODBC")
 ogr_dependent_driver(mssqlspatial MSSQLSPATIAL "HAVE_ODBC")
 ogr_dependent_driver(odbc ODBC "HAVE_ODBC")
-ogr_dependent_driver(walk WALK "HAVE_ODBC")
-ogr_dependent_driver(pgeo PGEO "HAVE_ODBC")
+ogr_dependent_driver(walk "WALK Spatial data" "HAVE_ODBC")
+ogr_dependent_driver(pgeo "PGEO" "HAVE_ODBC")
 
 # for dependency problem, grass is not always compiled in.
-ogr_optional_driver(grass GRASS)
+ogr_optional_driver(grass "GRASS Vector format")
 if(OGR_ENABLE_GRASS)
-    if(HAVE_GRASS AND HAVE_POSTGRES)
+    if(HAVE_GRASS AND HAVE_POSTGRESQL)
     else()
         message(FATAL_ERROR "Dependency error on GRASS driver")
     endif()
 endif()
 
 ogr_dependent_driver(xlsx "Microsoft Office Excel(xlsx)" "HAVE_EXPAT")
-ogr_optional_driver(mongodb MongoDB)
-
-if(GDAL_USE_OPENCAD_INTERNAL OR HAVE_OPENCAD)
-    set(WITH_OPENCAD ON CACHE INTERNAL "")
-else()
-    set(WITH_OPENCAD OFF CACHE INTERNAL "")
-endif()
-ogr_dependent_driver(cad "OpenCAD" "WITH_OPENCAD")
+ogr_optional_driver(mongodb "MongoDB")
+ogr_optional_driver(cad "OpenCAD")
 
 #############################################
 # proprietary libraries
@@ -153,7 +150,7 @@ ogr_dependent_driver(idb "IDB" "HAVE_IDB")
 if(WIN32)
     ogr_optional_driver(arcobjects ARCOBJECTS)
 endif()
-ogr_optional_driver(mssqlspatial MSSQLSpatial)
+ogr_optional_driver(mssqlspatial "MSSQLSpatial")
 ogr_optional_driver(ods ODS)
 ogr_dependent_driver(ogdi "OGDI" "HAVE_OGDI;HAVE_PROJ4")
 

@@ -17,6 +17,7 @@ ADD_GDAL_DRIVER(TARGET gdal_NITF SOURCES
                 BUILTIN
 )
 gdal_standard_includes(gdal_NITF)
+
 if(GDAL_USE_LIBTIFF_INTERNAL)
     target_include_directories(gdal_NITF PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
     if(RENAME_LIBTIFF_SYMBOLS)
@@ -27,14 +28,17 @@ else()
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_NITF LIBRARIES ${TIFF_LIBRARY})
 endif()
 
+if(GDAL_USE_LIBJPEG_INTERNAL)
     target_compile_definitions(gdal_NITF PRIVATE -DJPEG_SUPPORTED)
-    if(GDAL_USE_LIBJPEG_INTERNAL)
-        target_include_directories(gdal_NITF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
-    else()
-        find_package(JPEG REQUIRED)
-        target_include_directories(gdal_NITF PRIVATE JPEG::JPEG)
-        GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_NITF LIBRARIES JPEG::JPEG)
+    target_include_directories(gdal_NITF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
+else()
+    if(HAVE_JPEG)
+        target_compile_definitions(gdal_NITF PRIVATE -DJPEG_SUPPORTED)
+        target_include_directories(gdal_NITF PRIVATE ${JPEG_INCLUDE_DIRS})
+        gdal_target_link_libraries(TARGET gdal_NITF LIBRARIES JPEG::JPEG)
     endif()
+endif()
+if(GDAL_USE_LIBJPEG_INTERNAL OR HAVE_JPEG)
     if(GDAL_JPEG12_SUPPORTED)
          target_compile_definitions(gdal_NITF PRIVATE -DJPEG_DUAL_MODE_8_12)
          target_sources(gdal_NITF PRIVATE
@@ -45,6 +49,6 @@ endif()
              nitfwritejpeg.cpp
          )
     endif()
-
+endif()
 target_include_directories(gdal_NITF PRIVATE $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)

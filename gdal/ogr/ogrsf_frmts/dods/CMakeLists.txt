@@ -1,5 +1,4 @@
-
-GDAL_DRIVER(TARGET ogr_DODS SOURCES
+add_gdal_driver(TARGET ogr_DODS SOURCES
         libdap_headers.h
         ogr_dods.h
         ogrdodsdatasource.cpp
@@ -7,9 +6,10 @@ GDAL_DRIVER(TARGET ogr_DODS SOURCES
         ogrdodsfielddefn.cpp
         ogrdodsgrid.cpp
         ogrdodslayer.cpp
-        ogrdodssequencelayer.cpp
-    INCLUDES ${DAP_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}
-    LIBRARIES ${DAP_CLIENT_LIBRARY} ${LIBXML2_LIBRARIES} )
+        ogrdodssequencelayer.cpp)
+gdal_standard_includes(ogr_DODS)
+target_include_directories(ogr_DODS PRIVATE ${DAP_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR})
+gdal_target_link_libraries(TARGET ogr_DODS LIBRARIES ${DAP_CLIENT_LIBRARY} ${LIBXML2_LIBRARIES} )
 
 if(DAP_VERSION VERSION_GREATER "3.9" OR
     DAP_VERSION VERSION_EQUAL   "3.9")

@@ -37,89 +37,60 @@
 #           GDAL_TARGET_LINK_LIBRARIES(TARGET <target_name> LIBRARIES <library> [<library2> [..]])
 #
 #
+#
+#  All in one macro; not recommended.
+#
 #  Symptoms GDAL_DRIVER( TARGET <target_name>
 #                        [SOURCES <source file> [<source file>[...]]]
 #                        [INCLUDES <include_dir> [<include dir2> [...]]]
 #                        [LIBRARIES <library1> [<library2> [...]][
 #                        [DEFINITIONS -DFOO=1 [-DBOO [...]]]
-#                        [FORCE_BUILTIN]
+#                        [BUILTIN]
 #          )
 #
 #  All driver which is not specify 'BUILTIN' beocmes PLUGIN when
-#  configuration GDAL_ENABLE_PLUGIN = true.
+#  configuration ENABLE_PLUGIN = true.
 #
 #  There aree several examples to show how to write build cmake script.
 #
-# ex.1  Driver which is depend on some external libraries
-#       These definitions are detected in cmake/macro/CheckDependentLibraries.cmake
-#       If you cannot find your favorite library in the macro, please add it to
-#       CheckDependentLibraries.cmake.
-#
-#   GDAL_DRIVER(TARGET    gdal_WEBP
-#               SOURCES   gdal_webp.c gdal_webp.h
-#               INCLUDES  ${WEBP_INCLUDE_DIRS} ${TIFF_INCLUDE_DIRS}
-#               LIBRARIES ${WEBP_LIBRARIES} ${TIFF_LIBRARIES})
-#
-#
-# ex.2  Driver which is depend on internal bundled thirdparty libraries
-#       To refer thirdparty library dev files, pls use '$<BUILD_INTERFACE:(path)>'
-#       and '$<TARGET_LINKER_FILE:(name)>' cmake directive.
-#       You may use 'IF(GDAL_USE_SOME_LIBRARY_INTERNAL)...ELSE()...ENDIF()' cmake directive too.
-#
-#   GDAL_DRIVER(TARGET gdal_CALS
-#               SOURCES calsdataset.cpp
-#               INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/gtiff/libtiff>
-#               LIBRARIES $<TARGET_LINKER_FILE:gdal_libtiff>
-#
-# ex.3 Driver which is referrenced by other drivers
+# ex.1 Driver which is referrenced by other drivers
 #      Such driver should built-in into library to resolve reference.
 #      Please use 'FORCE_BUILTIN' option keyword which indicate to link it into libgdal.so.
 #
 #   add_gdal_driver(TARGET gdal_iso8211 SOURCES iso8211.cpp BUILTIN)
 #
-# ex.4 Driver that refer other driver as dependency
+# ex.2 Driver that refer other driver as dependency
 #      Please do not specify LIBRARIES for linking target for other driver,
 #      That should be bulit into libgdal.
 #
 #   add_gdal_driver(TARGET gdal_ADRG SOURCES foo.cpp)
-#   target_include_directories(gdal_ADRG PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/iso8211>)
+#   target_include_directories(gdal_ADRG PRIVATE $<TARGET_PROPERTY:iso8211,SOURCE_DIR>)
 #
-macro(GDAL_DRIVER)
-    set(_options FORCE_BUILTIN)
-    set(_oneValueArgs TARGET)
-    set(_multiValueArgs SOURCES INCLUDES LIBRARIES DEFINITIONS)
-    cmake_parse_arguments(_DRIVER "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
-    if(NOT _DRIVER_TARGET)
-        message(FATAL_ERROR "GDAL_DRIVER(): TARGET is a mandatory argument.")
-    endif()
-    if(NOT _DRIVER_SOURCES)
-        message(FATAL_ERROR "GDAL_DRIVER(): SOURCES is a mandatory argument.")
-    endif()
-    if(_DRIVER_FORCE_BUILTIN)
-        ADD_GDAL_DRIVER(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES} BUILTIN)
-    else()
-        ADD_GDAL_DRIVER(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES})
-    endif()
-    gdal_driver_standard_includes(${_DRIVER_TARGET})
-    if(_DRIVER_INCLUDES)
-        target_include_directories(${_DRIVER_TARGET} PRIVATE ${_DRIVER_INCLUDES})
-    endif()
-    if(_DRIVER_LIBRARIES)
-        GDAL_target_link_libraries(TARGET ${_DRIVER_TARGET} LIBRARIES ${_DRIVER_LIBRARIES})
-    endif()
-    if(_DRIVER_DEFINITIONS)
-        target_compile_definitions(${_DRIVER_TARGET} PRIVATE ${_DRIVER_DEFINITIONS})
-    endif()
-    unset(_DRIVER_TARGET)
-    unset(_DRIVER_SOURCES)
-    unset(_DRIVER_INCLUDES)
-    unset(_DRIVER_DEFINITIONS)
-    unset(_DRIVER_LIBRARIES)
-endmacro()
+# ex.3  Driver which is depend on some external libraries
+#       These definitions are detected in cmake/macro/CheckDependentLibraries.cmake
+#       If you cannot find your favorite library in the macro, please add it to
+#       CheckDependentLibraries.cmake.
+#
+#   add_gdal_driver(TARGET    gdal_WEBP
+#               SOURCES   gdal_webp.c gdal_webp.h)
+#   gdal_standard_includes(gdal_WEBP)
+#   target_include_directories(gdal_WEBP PRIVATE ${WEBP_INCLUDE_DIRS} ${TIFF_INCLUDE_DIRS})
+#   gdal_target_link_libraries(TARGET gdal_WEBP LIBRARIES ${WEBP_LIBRARIES} ${TIFF_LIBRARIES})
+#
+#
+# ex.4  Driver which is depend on internal bundled thirdparty libraries
+#       To refer thirdparty library dev files, pls use '$<TARGET_PROPERTY:(target_library),SOURCE_DIR>'
+#       cmake directive.
+#       You may use 'IF(GDAL_USE_SOME_LIBRARY_INTERNAL)...ELSE()...ENDIF()' cmake directive too.
+#
+#   add_gdal_driver(TARGET gdal_CALS
+#               SOURCES calsdataset.cpp)
+#   gdal_standard_includes(gdal_CALS)
+#   gdal_include_directories(gdal_CALS PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
 
 function(ADD_GDAL_DRIVER)
     set(_options BUILTIN)
-    set(_oneValueArgs TARGET)
+    set(_oneValueArgs TARGET DESCRIPTION OPTION_NAME OPTION_DESC)
     set(_multiValueArgs SOURCES)
     cmake_parse_arguments(_DRIVER "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
     # Check mandatory arguments
@@ -144,7 +115,7 @@ function(ADD_GDAL_DRIVER)
         string(REPLACE "ogr_" "" _FORMAT ${_DRIVER_TARGET})
         set_property(GLOBAL APPEND PROPERTY OGR_FORMATS ${_FORMAT})
     endif()
-    # target configuration
+     # target configuration
     if(_DRIVER_PLUGIN_BUILD)
         # target become *.so *.dll or *.dylib
         add_library(${_DRIVER_TARGET} MODULE ${_DRIVER_SOURCES})
@@ -184,11 +155,12 @@ function(GDAL_TARGET_LINK_LIBRARIES)
         message(FATAL_ERROR "GDAL_TARGET_LINK_LIBRARIES(): LIBRARIES is a mandatory argument.")
     endif()
     # Detect whether driver is built as PLUGIN or not.
-    get_property(_DRIVER_TYPE TARGET ${_DRIVER_TARGET} PROPERTY TYPE)
-    if(${_DRIVER_TYPE} EQUAL MODULE_LIBRARY)
-        target_link_libraries(${_DRIVER_TARGET} PRIVATE ${_DRIVER_LIBRARIES})
-    else()
+    get_property(_PLUGIN_MODULES GLOBAL PROPERTY PLUGIN_MODULES)
+    list(FIND _PLUGIN_MODULES ${_DRIVER_TARGET} _IS_DRIVER_PLUGIN)
+    if(_IS_DRIVER_PLUGIN EQUAL -1)
         target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${_DRIVER_LIBRARIES})
+    else()
+        target_link_libraries(${_DRIVER_TARGET} PRIVATE ${_DRIVER_LIBRARIES})
     endif()
 endfunction()
 
@@ -216,20 +188,23 @@ macro(GDAL_DEPENDENT_FORMAT format desc depends)
     string(TOUPPER ${format} key)
     CMAKE_DEPENDENT_OPTION(GDAL_ENABLE_FRMT_${key} "Set ON to build ${desc} format" ON
                            "${depends}" OFF)
+    add_feature_info(gdal_${key} GDAL_ENABLE_FRMT_${key} "${desc}")
     if(GDAL_ENABLE_FRMT_${key})
         add_subdirectory(${format})
     endif()
 endmacro()
 
-macro(gdal_format format)
-    string(TOUPPER ${format} key)
+macro(gdal_format format desc)
+    string(TOUPPER ${format} key desc)
     set(GDAL_ENABLE_FRMT_${key} ON CACHE BOOL "" FORCE)
+    add_feature_info(gdal_${key} GDAL_ENABLE_FRMT_${key} "${desc}")
     add_subdirectory(${format})
 endmacro()
 
 macro(gdal_optional_format format desc)
     string(TOUPPER ${format} key)
     option(GDAL_ENABLE_FRMT_${key} "Set ON to build ${desc} format" OFF)
+    add_feature_info(gdal_${key} GDAL_ENABLE_FRMT_${key} "${desc}")
     if(GDAL_ENABLE_FRMT_${key})
         add_subdirectory(${format})
     endif()
@@ -244,6 +219,7 @@ macro(OGR_DEPENDENT_DRIVER name desc depend)
     string(TOUPPER ${name} key)
     CMAKE_DEPENDENT_OPTION(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" ON
                            "${depend}" OFF)
+    add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     if (OGR_ENABLE_${key})
         add_subdirectory(${name})
     endif()
@@ -255,6 +231,7 @@ endmacro()
 macro(OGR_OPTIONAL_DRIVER name desc)
     string(TOUPPER ${name} key)
     option(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" OFF)
+    add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     if (OGR_ENABLE_${key})
         add_subdirectory(${name})
     endif()
@@ -266,9 +243,46 @@ endmacro()
 macro(OGR_DEFAULT_DRIVER name desc)
     string(TOUPPER ${name} key)
     set(OGR_ENABLE_${key} ON CACHE BOOL "${desc}" FORCE)
+    add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     add_subdirectory(${name})
 endmacro()
 macro(OGR_DEFAULT_DRIVER2 name key desc)
     set(OGR_ENABLE_${key} ON CACHE BOOL "${desc}" FORCE)
+    add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     add_subdirectory(${name})
 endmacro()
+
+
+macro(GDAL_DRIVER)
+    set(_options BUILTIN)
+    set(_oneValueArgs TARGET)
+    set(_multiValueArgs SOURCES INCLUDES LIBRARIES DEFINITIONS)
+    cmake_parse_arguments(_DRIVER "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
+    if(NOT _DRIVER_TARGET)
+        message(FATAL_ERROR "GDAL_DRIVER(): TARGET is a mandatory argument.")
+    endif()
+    if(NOT _DRIVER_SOURCES)
+        message(FATAL_ERROR "GDAL_DRIVER(): SOURCES is a mandatory argument.")
+    endif()
+    if(_DRIVER_FORCE_BUILTIN)
+        ADD_GDAL_DRIVER(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES} BUILTIN)
+    else()
+        ADD_GDAL_DRIVER(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES})
+    endif()
+    gdal_driver_standard_includes(${_DRIVER_TARGET})
+    if(_DRIVER_INCLUDES)
+        target_include_directories(${_DRIVER_TARGET} PRIVATE ${_DRIVER_INCLUDES})
+    endif()
+    if(_DRIVER_LIBRARIES)
+        GDAL_target_link_libraries(TARGET ${_DRIVER_TARGET} LIBRARIES ${_DRIVER_LIBRARIES})
+    endif()
+    if(_DRIVER_DEFINITIONS)
+        target_compile_definitions(${_DRIVER_TARGET} PRIVATE ${_DRIVER_DEFINITIONS})
+    endif()
+    unset(_DRIVER_TARGET)
+    unset(_DRIVER_SOURCES)
+    unset(_DRIVER_INCLUDES)
+    unset(_DRIVER_DEFINITIONS)
+    unset(_DRIVER_LIBRARIES)
+endmacro()
+
