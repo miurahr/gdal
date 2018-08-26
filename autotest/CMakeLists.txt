@@ -31,6 +31,8 @@ project(gdal_autotest C CXX)
 set(CMAKE_COLOR_MAKEFILE ON)
 enable_testing()
 
+set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
 # not support test on cross compiling, but mingw support with wine
 if(NOT CMAKE_CROSSCOMPILING OR MINGW)
     add_subdirectory(cpp)
@@ -38,22 +40,30 @@ if(NOT CMAKE_CROSSCOMPILING OR MINGW)
     find_package(PythonInterp)
     find_package(PythonLibs)
     if(PythonInterp_FOUND)
-        add_test(gcore-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
-        add_test(gdrivers-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
-        add_test(alg-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
-        add_test(osr-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
-        add_test(ogr-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
-        add_test(utilities-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
-        add_test(pyscripts-test ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
+        add_test(gcore-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
+        add_test(gdrivers-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
+        add_test(alg-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
+        add_test(osr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
+        add_test(ogr-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
+        add_test(utilities-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
+        add_test(pyscripts-test ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
         get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
+        set(TEST_ENV)
+        list(APPEND TEST_ENV
+                    PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod
+                    LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal
+                    GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data
+                    GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
+                    #GDAL_DOWNLOAD_TEST_DATA=1
+#                   #GDAL_SLOW_TESTSA=1
+            )
         set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
                              PROPERTIES
-                             #ENVIRONMENT GDAL_DOWNLOAD_TEST_DATA=1
-                             #            GDAL_SLOW_TESTSA=1
-                             # FIXME: only run in-source currently.
+                             ENVIRONMENT "${TEST_ENV}"
+                             # run_all.py enforce us to run on a directory where script exist.
                              WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                              TIMEOUT 300)
-         add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7
+        add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7
                            DEPENDS
                            testblockcache
                            testperfcopywords
