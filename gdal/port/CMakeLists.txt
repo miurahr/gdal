@@ -120,6 +120,12 @@ add_library(cpl OBJECT
 		cpl_md5.cpp
 		cpl_vsil_hdfs.cpp
 		cpl_swift.cpp
+			cpl_vsil_az.cpp
+			cpl_vsil_gs.cpp
+			cpl_vsil_webhdfs.cpp
+			cpl_vsil_s3.cpp
+			cpl_vsil_oss.cpp
+			cpl_vsil_swift.cpp
 )
 set_target_properties(cpl PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
 if(UNIX)
@@ -216,8 +222,10 @@ target_sources(gdal PRIVATE $<TARGET_OBJECTS:cpl>)
 if(NOT WIN32)
 	set(CMAKE_THREAD_PREFER_PTHREAD ON CACHE BOOL "Prefer pthread")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE Threads::Threads)
+    find_package(Threads)
+    if(Threads_FOUND)
+        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE Threads::Threads)
+    endif()
 endif()
 
 if(MSVC)
