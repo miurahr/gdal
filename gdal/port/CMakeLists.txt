@@ -29,16 +29,16 @@
 add_library(cpl_headers INTERFACE)
 target_sources(cpl_headers	INTERFACE
 			   cpl_alibaba_oss.h
-		cpl_azure.h
-        cplkeywordparser.h
-        cpl_atomic_ops.h
-        cpl_config_extras.h
-        cpl_conv.h
-        cpl_cpu_features.h
-        cpl_csv.h
-        cpl_error.h
-        cpl_hash_set.h
-        cpl_http.h
+               cpl_azure.h
+               cplkeywordparser.h
+               cpl_atomic_ops.h
+               cpl_config_extras.h
+               cpl_conv.h
+               cpl_cpu_features.h
+               cpl_csv.h
+               cpl_error.h
+               cpl_hash_set.h
+               cpl_http.h
 		cpl_json.h
 		cpl_json_header.h
         cpl_list.h
@@ -228,3 +228,5 @@ endif()
 #endif()
 
 install(TARGETS cpl_headers DESTINATION include/gdal)
+
+add_executable(xmlreformat EXCLUDE_FROM_ALL xmlreformat.cpp)
