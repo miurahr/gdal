@@ -78,14 +78,14 @@ macro(py_ext name source)
                           DEPENS ${GDAL_SWIG_OUTPUT} ${ARRAY_OUTPUT})
     gdal_standard_includes(${name})
     target_include_directories(${name} PRIVATE
+                               ${PYTHON_INCLUDE_DIRS}
                                $<TARGET_PROPERTY:appslib,SOURCE_DIR>
                                $<TARGET_PROPERTY:gnm,SOURCE_DIR>
                                )
     if(WIN32 AND NOT CYGWIN)
         set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
-        target_link_libraries(${name} PRIVATE "-L${PYTHON_LIBRARIES}/libs/" "-lpython27")
     endif()
-    target_link_libraries(${name} PRIVATE gdal)
+    target_link_libraries(${name} PRIVATE ${PYTHON_LIBRARIES} $<TARGET_NAME:gdal>)
     add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/${name}.${PY_SUFFIX}
             COMMAND ${CMAKE_COMMAND} -E copy
