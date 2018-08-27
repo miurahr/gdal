@@ -67,13 +67,44 @@ find_library(DAP_SERVER_LIBRARY
 )
 MARK_AS_ADVANCED(DAP_INCLUDE_DIR DAP_LIBRARY DAP_CLIENT_LIBRARY DAP_SERVER_LIBRARY)
 
+if(DAP_INCLUDE_DIR AND DAP_LIBRARY)
+    set(DAP_CONFIG_EXE dap-config)
+    execute_process(COMMAND ${DAP_CONFIG_EXE} --version
+           OUTPUT_VARIABLE DAP_VERSION
+           OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif()
+
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(DAP DEFAULT_MSG DAP_LIBRARY DAP_CLIENT_LIBRARY DAP_SERVER_LIBRARY DAP_INCLUDE_DIR)
 
 if(DAP_FOUND)
-   set(DAP_CONFIG_EXE dap-config)
-   execute_process(COMMAND ${DAP_CONFIG_EXE} --version
-           OUTPUT_VARIABLE DAP_VERSION
-           OUTPUT_STRIP_TRAILING_WHITESPACE
-   )
+    set(DAP_INCLUDE_DIRS ${DAP_INCLUDE_DIR})
+    set(DAP_LIBRARIES ${DAP_LIBRARY} ${DAP_CLIENT_LIBRARY} ${DAP_SERVER_LIBRARY})
+
+    if(NOT TARGET DAP::DAP)
+        if(DAP_INCLUDE_DIR)
+            add_library(DAP::DAP UNKNOWN IMPORTED)
+            set_target_properties(DAP::DAP PROPERTIES
+                                  INTERFACE_INCLUDE_DIRECTORIES ${DAP_INCLUDE_DIR})
+            if(EXISTS "${DAP_LIBRARY}")
+                set_target_properties(DAP::DAP PROPERTIES
+                                      IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                                      IMPORTED_LOCATION "${DAP_LIBRARY}")
+            endif()
+        endif()
+        if(EXISTS "${DAP_CLIENT_LIBRARY}")
+            add_library(DAP::CLIENT UNKNOWN IMPORTED)
+            set_target_properties(DAP::CLIENT PROPERTIES
+                                  IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                                  IMPORTED_LOCATION "${DAP_CLIENT_LIBRARY}")
+        endif()
+        if(EXISTS "${DAP_SERVER_LIBRARY}")
+            add_library(DAP::SERVER UNKNOWN IMPORTED)
+            set_target_properties(DAP::SERVER PROPERTIES
+                                  IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                                  IMPORTED_LOCATION "${DAP_SERVER_LIBRARY}")
+        endif()
+    endif()
 endif(DAP_FOUND)
+
