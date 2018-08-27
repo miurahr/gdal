@@ -30,6 +30,7 @@ option(USE_CPL "Set ON to use cpl" ON)
 option(ENABLE_GNM "Build GNM module" ON)
 option(PAM_ENABLED "Set ON to enable pam" ON)
 option(BUILD_APPS "Build command utilities" ON)
+option(BUILD_FUZZERS "Build fuzzers utilities" OFF)
 option(BUILD_DOCS "Build documents" ON)
 option(GDAL_ENABLE_PLUGIN "Set ON prefer to build drivers as plugin" OFF)
 
@@ -164,7 +165,11 @@ add_subdirectory(swig)
 
 # Utilities
 add_subdirectory(apps)
-add_subdirectory(fuzzers)
+
+# Google OSS-Fuzz project utilities
+if(BUILD_FUZZERS)
+    add_subdirectory(fuzzers)
+endif()
 
 # Document/Manuals
 if(BUILD_DOCS)
