@@ -2,5 +2,5 @@ GDAL_DRIVER(TARGET ogr_Geoconcept SOURCES
     geoconcept.h ogrgeoconceptdatasource.cpp ogrgeoconceptdriver.cpp ogrgeoconceptlayer.cpp
     geoconcept_syscoord.h ogrgeoconceptdatasource.h ogrgeoconceptdriver.h ogrgeoconceptlayer.h
     geoconcept.c geoconcept_syscoord.c)
-gdal_driver_standard_includes(ogr_Geoconcept)
+gdal_standard_includes(ogr_Geoconcept)
 target_compile_definitions(ogr_Geoconcept PRIVATE -DUSE_CPL)
