@@ -27,7 +27,7 @@
 
 add_library(gdal_frmts OBJECT gdalallregister.cpp)
 ###############################################
-include(MacroGdalDrivers)
+include(GdalDriverHelper)
 include(CMakeDependentOption)
 
 # base driver provide frmt core functions

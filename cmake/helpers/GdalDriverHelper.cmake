@@ -46,7 +46,7 @@
 #          )
 #
 #  All driver which is not specify 'BUILTIN' beocmes PLUGIN when
-#  configuration GDAL_ENABLE_PLUGIN = true.
+#  configuration ENABLE_PLUGIN = true.
 #
 #  There aree several examples to show how to write build cmake script.
 #
@@ -130,7 +130,7 @@ function(ADD_GDAL_DRIVER)
         message(FATAL_ERROR "ADD_GDAL_DRIVER(): SOURCES is a mandatory argument.")
     endif()
     # Determine whether plugin or built-in
-    if((NOT GDAL_ENABLE_PLUGIN) OR _DRIVER_BUILTIN)
+    if((NOT ENABLE_PLUGIN) OR _DRIVER_BUILTIN)
         set(_DRIVER_PLUGIN_BUILD FALSE)
     else()
         set(_DRIVER_PLUGIN_BUILD TRUE)

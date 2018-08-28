@@ -25,7 +25,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-include(MacroGdalDrivers)
+include(GdalDriverHelper)
 
 #############################################
 # register all drivers
