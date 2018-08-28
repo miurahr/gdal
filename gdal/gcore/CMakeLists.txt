@@ -107,7 +107,7 @@ if(USE_CPL)
 	target_compile_definitions(gcore PRIVATE -DUSE_CPL)
 endif()
 
-if(PAM_ENABLED)
+if(ENABLE_PAM)
 	target_compile_definitions(gcore PRIVATE -DPAM_ENABLED)
 endif()
 

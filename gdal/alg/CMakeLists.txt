@@ -71,8 +71,8 @@ if(HAVE_GEOS)
 							   ${GEOS_ROOT}/capi
 							   ${GEOS_ROOT})
 	target_compile_definitions(alg PRIVATE -DHAVE_GEOS=1)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARY})
-endif(HAVE_GEOS)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE GEOS::GEOS)
+endif()
 
 if(HAVE_ARMADILLO)
 	target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS})
@@ -82,11 +82,11 @@ endif()
 
 if(USE_CPL)
 	target_compile_definitions(alg PRIVATE -DUSE_CPL)
-endif(USE_CPL)
+endif()
 
-if(PAM_ENABLED)
+if(ENABLE_PAM)
 	target_compile_definitions(alg PRIVATE -DPAM_ENABLED)
-endif(PAM_ENABLED)
+endif()
 
 if (HAVE_OPENCL)
 	target_include_directories(alg PRIVATE ${OpenCL_INCLUDE_DIRS})
