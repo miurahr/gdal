@@ -11,7 +11,7 @@ ADD_GDAL_DRIVER(TARGET ogr_GeoPackage SOURCES
                 gdalgeopackagerasterband.cpp
                 BUILTIN
                 )
-gdal_driver_standard_includes(ogr_GeoPackage)
+gdal_standard_includes(ogr_GeoPackage)
 
 target_include_directories(ogr_GeoPackage PRIVATE
                            $<TARGET_PROPERTY:alg,SOURCE_DIR>

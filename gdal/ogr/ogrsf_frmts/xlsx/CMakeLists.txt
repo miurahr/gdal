@@ -1,5 +1,5 @@
-ADD_GDAL_DRIVER(TARGET ogr_XLSX SOURCES ogr_xlsx.h ogrxlsxdatasource.cpp ogrxlsxdriver.cpp)
-gdal_driver_standard_includes(ogr_XLSX)
+add_gdal_driver(TARGET ogr_XLSX SOURCES ogr_xlsx.h ogrxlsxdatasource.cpp ogrxlsxdriver.cpp)
+gdal_standard_includes(ogr_XLSX)
 target_include_directories(ogr_XLSX PRIVATE $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)

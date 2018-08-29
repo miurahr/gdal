@@ -1,3 +1,3 @@
-ADD_GDAL_DRIVER(TARGET gdal_BMP SOURCES bmpdataset.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_BMP)
+add_gdal_driver(TARGET gdal_BMP SOURCES bmpdataset.cpp)
+gdal_standard_includes(gdal_BMP)
 

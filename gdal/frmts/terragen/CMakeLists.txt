@@ -1,2 +1,3 @@
-GDAL_DRIVER(TARGET gdal_Terragen SOURCES  terragendataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_Terragen)
+add_gdal_driver(TARGET gdal_Terragen SOURCES  terragendataset.cpp)
+gdal_standard_includes(gdal_Terragen)
+

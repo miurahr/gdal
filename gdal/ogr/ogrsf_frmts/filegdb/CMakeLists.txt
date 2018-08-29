@@ -1,11 +1,13 @@
-GDAL_DRIVER(TARGET ogr_FileGDB SOURCES
+add_gdal_driver(TARGET ogr_FileGDB SOURCES
         FGdbUtils.h
         FGdbDatasource.cpp
         FGdbDriver.cpp
         FGdbLayer.cpp
         FGdbResultLayer.cpp
         FGdbUtils.cpp
-    INCLUDES ${FILEGDB_INCLUDE_DIR}
-             $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-    LIBRARIES ${FILEGDB_LIBRARY})
-gdal_driver_standard_includes(ogr_FileGDB)
+              )
+gdal_standard_includes(ogr_FileGDB)
+target_include_directories(ogr_FileGDB PRIVATE
+                           ${FILEGDB_INCLUDE_DIR}
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)
+gdal_target_link_libraries(TARGET ogr_FileGDB LIBRARIES ${FILEGDB_LIBRARY})

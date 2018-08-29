@@ -1,17 +1,17 @@
 #depend from hdf4 and ogr_PDS
-ADD_GDAL_DRIVER(TARGET gdal_PDS SOURCES
-        nasakeywordhandler.h
-        vicarkeywordhandler.h
-        isis2dataset.cpp
-        isis3dataset.cpp
-        nasakeywordhandler.cpp
-        pdsdataset.cpp
-        pds4dataset.cpp
-        vicardataset.cpp
-        vicarkeywordhandler.cpp
+add_gdal_driver(TARGET gdal_PDS SOURCES
+                nasakeywordhandler.h
+                vicarkeywordhandler.h
+                isis2dataset.cpp
+                isis3dataset.cpp
+                nasakeywordhandler.cpp
+                pdsdataset.cpp
+                pds4dataset.cpp
+                vicardataset.cpp
+                vicarkeywordhandler.cpp
                 BUILTIN
 )
-gdal_driver_standard_includes(gdal_PDS)
+gdal_standard_includes(gdal_PDS)
 target_include_directories(gdal_PDS PRIVATE
                            $<TARGET_PROPERTY:gdal_raw,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
@@ -20,5 +20,5 @@ IF(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gdal_PDS PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
     target_include_directories(gdal_PDS PRIVATE ${JSONC_INCLUDE_DIR})
-    gdal_target_link_libraries(TARGET gdal_PDS LIBRARIES ${JSONC_LIBRARY})
+    gdal_target_link_libraries(TARGET gdal_PDS LIBRARIES JSONC::JSONC)
 endif()

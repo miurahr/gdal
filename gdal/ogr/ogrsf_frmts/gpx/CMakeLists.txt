@@ -1,5 +1,5 @@
-ADD_GDAL_DRIVER(TARGET ogr_GPX SOURCES ogr_gpx.h ogrgpxdatasource.cpp ogrgpxdriver.cpp ogrgpxlayer.cpp)
-gdal_driver_standard_includes(ogr_GPX)
+add_gdal_driver(TARGET ogr_GPX SOURCES ogr_gpx.h ogrgpxdatasource.cpp ogrgpxdriver.cpp ogrgpxlayer.cpp)
+gdal_standard_includes(ogr_GPX)
 
 if(HAVE_EXPAT)
     target_compile_definitions(ogr_GPX PRIVATE -DHAVE_EXPAT=1)

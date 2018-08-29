@@ -1,11 +1,9 @@
-ADD_GDAL_DRIVER(TARGET ogr_OSM SOURCES
+add_gdal_driver(TARGET ogr_OSM SOURCES
                 gpb.h ogr_osm.h osm_parser.h
-                ogrosmdatasource.cpp ogrosmdriver.cpp ogrosmlayer.cpp osm_parser.cpp
-                )
-gdal_driver_standard_includes(ogr_OSM)
-target_include_directories(ogr_OSM PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/sqlite>)
+                ogrosmdatasource.cpp ogrosmdriver.cpp ogrosmlayer.cpp osm_parser.cpp)
+gdal_standard_includes(ogr_OSM)
+target_include_directories(ogr_OSM PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_SQLite,SOURCE_DIR>)
 if(HAVE_EXPAT)
     target_compile_definitions(ogr_OSM PRIVATE -DHAVE_EXPAT=1)
     target_include_directories(ogr_OSM PRIVATE ${EXPAT_INCLUDE_DIRS})

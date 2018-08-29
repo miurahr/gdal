@@ -1,3 +1,3 @@
-ADD_GDAL_DRIVER(TARGET gdal_BLX SOURCES blx.c blx.h blxdataset.cpp)
-GDAL_DRIVER_STANDARD_INCLUDES(gdal_BLX)
-TARGET_COMPILE_DEFINITIONS(gdal_BLX PRIVATE -DGDALDRIVER)
+add_gdal_driver(TARGET gdal_BLX SOURCES blx.c blx.h blxdataset.cpp)
+gdal_standard_includes(gdal_BLX)
+target_compile_definitions(gdal_BLX PRIVATE -DGDALDRIVER)

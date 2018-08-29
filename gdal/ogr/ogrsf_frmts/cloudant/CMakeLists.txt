@@ -15,6 +15,5 @@ if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(ogr_Cloudant PRIVATE  $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
     target_include_directories(ogr_Cloudant PRIVATE ${JSONC_INCLUDE_DIRS})
-    gdal_target_link_libraries(TARGET ogr_Cloudant LIBRARIES ${JSONC_LIBRARIES})
+    gdal_target_link_libraries(TARGET ogr_Cloudant LIBRARIES JSONC::JSONC)
 endif()
-

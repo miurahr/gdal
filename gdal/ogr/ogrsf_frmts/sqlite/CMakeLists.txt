@@ -20,7 +20,7 @@ ADD_GDAL_DRIVER(TARGET ogr_SQLite BUILTIN SOURCES
         ogrsqliteapiroutines.c
         rasterlite2_header.h
         rasterlite2.cpp)
-gdal_driver_standard_includes(ogr_SQLite)
+gdal_standard_includes(ogr_SQLite)
 
 if(HAVE_SQLITE3)
     target_include_directories(ogr_SQLite PRIVATE ${SQLITE3_INCLUDE_DIR})

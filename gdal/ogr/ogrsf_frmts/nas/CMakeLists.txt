@@ -1,7 +1,7 @@
-ADD_GDAL_DRIVER(TARGET ogr_NAS
-            SOURCES nashandler.cpp  nasreader.cpp  nasreaderp.h  ogr_nas.h  ogrnasdatasource.cpp  ogrnasdriver.cpp  ogrnaslayer.cpp  ogrnasrelationlayer.cpp
-            )
-gdal_driver_standard_includes(ogr_NAS)
+add_gdal_driver(TARGET ogr_NAS
+            SOURCES nashandler.cpp  nasreader.cpp  nasreaderp.h  ogr_nas.h  ogrnasdatasource.cpp
+                ogrnasdriver.cpp  ogrnaslayer.cpp  ogrnasrelationlayer.cpp)
+gdal_standard_includes(ogr_NAS)
 TARGET_INCLUDE_DIRECTORIES(ogr_NAS PRIVATE $<TARGET_PROPERTY:ogr_GML,SOURCE_DIR>)
 
 if(HAVE_EXPAT)
