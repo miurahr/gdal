@@ -98,7 +98,7 @@ if (HAVE_OPENCL)
 	)
 endif()
 
-if(GDAL_QHULL)
+if(GDAL_ENABLE_QHULL)
     if(GDAL_USE_QHULL_INTERNAL)
         target_compile_definitions(alg PRIVATE -DINTERNAL_QHULL)
         target_sources(alg PRIVATE internal_qhull_headers.h)

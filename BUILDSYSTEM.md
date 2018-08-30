@@ -289,6 +289,42 @@ and run multiple build and test on same environment.
 
 - MSVC 2015 for Win64
 
+Internal variables
+--------------------
+
+### Dependency check results
+
+- HAVE_*: when exist <library> then set ON to HAVE_<LIB>
+
+### Internal libraries
+
+These libraries are automatically detected and when not exist in system, enables internal one.
+
+- GDAL_USE_LIBTIFF_INTERNAL
+
+- GDAL_USE_LIBPNG_INTERNAL
+
+- GDAL_USE_LIBGEOTIFF_INTERNAL
+
+- GDAL_USE_LIBJPEG_INTERNAL
+
+- GDAL_USE_GIFLIB_INTERNAL
+
+- GDAL_USE_LIBJSONC_INTERNAL
+
+- GDAL_USE_OPENCAD_INTERNAL
+
+- GDAL_USE_QHULL_INTERNAL
+
+### Manual options for Internal libraries
+
+- GDAL_USE_LIBPCIDSK_INTERNAL: set ON to enable internal libpcidsk sdk
+
+- RENAME_INTERNAL_LIBTIFF_SYMBOLS: set ON to rename internal symbols in libtiff
+
+- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC 
+
+- SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
 
 Drivers which has special scripts
 ---------------------------------
@@ -307,4 +343,6 @@ This is not normal driver but internal library.
 These are referred from other drivers so it should be built into libgdal
 to resolve plugins dependencies.
 
+### ogr_ILI (ogr_ILI1 and ogr_ILI2) (ogr/ogrsf_frmts/ili)
 
+These are two drivers in single module.

@@ -101,9 +101,73 @@ For additional syntax and options, see the CMake website, FAQ and Wiki available
 Vagrant build automation environment
 ====================================
 
+Build targets
+=============
+
+### default targets (build by ALL)
+
+- gdal:  main target to build libgdal.so
+
+- doc: build documents and manuals
+
+- apps: build utility applications
+
+- python_bindings
+
+- php_bindings
+
+- perl_bindings
+
+- csharp_bindings
+
+- java_bindings
 
 
+### test targets
 
+- autotest: run autotest in the source
+
+- quicktest: run quick-test
+
+- test_sse
+
+- test_misc
+
+### fuzzers
+
+- fuzzers: build fuzzers programs and data
+
+### misc utilities
+
+- s57dump
+
+- ceostest
+
+- sdts2shp
+
+- hfatest
+
+- bsb2raw
+
+- aitest
+
+- dumpgeo
+
+- envisat_dump
+
+- dted_test
+
+- dgnwritetest
+
+- dgndump
+
+- osm2osm
+
+- ntfdump
+
+- testparser
+
+- test_load_virtual_ogr
 
 Appendix
 ========
@@ -119,22 +183,34 @@ Configuration parameters
 
 - USE_CPL: set ON to use CPL,Common Portability Library
 
+  * GDAL_USE_ODBC: set ON to build ODBC support in Portability Library
+
+  * GDAL_USE_XMLREFORMAT: set ON to build XML reformat feature in Portability Library.
+
 - ENABLE_GNM: set ON to use GNM driver
 
 - ENABLE_PAM: set ON to enable PAM
 
 - BUILD_APPS: set ON to build utility applications
 
-- ENABLE_PLUGIN: set ON to build drivers as plugin
+- BUILD_DOCS: set ON to build documentations
 
-- GDAL_QHULL: set ON to build QHULL support
+- GDAL_ENABLE_PLUGIN: set ON to build drivers as plugin
+
+- GDAL_ENABLE_QHULL: set ON to build QHULL support
+
+- GDAL_USE_LIBZ: set ON to use LIBZ.
+
+
+### Set Internal libraries
 
 - GDAL_USE_LIBPCIDSK_INTERNAL: set ON to enable internal libpcidsk sdk
 
 - RENAME_INTERNAL_LIBTIFF_SYMBOLS: set ON to rename internal symbols in libtiff
 
-- BUILD_DOCS: set ON to build documentations
+- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC 
 
+- SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
 
 ### Drivers
 
@@ -274,4 +350,18 @@ Configuration parameters
 
 - GDAL_ENABLE_FRMT_GRASS
 - OGR_ENABLE_GRASS
+
+### Language bindings
+
+There are 5 language bindings are integrated into gdal source tree.
+
+- SWIG_PYTHON: python bindings, default ON, it is required to run autotest
+
+- SWIG_CSHARP: c# bindings built by .NET or MONO
+
+- SWIG_PHP: PHP bindings
+
+- SWIG_JAVA: Java bindings as JNI
+
+- SWIG_PERL: Perl bindings.
 
