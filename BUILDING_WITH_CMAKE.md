@@ -199,6 +199,8 @@ Configuration parameters
 
 - GDAL_ENABLE_QHULL: set ON to build QHULL support
 
+- GDAL_USE_CURL: set ON to use CURL
+
 - GDAL_USE_LIBZ: set ON to use LIBZ.
 
 
