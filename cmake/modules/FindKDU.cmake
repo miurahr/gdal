@@ -1,16 +1,14 @@
-
 set(KDU_DIRECTORY "KDU-DIRECTORY-NOT-FOUND" CACHE STRING "KAKADU library base directory")
-set(KDU_VERSION_STRING "" CACHE STRING "KAKADU version")
 
 if(KDU_DIRECTORY)
     find_path(KDU_INCLUDE_DIR kdu_file_io.h
-              SUFFIXES /coresys/common
-              PATH ${KAKADU_DIRECTORY})
+              PATH_SUFFIX coresys/common
+              PATH ${KDU_DIRECTORY})
     find_library(KDU_LIBRARY kdu
                  PATH ${KDU_DIRECTORY})
 else()
     find_path(KDU_INCLUDE_DIR kdu_file_io.h
-              SUFFIXES /coresys/common)
+              PATH_SUFFIX coresys/common)
     find_library(KDU_LIBRARY kdu)
 endif()
 
@@ -27,12 +25,9 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(KDU_FOUND
                                   VERSION_VAR KDU_VERSION_STRING
                                   REQUIRED_VARS KDU_INCLUDE_DIR KDU_LIBRARY)
+mark_as_advanced(KDU_INCLUDE_DIR KDU_LIBRARY)
 
 if(KDU_FOUND)
-    set(HAVE_KDU ON CACHE INTERNAL "HAVE_KDU")
-    set(KDU_INCLUDE_DIRS KDU_INCLUDE_DIR)
-    set(KDU_LIBRARIES KDU_LIBRARY)
-
-else()
-    set(HAVE_KDU OFF CACHE INTERNAL "HAVE_KDU")
+    set(KDU_INCLUDE_DIRS ${KDU_INCLUDE_DIR})
+    set(KDU_LIBRARIES ${KDU_LIBRARY})
 endif()

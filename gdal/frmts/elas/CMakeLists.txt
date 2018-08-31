@@ -1,2 +1,2 @@
-GDAL_DRIVER(TARGET gdal_ELAS SOURCES elasdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_ELAS)
+add_gdal_driver(TARGET gdal_ELAS SOURCES elasdataset.cpp)
+gdal_standard_includes(gdal_ELAS)

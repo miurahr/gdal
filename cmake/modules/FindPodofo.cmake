@@ -79,3 +79,9 @@ find_library(PODOFO_LIBRARY
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(PODOFO DEFAULT_MSG PODOFO_LIBRARY PODOFO_INCLUDE_DIR)
 
+
+include(FeatureSummary)
+set_package_properties(PODOFO PROPERTIES
+                       DESCRIPTION "a free, portable C++ library which includes classes to parse PDF files and modify their contents into memory."
+                       URL "http://podofo.sourceforge.net/"
+)
