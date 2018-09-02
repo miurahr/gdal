@@ -74,6 +74,7 @@ target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_R
 add_test(NAME test-unit  COMMAND gdal_unit_test)
 set(TEST_ENV)
 list(APPEND TEST_ENV
+            LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal:$ENV{LD_LIBRARY_PATH}
             GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
             GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data)
 set_tests_properties(test-unit PROPERTIES ENVIRONMENT "${TEST_ENV}")

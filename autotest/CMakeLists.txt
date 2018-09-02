@@ -58,7 +58,7 @@ if(Python_FOUND)
     set(TEST_ENV)
     list(APPEND TEST_ENV
                 PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod
-                LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal
+                LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal:$ENV{LD_LIBRARY_PATH}
                 GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data
                 GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
                 #GDAL_DOWNLOAD_TEST_DATA=1
