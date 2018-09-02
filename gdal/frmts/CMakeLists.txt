@@ -105,7 +105,6 @@ gdal_format(pcraster "PCRaster CSF 2.0 raster file driver")
 gdal_format(gif "Graphics Interchange Format")
 
 # optioal Formats
-gdal_optional_format(fits "FIT Driver")
 gdal_optional_format(bsb "Maptech/NOAA BSB Nautical Chart Format")
 gdal_optional_format(aigrid "Arc/Info Binary Grid Format")
 gdal_optional_format(arg "ARG: Azavea Raster Grid")
@@ -121,6 +120,7 @@ gdal_optional_format(msg "Meteosat Second Generation")
 
 
 # formats with external library dependency
+gdal_dependent_format(fits "FIT Driver" "HAVE_CFITSIO")
 gdal_dependent_format(rasdaman "Rasdaman GDAL driver" "HAVE_RASDAMAN")
 gdal_dependent_format(hdf5 "Hierarchical Data Format Release 5 (HDF5)" "HAVE_HDF5")
 gdal_dependent_format(plmosaic "PLMosaic (Planet Labs Mosaics API)" "GDAL_USE_CURL")
@@ -176,7 +176,7 @@ if(GDAL_ENABLE_FRMT_ECW)
         message(STATUS "Gcc 5.1 or later detected, which introduced new C++ ABI. ECW support disabled, because ECW library use old style ABI.")
         set(GDAL_ENABLE_FRMT_ECW OFF CACHE BOOL "" FORCE)
     else()
-        gdal_format(ecw)
+        gdal_format(ecw "ERDAS JPEG2000 (.jp2)")
     endif()
 endif()
 

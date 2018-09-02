@@ -220,6 +220,9 @@ gdal_check_package(CharLS)
 gdal_find_package(BPG libbpg.h bpg)
 gdal_find_package(Crnlib crnlib.h crunch)
 gdal_find_package(IDB it.h idb)
+# TODO: implement FindRASDAMAN
+# libs: -lrasodmg -lclientcomm -lcompression -lnetwork -lraslib
+gdal_find_package(RASDAMAN rasdaman.hh raslib)
 
 # OpenJPEG's cmake-CONFIG is broken, so call module explicitly
 find_package(OpenJPEG MODULE)
