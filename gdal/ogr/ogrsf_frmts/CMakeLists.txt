@@ -96,6 +96,7 @@ ogr_dependent_driver(nas "NAS/ALKIS" "HAVE_XERCESC")
 ogr_dependent_driver(plscenes PLSCENES "HAVE_CURL")
 ogr_dependent_driver(sosi "SOSI:Systematic Organization of Spatial Information" "HAVE_SOCI")
 ogr_dependent_driver(wfs "OGC WFS service" "HAVE_CURL")
+
 ogr_optional_driver(elastic ELASTIC)
 ogr_optional_driver(idrisi IDRISI)
 ogr_optional_driver(pds "Planetary Data Systems TABLE")
@@ -109,6 +110,7 @@ endif()
 add_feature_info(ogr_GPKG OGR_ENABLE_SQLITE "GeoPackage")
 ogr_dependent_driver(osm "OpenStreetMap XML and PBF" "OGR_ENABLE_SQLITE")
 ogr_dependent_driver(vfk "Czech Cadastral Exchange Data Format" "HAVE_SQLITE3")
+ogr_dependent_driver(mvt "MVT" "HAVE_SQLITE3")
 
 # ODBC/POSTGRES/MYSQL/INGRESS/COUCHDB
 ogr_dependent_driver(amigocloud AMIGOCLOUD "HAVE_CURL")
