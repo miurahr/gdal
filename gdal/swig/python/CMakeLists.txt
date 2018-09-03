@@ -74,10 +74,16 @@ if(NumPy_FOUND)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gdal/swig/python
         DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${GDAL_SWIG_DEPENDS} ${ARRAY_INPUT}
     )
+    add_custom_command(
+             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdalnumeric.py
+             COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalnumeric.py
+                ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
+    )
 endif()
 
 add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py
+         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py
          COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
             ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
@@ -125,10 +131,11 @@ endif()
 if(NumPy_FOUND)
     add_custom_target(python_binding ALL
                   DEPENDS osgeo/_gdal.${PY_LIB_SUFFIX}
-                          osgeo/_gdal_array.${PY_LIB_SUFFIX}
-                          osgeo/_gdalconst.${PY_LIB_SUFFIX}
-                          osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
-                          osgeo/__init__.py)
+                      osgeo/_gdal_array.${PY_LIB_SUFFIX}
+                      osgeo/_gdalconst.${PY_LIB_SUFFIX}
+                      osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
+                      osgeo/gdalnumeric.py
+                      osgeo/__init__.py)
 else()
     add_custom_target(python_binding ALL
                   DEPENDS osgeo/_gdal.${PY_LIB_SUFFIX}
