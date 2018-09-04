@@ -9,8 +9,8 @@ if(HAVE_GEOS)
     gdal_target_link_libraries(TARGET ogr_MVT LIBRARIES GEOS::GEOS)
 endif()
 
-if(HAVE_SQLITE)
-    target_include_directories(ogr_MVT PRIVATE ${SQLITE_INCLUDE_DIRS})
+if(HAVE_SQLITE3)
+    target_include_directories(ogr_MVT PRIVATE ${SQLITE3_INCLUDE_DIRS})
     target_compile_definitions(ogr_MVT PRIVATE -DHAVE_SQLITE)
     gdal_target_link_libraries(TARGET ogr_MVT
                                LIBRARIES SQLITE3::SQLITE3)
