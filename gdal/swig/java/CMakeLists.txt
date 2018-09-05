@@ -83,4 +83,4 @@ foreach(tgt IN ITEMS gdal ogr osr gnm)
                         -outdir ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${tgt}/ -package "org.gdal.${tgt}")
 endforeach()
 
-add_custom_target(java_binding DEPENDS  gdaljni ogrjni osrjni gnmjni gdalconstjni)
+add_custom_target(java_binding ALL DEPENDS  gdaljni ogrjni osrjni gnmjni gdalconstjni)

@@ -223,3 +223,7 @@ add_custom_target(csharp_samples DEPENDS
 				  GDALAdjustContrast.exe GDALDatasetRasterIO.exe GDALWrite.exe GDALDatasetWrite.exe
 				  GDALColorTable.exe WKT2WKB.exe OGRGEOS.exe ReadXML.exe GDALInfo.exe GDALOverviews.exe
 				  GDALCreateCopy.exe GDALGetHistogram.exe)
+
+add_custom_target(csharp_binding ALL DEPENDS
+				  csharp_samples gdalconst_csharp.dll gdal_csharp.dll
+				  ogr_csharp.dll osr_csharp.dll)

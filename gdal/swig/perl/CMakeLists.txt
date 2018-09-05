@@ -24,7 +24,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-find_package(Perl REQUIRED)
+find_package(Perl)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL)
 include(GdalSwigBindings)
 gdal_swig_bindings(
@@ -39,7 +39,11 @@ gdal_swig_bindings(
 )
 #------------------------------------------------------------
 # HACK to compile interface source
-#   this should do by Makefile.PL
+# add_library() effects
+#    all perl wrapper c++ sources to compile into ${GDAL_PERL_WRAP_OBJ_DIR}/*.o
+# GDAL_PERL_WRAP_OBJ_DIR=CMakeFiles/swig_perl_wrap.dir/extensions
+# Generating custom Makefile.PL using above information
+#
 find_package(PerlLibs)
 add_library(swig_perl_wrap OBJECT
         ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_wrap.cpp
@@ -55,6 +59,7 @@ target_include_directories(swig_perl_wrap PRIVATE
                            $<TARGET_PROPERTY:gnm,SOURCE_DIR>
                            )
 target_compile_definitions(swig_perl_wrap PRIVATE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE)
+# Generate Makefile.PL
 set(GDAL_PERL_WRAP_OBJ_DIR "CMakeFiles/swig_perl_wrap.dir/extensions")
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Makefile.PL.in ${CMAKE_CURRENT_BINARY_DIR}/Makefile.PL @ONLY)
 #--------------------------------------------------------------
@@ -74,12 +79,12 @@ add_custom_command(
             ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OGR
         COMMAND ${PERL_EXECUTABLE} Makefile.PL INSTALL_BASE=${CMAKE_INSTALL_PREFIX}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS gdal_perl_wrappers swig_perl_wrap
+        DEPENDS swig_perl_wrap
             ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL/Const.pm
             ${CMAKE_CURRENT_BINARY_DIR}/Makefile.PL
 )
 
-add_custom_target(perl_binding
+add_custom_target(perl_binding ALL
 				  COMMAND
                       make -f Makefile_Geo__GDAL && make -f Makefile_Geo__GDAL__Const &&
                       make -f Makefile_Geo__OSR && make -f Makefile_Geo__OGR
