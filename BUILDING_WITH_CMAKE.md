@@ -82,6 +82,15 @@ $ cmake --build . --target quicktest
 $ cmake --build . --target autotest
 ```
 
+Known issues and TODOs
+----------------------
+
+- Perl binding installation fails because of dependency incompleteness.
+  Please call `cmake --build . --target perl_binding  && cmake --build . --target install`
+
+- There are not enough tests or not tested for proprietary drivers such as Oracle OCI, and Kakadu library.
+
+
 CMake options
 -------------
 
