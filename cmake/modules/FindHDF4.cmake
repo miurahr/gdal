@@ -77,10 +77,10 @@ include(FindPackageHandleStandardArgs)
 include(SelectLibraryConfigurations)
 
 # seed the initial lists of libraries to find with items we know we need
-set( HDF4_C_LIBRARY_NAMES_INIT hdf )
+set( HDF4_C_LIBRARY_NAMES_INIT hdf df dfalt )
 set( HDF4_F90_LIBRARY_NAMES_INIT hdf_f90cstub ${HDF4_C_LIBRARY_NAMES_INIT} )
 set( HDF4_FORTRAN_LIBRARY_NAMES_INIT df_fortran ${HDF4_F90_LIBRARY_NAMES_INIT} )
-set( HDF4_MFHDF_LIBRARY_NAMES_INIT mfhdf ${HDF4_C_LIBRARY_NAMES_INIT})
+set( HDF4_MFHDF_LIBRARY_NAMES_INIT mfhdf mfhdfalt ${HDF4_C_LIBRARY_NAMES_INIT})
 set( HDF4_XDR_LIBRARY_NAMES_INIT xdr ${HDF4_MFHDF_LIBRARY_NAMES_INIT})
 set( HDF4_FORTRAN_MF_90_LIBRARY_NAMES_INIT mfhdf_f90cstub ${HDF4_FORTRAN_LIBRARY_NAMES_INIT} )
 set( HDF4_FORTRAN_MF_LIBRARY_NAMES_INIT mfhdf_fortran ${HDF4_FORTRAN_MF_90_LIBRARY_NAMES_INIT} )
@@ -119,14 +119,14 @@ if(HDF4_INCLUDE_DIR)
                 set( THIS_LIBRARY_SEARCH_DEBUG ${LIB}d )
                 set( THIS_LIBRARY_SEARCH_RELEASE ${LIB} )
             endif()
-            find_library(_HDF4_${LIB}_LIBRARY_DEBUG
+            find_library( HDF4_${LIB}_LIBRARY_DEBUG
                 NAMES ${THIS_LIBRARY_SEARCH_DEBUG}
                 HINTS ${HDF4_${LANGUAGE}_LIBRARY_DIRS}
-                PATH_SUFFIXES lib Lib )
-            find_library(_HDF4_${LIB}_LIBRARY_RELEASE
+                         )
+            find_library( HDF4_${LIB}_LIBRARY_RELEASE
                 NAMES ${THIS_LIBRARY_SEARCH_RELEASE}
                 HINTS ${HDF4_${LANGUAGE}_LIBRARY_DIRS}
-                PATH_SUFFIXES lib Lib )
+                         )
             select_library_configurations( HDF4_${LIB} )
             if(HDF4_${LIB}_LIBRARY)
                 list(APPEND HDF4_LIBRARY ${HDF4_${LIB}_LIBRARY})
