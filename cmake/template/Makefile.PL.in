@@ -82,7 +82,7 @@ sub get_config {
                 $INC .= $_;
             }
             if (/CONFIG_GNM_ENABLED/ and /yes/) {
-                $objects->{'Geo::GNM'} = 'gnm_wrap.o';
+                $objects->{'Geo::GNM'} = "$wrap_dir/gnm_wrap.cpp.o";
                 $INC .= " -I$source_tree/gnm ";
             }
         }
