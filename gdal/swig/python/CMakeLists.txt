@@ -146,5 +146,7 @@ else()
                           osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
                           osgeo/__init__.py)
 endif()
-install(DIRECTORY osgeo DESTINATION ${Python_SITEARCH})
 
+if(Python_SITEARCH)
+    install(DIRECTORY osgeo DESTINATION ${Python_SITEARCH})
+endif()
