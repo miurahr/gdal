@@ -26,6 +26,7 @@
 
 find_package(Perl)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Geo/GDAL)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL)
 include(GdalSwigBindings)
 gdal_swig_bindings(
 		BINDING perl
