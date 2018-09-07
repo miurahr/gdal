@@ -115,7 +115,7 @@ foreach(tgt IN ITEMS block-cache-1 block-cache-2 block-cache-3 block-cache-4 blo
     set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 macro(gdal_autotest_target _target testlabel _source options)
-    if(NOT CMAKE_CROSSCOMPILING)
+    if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
         gdal_test_target(${_target} ${_source})
         add_test(NAME ${testlabel}
             COMMAND ${_target} ${options})
