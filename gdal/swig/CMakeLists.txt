@@ -31,19 +31,19 @@ set(GDAL_SWIG_COMMON_INTERFACE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpl.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpl_exceptions.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Dataset.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/Driver.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdal.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdal_array.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdal_typemaps.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/gnm.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/MajorObject.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/ogr.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/ogr_error_map.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/Operations.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/osr.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/RasterAttributeTable.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/Transform.i
-                 ${GDAL_ROOT_SOURCE_DIR}/swig/include/XMLNode.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Driver.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gdal.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gdal_array.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gdal_typemaps.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gnm.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/MajorObject.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ogr.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ogr_error_map.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Operations.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/osr.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/RasterAttributeTable.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Transform.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/XMLNode.i
 )
 
 include(CMakeDependentOption)

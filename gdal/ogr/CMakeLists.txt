@@ -105,9 +105,8 @@ add_library(ogr OBJECT
 )
 include(GdalStandardIncludes)
 gdal_standard_includes(ogr)
-target_include_directories(ogr PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
+target_include_directories(ogr PRIVATE $<TARGET_PROPERTY:geojson,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
                            )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogr>)
 target_compile_definitions(ogr PRIVATE -DHAVE_MITAB)
@@ -132,9 +131,10 @@ endif()
 if(GDAL_USE_LIBZ)
     target_compile_definitions(ogr PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
     if(GDAL_USE_LIBZ_INTERNAL)
-        target_include_directories(ogr PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+        target_include_directories(ogr PRIVATE
+                                   $<TARGET_PROPERTY:libz,SOURCE_DIR>)
     else()
-        target_include_directories(ogr PRIVATE $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+        target_include_directories(ogr PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_compile_definitions(ogr PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
         if(MSVC)
             target_compile_definitions(ogr PRIVATE -DZLIB_DLL)
@@ -162,7 +162,7 @@ if(HAVE_JSONC)
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARY})
 else()
     if(GDAL_USE_LIBJSONC_INTERNAL)
-        target_include_directories(ogr PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/geojson/libjson>)
+        target_include_directories(ogr PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
     endif()
 endif()
 

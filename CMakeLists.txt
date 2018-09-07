@@ -118,12 +118,6 @@ include(cotire)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
 
-################################################################
-# set common variables
-# WARN: these will be deprecated in future
-set(GDAL_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gdal)
-set(GDAL_ROOT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gdal)
-
 # template files path
 set(GDAL_CMAKE_TEMPLATE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/template)
 

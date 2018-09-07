@@ -90,8 +90,8 @@ add_custom_command(
 			-I${CMAKE_SOURCE_DIR}/gdal -c++ -csharp -o ogr_wrap.cpp ${CMAKE_SOURCE_DIR}/gdal/swig/include/ogr.i
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ogr
 		DEPENDS ${GDAL_SWIG_COMMON_INCLUDE}
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/typemaps_csharp.i
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/ogr_csharp.i
+			${CMAKE_CURRENT_SOURCE_DIR}/../include/csharp/typemaps_csharp.i
+			${CMAKE_CURRENT_SOURCE_DIR}/../include/csharp/ogr_csharp.i
 )
 set_source_files_properties(ogr_wrap PROPERTIES GENERATED 1)
 add_library(ogr_wrap OBJECT ${CMAKE_CURRENT_BINARY_DIR}/ogr/ogr_wrap.cpp)

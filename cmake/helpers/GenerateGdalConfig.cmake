@@ -46,14 +46,14 @@ function(generate_gdal_config)
     string(REPLACE ";" " " CONFIG_FORMATS "${_GDAL_FORMATS} ${_OGR_FORMATS}")
 
     # Generate gdal-config
-    add_custom_target(gdal_config ALL DEPENDS ${GDAL_ROOT_BINARY_DIR}/apps/gdal-config)
+    add_custom_target(gdal_config ALL DEPENDS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal-config.in ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/gdal-config @ONLY)
     file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/gdal-config
-            DESTINATION ${GDAL_ROOT_BINARY_DIR}/apps/
+            DESTINATION ${CMAKE_BINARY_DIR}/gdal/apps/
             FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
     if(UNIX AND NOT MACOSX_FRAMEWORK)
-        install(PROGRAMS ${GDAL_ROOT_BINARY_DIR}/apps/gdal-config
+        install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
                 DESTINATION bin
                 COMPONENT applications)
     endif()

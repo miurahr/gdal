@@ -199,7 +199,7 @@ include(GenerateGdalConfig)
 generate_gdal_config()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/"
         DESTINATION ${INSTALL_SHARE_DIR}/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
         COMPONENT libraries FILES_MATCHING PATTERN "*.*")
 

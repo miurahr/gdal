@@ -64,7 +64,7 @@
 #      That should be bulit into libgdal.
 #
 #   add_gdal_driver(TARGET gdal_ADRG SOURCES foo.cpp)
-#   target_include_directories(gdal_ADRG PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/iso8211>)
+#   target_include_directories(gdal_ADRG PRIVATE $<TARGET_PROPERTY:iso8211,SOURCE_DIR>)
 #
 # ex.3  Driver which is depend on some external libraries
 #       These definitions are detected in cmake/macro/CheckDependentLibraries.cmake

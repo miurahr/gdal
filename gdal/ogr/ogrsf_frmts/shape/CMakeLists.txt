@@ -13,7 +13,7 @@ add_gdal_driver(TARGET ogr_Shape SOURCES
         sbnsearch.c
                 BUILTIN)
 gdal_standard_includes(ogr_Shape)
-target_include_directories(ogr_Shape PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>)
+target_include_directories(ogr_Shape PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)
 target_compile_definitions(ogr_Shape PRIVATE -DDSHAPELIB_DLLEXPORT -DSAOffset=vsi_l_offset)
 if(USE_CPL)
     target_compile_definitions(ogr_Shape PRIVATE -DUSE_CPL)

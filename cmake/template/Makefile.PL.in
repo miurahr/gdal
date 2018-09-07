@@ -5,10 +5,10 @@ use ExtUtils::MakeMaker;
 use Config;
 use Cwd;
 
-my $source_tree = '@GDAL_ROOT_SOURCE_DIR@';
-my $build_tree = '@GDAL_ROOT_BINARY_DIR@';
+my $source_tree = '@CMAKE_SOURCE_DIR@/gdal';
+my $build_tree = '@CMAKE_BINARY_DIR@/gdal';
 my $wrap_dir = '@GDAL_PERL_WRAP_OBJ_DIR@';
-my $config = "@GDAL_ROOT_BINARY_DIR@/apps/gdal-config";
+my $config = "@CMAKE_BINARY_DIR@/gdal/apps/gdal-config";
 push @ARGV, "INSTALLSITEMAN1DIR=@INSTALL_PREFIX@/@INSTALL_BASE@/man1";
 push @ARGV, "INSTALLSITEMAN3DIR=@INSTALL_PREFIX@/@INSTALL_BASE@/man3";
 
