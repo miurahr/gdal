@@ -41,109 +41,19 @@ if(NOT Python_FOUND)
     return()
 endif()
 
-include(GdalSwigBindings)
-
 INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/osgeo/)
 
-GDAL_SWIG_BINDINGS(
-        BINDING python
-        ARGS -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}/osgeo
-        OUTPUT
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdal.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdalconst.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdalnumeric.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gnm.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/ogr.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/osr.py
-)
-
-# gdal_array_wrap.cpp when NumPy exist
-find_package(NumPy)
-if(NumPy_FOUND)
-    set(ARRAY_INPUT  ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdal_array.i )
-    set(ARRAY_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_array_wrap.cpp )
-    set(GDAL_SWIG_DEPENDS
-            ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/typemaps_python.i
-    )
-    set(SWIG_ARGS -Wall  -I${GDAL_ROOT_SOURCE_DIR}/swig/include
-                -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs
-                -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}/osgeo)
-    add_custom_command(
-        OUTPUT  ${ARRAY_OUTPUT}
-        COMMAND ${SWIG_EXECUTABLE} ${SWIG_ARGS} ${SWIG_DEFINES} -I${CMAKE_SOURCE_DIR}/gdal -c++ -python -o ${ARRAY_OUTPUT} ${ARRAY_INPUT}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gdal/swig/python
-        DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${GDAL_SWIG_DEPENDS} ${ARRAY_INPUT}
-    )
-    add_custom_command(
-             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdalnumeric.py
-             COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalnumeric.py
-                ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
-    )
-endif()
-
-add_custom_command(
-         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py
-         COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
-)
-
-set(PY_LIB_SUFFIX so)
-if(WIN32 AND NOT CYGWIN)
-    set(PY_LIB_SUFFIX pyd)
-    add_definitions(-D__MSVCRT_VERSION__=0x0601)
-endif()
-if(APPLE)
-    set(PY_LIB_SUFFIX dylib)
-endif()
-
-macro(py_ext name source)
-    add_library(${name} SHARED extensions/${source})
-    set_target_properties(${name} PROPERTIES PREFIX "")
-    gdal_standard_includes(${name})
-    target_include_directories(${name} PRIVATE
-                               ${Python_INCLUDE_DIRS}
-                               $<TARGET_PROPERTY:appslib,SOURCE_DIR>
-                               $<TARGET_PROPERTY:gnm,SOURCE_DIR>
-                               )
-    if(WIN32 AND NOT CYGWIN)
-        set_target_properties(${name} PROPERTIES SUFFIX ".pyd")
-    endif()
-    target_link_libraries(${name} PRIVATE ${Python_LIBRARIES} $<TARGET_NAME:gdal>)
-    add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/${name}.${PY_LIB_SUFFIX}
-            COMMAND ${CMAKE_COMMAND} -E copy
-               ${name}.${PY_LIB_SUFFIX} osgeo/
-            DEPENDS ${name}
-    )
-endmacro()
-
-py_ext(_gdal gdal_wrap.cpp)
-py_ext(_gdalconst gdalconst_wrap.c)
-py_ext(_gnm gnm_wrap.cpp)
-py_ext(_ogr ogr_wrap.cpp)
-py_ext(_osr osr_wrap.cpp)
-install(TARGETS _gdal _gdalconst _gnm _osr _ogr DESTINATION ${Python_SITEARCH}/osgeo)
-if(NumPy_FOUND)
-    py_ext(_gdal_array gdal_array_wrap.cpp)
-    install(TARGETS _gdal_array DESTINATION ${Python_SITEARCH}/osgeo)
-endif()
+add_subdirectory(osgeo)
 
 if(NumPy_FOUND)
     add_custom_target(python_binding ALL
-                  DEPENDS osgeo/_gdal.${PY_LIB_SUFFIX}
-                      osgeo/_gdal_array.${PY_LIB_SUFFIX}
-                      osgeo/_gdalconst.${PY_LIB_SUFFIX}
-                      osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
-                      osgeo/gdalnumeric.py
+                      DEPENDS _gdal _gdalconst _gnm _ogr _osr
+                      _gdal_array
                       osgeo/__init__.py)
 else()
     add_custom_target(python_binding ALL
-                  DEPENDS osgeo/_gdal.${PY_LIB_SUFFIX}
-                          osgeo/_gdalconst.${PY_LIB_SUFFIX}
-                          osgeo/_gnm.${PY_LIB_SUFFIX} osgeo/_ogr.${PY_LIB_SUFFIX} osgeo/_osr.${PY_LIB_SUFFIX}
+                  DEPENDS _gdal _gdalconst _gnm _ogr _osr
                           osgeo/__init__.py)
 endif()
 
