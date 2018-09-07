@@ -136,7 +136,7 @@ IF(DOXYGEN_FOUND)
               "apps frmts frmts/jdem"
               )
       set(GDAL_DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/grid)
-      set(GDAL_DOXYGEN_LAYOUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenLayout.xml)
+      set(GDAL_DOXYGEN_LAYOUT_FILE ${CMAKE_SOURCE_DIR}/gdal/DoxygenLayout.xml)
       set(GDAL_GENERATE_MAN "NO")
       configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_main)
       add_custom_command(
