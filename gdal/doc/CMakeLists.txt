@@ -100,7 +100,7 @@ IF(DOXYGEN_FOUND)
                            *.dox"
       )
       set(GDAL_GENERATE_MAN "NO")
-      configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile_br)
+      configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_br)
       add_custom_command(
               OUTPUT ${TARGET_HTML_DIR}/index_br.html
               COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_br
