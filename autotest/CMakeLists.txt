@@ -92,8 +92,11 @@ endif()
 #endif()
 #endif()
 
+get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
 add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*'
               DEPENDS
+                  gdal
+                  ${_plugins}
                 gdal_unit_test
                 testblockcache
                 testcopywords
