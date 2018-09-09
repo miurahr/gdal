@@ -188,6 +188,9 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     target_link_libraries(gdal PRIVATE wsock32 ws2_32 psapi)
 endif()
 
+get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
+add_custom_target(gdal_plugins DEPENDS ${_plugins})
+
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
