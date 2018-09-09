@@ -50,7 +50,7 @@ if(ENABLE_GNM)
 	add_library(swig_perl_wrap OBJECT
         ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_wrap.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdalconst_wrap.c
-			${CMAKE_CURRENT_BINARY_DIR}/extensions/gnm_wrap.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/extensions/gnm_wrap.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/extensions/ogr_wrap.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/extensions/osr_wrap.cpp
 	)
@@ -95,22 +95,30 @@ add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL/GDAL_const.so
         COMMAND make -f Makefile_Geo__GDAL__Const
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GDAL__Const gdal)
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GDAL__Const gdal
+		${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL.so
+)
 add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL_osr.so
 		COMMAND make -f Makefile_Geo__OSR
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OSR gdal)
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OSR gdal
+		${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL.so
+)
 add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL_ogr.so
 		COMMAND	make -f Makefile_Geo__OGR
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OGR gdal)
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__OGR gdal
+		${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL.so
+)
 add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL_gnm.so
 		COMMAND	make -f Makefile_Geo__GNM
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GNM gdal)
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Makefile_Geo__GNM gdal
+		${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL.so
+)
 if(ENABLE_GNM)
     add_custom_target(perl_binding ALL
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/blib/arch/Geo/GDAL.so
