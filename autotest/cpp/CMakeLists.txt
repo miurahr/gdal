@@ -90,17 +90,17 @@ endmacro()
 
 gdal_test_target(testblockcache testblockcache.cpp)
 
-add_test(NAME block-cache-1
+add_test(NAME test-block-cache-1
                 COMMAND testblockcache -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES)
-add_test(NAME block-cache-2
+add_test(NAME test-block-cache-2
                 COMMAND testblockcache -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES --config GDAL_RB_LOCK_TYPE SPIN)
-add_test(NAME block-cache-3
+add_test(NAME test-block-cache-3
                 COMMAND testblockcache -check -co TILED=YES -migrate)
-add_test(NAME block-cache-4
+add_test(NAME test-block-cache-4
                 COMMAND testblockcache -check -memdriver)
-add_test(NAME block-cache-5
+add_test(NAME test-block-cache-5
                 COMMAND testblockcache --config GDAL_BAND_BLOCK_CACHE HASHSET -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES)
-add_test(NAME block-cache-6
+add_test(NAME test-block-cache-6
                 COMMAND testblockcache --config GDAL_BAND_BLOCK_CACHE HASHSET -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES --config GDAL_RB_LOCK_TYPE SPIN)
 
 gdal_test_target(testsse1 testsse.cpp)
@@ -111,7 +111,8 @@ gdal_test_target(testsse3 testsse.cpp)
 add_test(NAME testsse1 COMMAND testsse1)
 add_test(NAME testsse2 COMMAND testsse2)
 add_test(NAME testsse3 COMMAND testsse3)
-foreach(tgt IN ITEMS block-cache-1 block-cache-2 block-cache-3 block-cache-4 block-cache-5 testsse1 testsse2 testsse3)
+foreach(tgt IN ITEMS test-block-cache-1 test-block-cache-2 test-block-cache-3 test-block-cache-4 test-block-cache-5
+                     testsse1 testsse2 testsse3)
     set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 macro(gdal_autotest_target _target testlabel _source options)

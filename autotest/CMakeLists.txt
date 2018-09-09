@@ -92,7 +92,7 @@ endif()
 #endif()
 #endif()
 
-add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*|^block-.*'
+add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*'
               DEPENDS
                 gdal_unit_test
                 testblockcache
