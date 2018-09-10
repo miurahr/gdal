@@ -36,13 +36,6 @@ if(NumPy_FOUND)
     )
 endif()
 
-add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/__init__.py
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_SOURCE_DIR}
-            ${CMAKE_CURRENT_BINARY_DIR}
-)
-
 macro(py_ext name source)
     # FIXME: current script builds from generated sources
     add_library(${name} SHARED ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/${source})
@@ -68,14 +61,12 @@ py_ext(_gdalconst gdalconst_wrap.c)
 py_ext(_gnm gnm_wrap.cpp)
 py_ext(_ogr ogr_wrap.cpp)
 py_ext(_osr osr_wrap.cpp)
+install(TARGETS _gdal _gdalconst _gnm _osr _ogr DESTINATION ${Python_SITEARCH}/osgeo)
 
 if(NumPy_FOUND)
     py_ext(_gdal_array gdal_array_wrap.cpp)
+    install(TARGETS _gdal_array DESTINATION ${Python_SITEARCH}/osgeo)
 endif()
 
-if(Python_SITEARCH)
-    install(TARGETS _gdal _gdalconst _gnm _osr _ogr DESTINATION ${Python_SITEARCH}/osgeo)
-    if(NumPy_FOUND)
-        install(TARGETS _gdal_array DESTINATION ${Python_SITEARCH}/osgeo)
-    endif()
-endif()
+install(FILES __init__.py gdal.py gdalconst.py gdal_array.py gdalnumeric.py gnm.py ogr.py osr.py
+        DESTINATION ${Python_SITELIB}/osgeo)

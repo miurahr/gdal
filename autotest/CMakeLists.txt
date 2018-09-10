@@ -35,16 +35,7 @@ set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(cpp)
 
-if(CMAKE_VERSION VERSION_LESS 3.12)
-    find_package(PythonInterp)
-    find_package(PythonLibs)
-    if(PythonInterp_FOUND AND PythonLibs_FOUND)
-        set(Python_FOUND ON)
-        set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
-    endif()
-else()
-    find_package(Python COMPONENTS Interpreter Development)
-endif()
+find_package(Python COMPONENTS Interpreter Development)
 
 if(Python_FOUND)
     add_test(gcore-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
@@ -55,21 +46,40 @@ if(Python_FOUND)
     add_test(utilities-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
     add_test(pyscripts-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
     get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
-    set(TEST_ENV)
-    list(APPEND TEST_ENV
-                PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python:${CMAKE_CURRENT_SOURCE_DIR}/pymod
-                LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal:$ENV{LD_LIBRARY_PATH}
-                GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data
-                GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
-                #GDAL_DOWNLOAD_TEST_DATA=1
-#                   #GDAL_SLOW_TESTSA=1
+    set(_TEST_ENV)
+    if(WIN32)
+        set(_SEP ";")
+    else()
+        set(_SEP ":")
+    endif()
+    list(APPEND _TEST_ENV
+                "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
+                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python${_SEP}${CMAKE_CURRENT_SOURCE_DIR}/pymod"
+                "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
+                "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
+                "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
         )
-    set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
-                         PROPERTIES
-                         ENVIRONMENT "${TEST_ENV}"
-                         # run_all.py enforce us to run on a directory where script exist.
-                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                         TIMEOUT 300)
+    option(AUTOTEST_DOWNLOAD_TEST_DATA "Autotest to download test data" OFF)
+    if(AUTOTEST_DOWNLOAD_TEST_DATA)
+        list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=1)
+    endif()
+    option(AUTOTEST_SLOW_TEST "Autotest to run slow test" OFF)
+    if(AUTOTEST_SLOW_TEST)
+        list(APPEND _TEST_ENV GDAL_SLOW_TESTSA=1)
+        set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
+                             PROPERTIES
+                             ENVIRONMENT "${_TEST_ENV}"
+                             # run_all.py enforce us to run on a directory where script exist.
+                             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                             TIMEOUT 600)
+     else()
+        set_tests_properties(gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
+                             PROPERTIES
+                             ENVIRONMENT "${_TEST_ENV}"
+                             # run_all.py enforce us to run on a directory where script exist.
+                             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                             TIMEOUT 360)
+    endif()
     add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -I 1,7
                        DEPENDS
                        testblockcache
@@ -79,6 +89,8 @@ if(Python_FOUND)
                        testsse1
                        testsse2
                        testsse3)
+    unset(_TEST_ENV)
+    unset(_SEP)
 endif()
 
 #if(ANDROID)
