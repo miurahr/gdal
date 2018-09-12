@@ -188,7 +188,12 @@ if(SQLITE3_FOUND)
 endif()
 
 gdal_check_package(SPATIALITE)
-option(SPATIALITE_AMALGAMATION "Use amalgamation for spatialite(for windows)" OFF)
+if(WIN32)
+    set(SPATIALITE_AMALGAMATION_DEFAULT ON)
+else()
+    set(SPATIALITE_AMALGAMATION_DEFAULT OFF)
+endif()
+option(SPATIALITE_AMALGAMATION "Use amalgamation for spatialite(for windows)" ${SPATIALITE_AMALGAMATION_DEFAULT})
 mark_as_advanced(SPATIALITE_AMALGAMATION)
 
 # 3rd party libraries
