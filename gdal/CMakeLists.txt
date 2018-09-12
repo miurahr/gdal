@@ -49,7 +49,6 @@ endif()
 # generate ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_version.h
 # and set GDAL_VERSION variable
 include(GdalVersion)
-set(GDAL_SOVERSION 20 CACHE STRING "")
 
 ################################################################
 # find 3rd party libraries
