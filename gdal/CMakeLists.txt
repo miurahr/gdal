@@ -151,7 +151,9 @@ endif()
 # Core components
 add_subdirectory(alg)
 add_subdirectory(ogr)
-add_subdirectory(gnm)
+if(ENABLE_GNM)
+    add_subdirectory(gnm)
+endif()
 add_subdirectory(gcore)
 
 # Raster/Vector drivers (built-in and plugins)

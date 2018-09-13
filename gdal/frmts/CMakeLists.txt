@@ -183,7 +183,11 @@ endif()
 ###############################################################
 # Register all frmt drivers according to FRMT_<driver> flags
 gdal_standard_includes(gdal_frmts)
+if(ENABLE_GNM)
+    target_compile_definitions(gdal_frmts PRIVATE -DGNM_ENABLED)
+endif()
 target_include_directories(gdal_frmts PRIVATE
+                           $<TARGET_PROPERTY:gnm_frmts,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>)
