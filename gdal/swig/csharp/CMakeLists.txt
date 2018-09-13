@@ -61,6 +61,7 @@ add_custom_command(
                 gdal/CPLErr.cs                      gdal/PaletteInterp.cs
                 gdal/ColorEntry.cs                  gdal/RATFieldType.cs
                 gdal/ColorInterp.cs                 gdal/RATFieldUsage.cs
+                gdal/RATTableType.cs
                 gdal/ColorTable.cs                  gdal/RIOResampleAlg.cs
                 gdal/DataType.cs                    gdal/RWFlag.cs
                 gdal/Dataset.cs                     gdal/RasterAttributeTable.cs
