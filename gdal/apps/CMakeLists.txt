@@ -107,13 +107,13 @@ if(BUILD_APPS)
         if (CMAKE_SYSTEM_NAME MATCHES "Windows")
             target_link_libraries(${UTILCMD} PRIVATE wsock32 ws2_32 psapi)
         endif()
-        install(TARGETS ${UTILCMD}
-                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
     endforeach()
+    install(TARGETS ${APPS_TARGETS}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
     target_include_directories(gnmanalyse PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
     target_include_directories(gnmmanage PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
 
@@ -146,4 +146,4 @@ if(BUILD_APPS)
                                    )
         target_link_libraries(${UTILCMD} PRIVATE $<TARGET_NAME:gdal>)
     endforeach()
-endif()
+ endif()
