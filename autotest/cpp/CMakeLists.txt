@@ -73,6 +73,9 @@ target_include_directories(gdal_unit_test PRIVATE
 target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
 add_test(NAME test-unit  COMMAND gdal_unit_test)
 set(TEST_ENV)
+if(MINGW)
+    list(APPEND TEST_ENV SKIP_MEM_INTENSIVE_TEST=YES)
+endif()
 list(APPEND TEST_ENV
             LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal:$ENV{LD_LIBRARY_PATH}
             GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins
