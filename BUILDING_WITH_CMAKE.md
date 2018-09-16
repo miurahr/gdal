@@ -368,6 +368,9 @@ There are 5 language bindings are integrated into gdal source tree.
 
 - SWIG_PYTHON: python bindings, default ON, it is required to run autotest
 
+  * PYTHON_VERSION: specify what version to build module. if not specified, preferably search python3
+    then see python2.
+
 - SWIG_CSHARP: c# bindings built by .NET or MONO
 
 - SWIG_PHP: PHP bindings

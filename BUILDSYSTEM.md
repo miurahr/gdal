@@ -14,13 +14,73 @@ It is difficult to manage in large project about implicit definitions.
 
 Other than previous cmake versions, modern cmake style controls scope.
 
-Here is a modern cmake guide.
-
+There are some modern cmake guides.
 * https://rix0r.nl/blog/2015/08/13/cmake-guide/
-
 * https://cliutils.gitlab.io/modern-cmake/
-
 * https://unclejimbo.github.io/2018/06/08/Modern-CMake-for-Library-Developers/
+
+Development status
+------------------
+
+- Under active development
+- Support building PLUGIN drivers
+- Successfully build for
+  * GCC4.8 on trusty
+  * Clang5 on trusty
+  * Clang with plugin enable on trusty
+  * Cross compile with android NDK.
+  * Cross compile by mingw-w64
+    * Test mingw binary with wine.
+  * XCode on mac os X
+  * Visual Studio 2015 on Windows 64bit
+  * Visual Studio 2017 on Windows 32bit
+- Implement all OSS drivers.
+- Work on current master branch.
+- Bindings: c#, perl, php and python.
+- All quick tests are passed on all built platforms.
+
+Known issues and ToDo things
+----------------------------
+
+- Issues
+  * Mingw: error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
+  * Python: No installs backward compatibility modules
+    only install files under osgeo folder.
+  * Global variables and definitions still exists;
+    * definitions: -DCPL_LSB -D_FORTIFY_SOURCE
+    * variables: HAVE_*
+  * Cannot generate gdal-config properly.
+    * `gdal-config -libs` returns incorrect list.
+  * Several autotest cases are not passed yet
+    * tiff, hdf4, hdf5, srs_proj4_epsg, grib, gpkg, pds, hfa
+      mitab, geojson, netcdf, osm, avc, vdv, sqlite, etc.
+  * Some drivers are always built-in and cannot build as plugin,
+    because of dependency from other components;
+    ex. geojson
+  * GRASS driver cannot build at a same time of libgdal.
+    It is because circular dependency problem exist.
+    
+- ToDo
+  * Test and fix for proprietary drivers
+    * Oracle Spatial GeoRaster
+    * Kakadu
+    * LULA
+    * ESRI ArcSDE
+    * Multi-resolution Seamless Image Database
+    * ERDAS JPEG2000
+    * ogr FME driver
+    * Oracle OCI
+    * IBM DB2
+    * MSSQL spatial
+  * build for iOS
+    * prepare platform configuration file
+    * CI test on Travis
+  * Better documentations.
+  * Add more package/module information for configuration summary.
+  * Improve cmake modules to support better modern cmake style
+    and propose to upstream.
+  * Build and install multiple python version binding
+  * Packaging.
 
 Directory structure
 -------------------
@@ -29,8 +89,12 @@ Directory structure
 <root>
  - cmake:   cmake modules and helper scripts
    - helpers:  helpers for gdal compilation
-   - init:  inital cmake cache configuration examples and toolschain files for cross compilation
+   - configurations:  inital cmake cache configuration examples
+   - platforms: toolschain files for cross compilation
    - modules:  generic cmake modules to find dependency libraries
+     - 3.13:
+     - 3.12: backported modules from specified cmake version
+     - 3.9:
    - templates: template source files to generate when configure
  - autotest: test suites
  - gdal: source files
@@ -130,6 +194,7 @@ cmake \
   -DCMAKE_C_COMPILER_LAUNCHER=ccache \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DSWIG_PYTHON=ON \
+  -DPYTHON_VERSION=2.7 \  
   -DSWIG_PERL=ON \
   -DSWIG_JAVA=ON \
   -DSWIG_CSHARP=ON \
