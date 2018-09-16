@@ -35,7 +35,13 @@ set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(cpp)
 
-find_package(Python COMPONENTS Interpreter Development)
+if(NOT DEFINED Python_FOUND)
+    if(PYTHON_VERSION)
+        find_package(Python ${PYTHON_VERSION} COMPONENTS Interpreter)
+    else()
+        find_package(Python COMPONENTS Interpreter)
+    endif()
+endif()
 
 if(Python_FOUND)
     add_test(gcore-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)

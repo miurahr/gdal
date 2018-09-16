@@ -25,12 +25,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-find_package(Python COMPONENTS Interpreter Development)
-
-if(NOT Python_FOUND)
-    return()
-endif()
-
+find_package(NumPy)
 INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS})
 
 add_subdirectory(osgeo)

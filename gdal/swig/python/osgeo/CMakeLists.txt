@@ -20,7 +20,6 @@ GDAL_SWIG_BINDINGS(
 )
 
 # gdal_array_wrap.cpp when NumPy exist
-find_package(NumPy)
 if(NumPy_FOUND)
     set(ARRAY_INPUT  ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdal_array.i )
     set(ARRAY_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gdal_array_wrap.cpp )
@@ -34,12 +33,47 @@ if(NumPy_FOUND)
         DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${ARRAY_INPUT}
                 ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/typemaps_python.i
     )
+
+    # generate wrapper sources
+    add_custom_target(pygen
+                      DEPENDS
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdal.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdal_array.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdalconst.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdalnumeric.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gnm.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/ogr.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/osr.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gdal_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gdal_array_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gdalconst_wrap.c
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gnm_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/ogr_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/osr_wrap.cpp
+                      )
+else()
+    add_custom_target(pygen
+                      DEPENDS
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdal.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdalconst.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gdalnumeric.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/gnm.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/ogr.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/osr.py
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gdal_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gdalconst_wrap.c
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/gnm_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/ogr_wrap.cpp
+                      ${CMAKE_CURRENT_BINARY_DIR}/../extensions/osr_wrap.cpp
+                      )
 endif()
 
 macro(py_ext name source)
     # FIXME: current script builds from generated sources
     add_library(${name} SHARED ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/${source})
-    set_target_properties(${name} PROPERTIES PREFIX "")
+    set_target_properties(${name} PROPERTIES
+                          PREFIX ""
+                          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/)
     gdal_standard_includes(${name})
     target_include_directories(${name} PRIVATE
                                ${Python_INCLUDE_DIRS}
@@ -65,6 +99,7 @@ install(TARGETS _gdal _gdalconst _gnm _osr _ogr DESTINATION ${Python_SITEARCH}/o
 
 if(NumPy_FOUND)
     py_ext(_gdal_array gdal_array_wrap.cpp)
+    target_include_directories(_gdal_array PRIVATE ${NumPy_INCLUDE_DIR})
     install(TARGETS _gdal_array DESTINATION ${Python_SITEARCH}/osgeo)
 endif()
 
