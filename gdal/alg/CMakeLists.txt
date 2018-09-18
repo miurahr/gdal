@@ -65,13 +65,16 @@ gdal_standard_includes(alg)
 target_include_directories(alg PRIVATE $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR> $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 
 if(HAVE_GEOS)
-	get_filename_component(GEOS_ROOT ${GEOS_INCLUDE_DIR} PATH)
-    target_include_directories(alg PRIVATE
-							   ${GEOS_INCLUDE_DIR}
-							   ${GEOS_ROOT}/capi
-							   ${GEOS_ROOT})
+    target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS}
+							   ${GEOS_INCLUDE_DIRS}/capi)
 	target_compile_definitions(alg PRIVATE -DHAVE_GEOS=1)
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE GEOS::GEOS)
+endif()
+
+if(HAVE_SFCGAL)
+	target_include_directories(alg PRIVATE ${SFCGAL_INCLUDE_DIRS})
+	target_compile_definitions(alg PRIVATE -DHAVE_SFCGAL=1)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${SFCGAL_LIBRARIES})
 endif()
 
 if(HAVE_ARMADILLO)
@@ -88,7 +91,7 @@ if(ENABLE_PAM)
 	target_compile_definitions(alg PRIVATE -DPAM_ENABLED)
 endif()
 
-if (HAVE_OPENCL)
+if(HAVE_OPENCL)
 	target_include_directories(alg PRIVATE ${OpenCL_INCLUDE_DIRS})
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${OpenCL_LIBRARIES})
 	target_compile_definitions(alg PRIVATE -DHAVE_OPENCL)
@@ -96,6 +99,11 @@ if (HAVE_OPENCL)
 		gdalwarpkernel_opencl.h
 		gdalwarpkernel_opencl.cpp
 	)
+endif()
+
+if(HAVE_PROJ4)
+    target_include_directories(alg PRIVATE ${PROJ4_INCLUDE_DIRS})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${PROJ4_LIBRARYES})
 endif()
 
 if(GDAL_ENABLE_QHULL)

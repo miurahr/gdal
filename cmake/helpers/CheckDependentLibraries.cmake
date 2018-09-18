@@ -127,6 +127,8 @@ if(HAVE_ZSTD AND GDAL_USE_LIBTIFF_INTERNAL)
     set(HAVE_ZSTD ON)
 endif()
 
+gdal_check_package(SFCGAL)
+
 gdal_check_package(GeoTIFF)
 if(NOT HAVE_GEOTIFF)
     set(GDAL_USE_LIBGEOTIFF_INTERNAL ON CACHE BOOL "")
