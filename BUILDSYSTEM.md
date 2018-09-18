@@ -52,7 +52,7 @@ Known issues and ToDo things
   * Cannot generate gdal-config properly.
     * `gdal-config -libs` returns incorrect list.
   * Several autotest cases are not passed yet
-    * tiff, hdf4, hdf5, srs_proj4_epsg, grib, gpkg, pds, hfa
+    * tiff, hdf5, srs_proj4_epsg, grib, gpkg, pds, hfa
       mitab, geojson, netcdf, osm, avc, vdv, sqlite, etc.
   * Some drivers are always built-in and cannot build as plugin,
     because of dependency from other components;

@@ -1,5 +1,7 @@
-add_gdal_driver(TARGET gdal_MBTiles SOURCES mbtilesdataset.cpp)
-
+add_gdal_driver(TARGET gdal_MBTiles SOURCES mbtilesdataset.cpp
+                BUILTIN)
+gdal_standard_includes(gdal_MBTiles)
+target_include_directories(gdal_MBTiles PRIVATE $<TARGET_PROPERTY:ogr_MVT,SOURCE_DIR>)
 if(HAVE_SQLITE3)
     target_include_directories(gdal_MBTiles PRIVATE ${SQLITE3_INCLUDE_DIRS})
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MBTiles LIBRARIES ${SQLITE3_LIBRARY})
@@ -7,7 +9,7 @@ endif()
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gdal_MBTiles PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
-    target_include_directories(gdal_MBTiles ${JSONC_INCLUDE_DIRS})
+    target_include_directories(gdal_MBTiles PRIVATE ${JSONC_INCLUDE_DIRS})
     GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MBTiles LIBRARIES ${JSONC_LIBRARIES})
 endif()
 target_include_directories(gdal_MBTiles PRIVATE

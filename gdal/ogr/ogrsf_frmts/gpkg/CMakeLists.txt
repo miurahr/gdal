@@ -1,3 +1,5 @@
+# GeoPackage has raster and vector drivers in single module
+# and referred from mbtiles driver
 ADD_GDAL_DRIVER(TARGET ogr_GeoPackage SOURCES
                 ogr_geopackage.h
                 gpkgmbtilescommon.h
@@ -33,7 +35,7 @@ if(HAVE_SPATIALITE)
     endif()
 endif()
 if(HAVE_RASTERLITE2)
-    target_include_directories(ogr_GeoPackage PRIVATE   ${RASTERLITE2_INCLUDE_DIRS})
+    target_include_directories(ogr_GeoPackage PRIVATE ${RASTERLITE2_INCLUDE_DIRS})
     target_compile_definitions(ogr_GeoPackage PRIVATE -DHAVE_RASTERLITE2)
     gdal_target_link_libraries(TARGET ogr_Geopackage LIBRARIES RASTERLITE2::RASTERLITE2)
 endif()

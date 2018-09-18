@@ -1,6 +1,7 @@
 ADD_GDAL_DRIVER(TARGET ogr_MVT SOURCES
                 mvt_tile.cpp mvt_tile.h mvtutils.cpp mvtutils.h
-                ogrmvtdataset.cpp)
+                ogrmvtdataset.cpp
+                BUILTIN)
 gdal_standard_includes(ogr_MVT)
 target_include_directories(ogr_MVT PRIVATE $<TARGET_PROPERTY:ogr_OSM,SOURCE_DIR>)
 if(HAVE_GEOS)
