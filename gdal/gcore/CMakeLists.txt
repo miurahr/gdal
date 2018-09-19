@@ -31,7 +31,6 @@ add_library(gcore OBJECT
         gdaldataset.cpp
         gdalrasterband.cpp
         gdal_misc.cpp
-        rasterio.cpp
         gdalrasterblock.cpp
         gdalcolortable.cpp
         gdalmajorobject.cpp
@@ -71,15 +70,15 @@ gdal_standard_includes(gdaldrivermanager)
 target_compile_definitions(gdaldrivermanager PRIVATE
                            -DINST_DATA="${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_DATADIR}")
 
-add_library(rasterio_ssse3 OBJECT rasterio_ssse3.cpp)
-gdal_standard_includes(rasterio_ssse3)
+add_library(rasterio OBJECT rasterio.cpp rasterio_ssse3.cpp)
+gdal_standard_includes(rasterio)
 if(SSSE3_FOUND)
-    target_compile_definitions(rasterio_ssse3 PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
-    target_compile_options(rasterio_ssse3 PRIVATE -mssse3 -ftrapv -fno-operator-names)
+    target_compile_definitions(rasterio PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
+    target_compile_options(rasterio PRIVATE -mssse3 -ftrapv -fno-operator-names)
 endif()
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore>
                             $<TARGET_OBJECTS:gdaldrivermanager>
-                            $<TARGET_OBJECTS:rasterio_ssse3>)
+                            $<TARGET_OBJECTS:rasterio>)
 
 install(FILES $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/gdal_version.h>
         DESTINATION include/gdal)
