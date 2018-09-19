@@ -71,14 +71,15 @@ Known issues and ToDo things
     * ogr FME driver
     * IBM DB2
     * MSSQL spatial
+    * RASDAMAN
   * build for iOS
     * prepare platform configuration file
     * CI test on Travis
   * Better documentations.
   * Add more package/module information for configuration summary.
   * Improve cmake modules to support better modern cmake style
-    and propose to upstream.
-  * Build and install multiple python version binding
+    and feedback to upstream cmake project.
+  * Build and install multiple python version bindings
   * Packaging.
 
 Directory structure
