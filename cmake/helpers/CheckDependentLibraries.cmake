@@ -181,6 +181,7 @@ else()
 endif()
 option(GDAL_USE_LIBLERC_INTERNAL "Set ON to build mrf driver with internal libLERC" ON)
 
+gdal_check_package(PCRE)
 find_package(SQLite3)
 if(SQLITE3_FOUND)
     set(HAVE_SQLITE3 ON CACHE INTERNAL "HAVE_SQLITE3")
