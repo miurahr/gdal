@@ -62,8 +62,10 @@ add_library(alg OBJECT
 )
 include(GdalStandardIncludes)
 gdal_standard_includes(alg)
-target_include_directories(alg PRIVATE $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR> $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
-
+target_include_directories(alg PRIVATE
+						   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/marching_squares>
+						   $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
+						   $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 if(HAVE_GEOS)
     target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS}
 							   ${GEOS_INCLUDE_DIRS}/capi)

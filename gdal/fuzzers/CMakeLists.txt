@@ -50,7 +50,6 @@ build_fuzzer(NAME alg_fuzzer SOURCES gdal_fuzzer.cpp
              DEFINITIONS  -DREGISTER_FUNC=GDALRegister_AIGrid
                           -DMEM_FILENAME="/vsimem/test.tar"
                           -DGDAL_FILENAME="/vsitar//vsimem/test.tar/hdr.adf")
-
 build_fuzzer(NAME gtiff_mmap SOURCES gdal_fuzzer.cpp
              DEFINITIONS -DREGISTER_FUNC=GDALRegister_GTiff -DGTIFF_USE_MMAP)
 

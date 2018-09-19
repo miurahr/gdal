@@ -12,6 +12,8 @@ add_gdal_driver(TARGET ogr_geojson SOURCES
                 ogrgeojsonwriter.cpp
                 ogrgeojsondriver.cpp
 
+                ogrgeojsonseqdriver.cpp
+
                 ogresrijsonreader.cpp
                 ogresrijsondriver.cpp
 
