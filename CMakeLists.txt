@@ -178,6 +178,9 @@ if(TARGET_CPU MATCHES "x86_64")
     endif()
 endif()
 
+include(FindSSE)
+FindSSE()
+
 ################################################################
 add_subdirectory(gdal)
 

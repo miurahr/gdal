@@ -27,7 +27,6 @@
 
 add_library(gcore OBJECT
         gdalopeninfo.cpp
-        gdaldrivermanager.cpp
         gdaldriver.cpp
         gdaldataset.cpp
         gdalrasterband.cpp
@@ -65,9 +64,22 @@ add_library(gcore OBJECT
         gdalabstractbandblockcache.cpp
         gdalarraybandblockcache.cpp
         gdalhashsetbandblockcache.cpp
-        rasterio_ssse3.cpp
 )
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore>)
+
+add_library(gdaldrivermanager OBJECT gdaldrivermanager.cpp)
+gdal_standard_includes(gdaldrivermanager)
+target_compile_definitions(gdaldrivermanager PRIVATE
+                           -DINST_DATA="${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_DATADIR}")
+
+add_library(rasterio_ssse3 OBJECT rasterio_ssse3.cpp)
+gdal_standard_includes(rasterio_ssse3)
+if(SSSE3_FOUND)
+    target_compile_definitions(rasterio_ssse3 PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
+    target_compile_options(rasterio_ssse3 PRIVATE -mssse3 -ftrapv -fno-operator-names)
+endif()
+target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore>
+                            $<TARGET_OBJECTS:gdaldrivermanager>
+                            $<TARGET_OBJECTS:rasterio_ssse3>)
 
 install(FILES $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/gdal_version.h>
         DESTINATION include/gdal)
@@ -123,14 +135,10 @@ if(HAVE_LIBXML2)
     target_compile_definitions(gcore PRIVATE -DHAVE_LIBXML2)
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${LIBXML2_LIBRARIES})
 endif()
-
-# temporary off untill designing optimizations in cmake way.
-#set(CXXFLAGS_NO_LTO_IF_SSSE3_NONDEFAULT  -DHAVE_SSSE3_AT_COMPILE_TIME  -ftrapv  -Wall  -fno-operator-names)
-#if(UNIX)
-#    set(CXXFLAGS_NO_LTO_IF_SSSE3_NONDEFAULT ${CXXFLAGS_NO_LTO_IF_SSE3_NONDEFAULT} -Wextra -Winit-self -Wunused-parameter -Wformat -Werror=format-security -Wno-format-nonliteral -Wlogical-op -Wshadow -Werror=vla -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual)
-#endif()
-#add_definitions(${CXXFLAGS_NO_LTO_IF_SSSE3_NONDEFAULT})
-#add_compile_options(-mssse3)
+if(HAVE_GEOS)
+    target_include_directories(gcore PRIVATE ${GEOS_INCLUDE_DIRS})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARIES})
+endif()
 
 if (POLICY CMP0069)
   include(CheckIPOSupported)
@@ -141,3 +149,4 @@ if (POLICY CMP0069)
 else()
    set_property(TARGET gdal PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
 endif()
+
