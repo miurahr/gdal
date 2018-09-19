@@ -16,3 +16,8 @@ if(HAVE_SQLITE3)
     gdal_target_link_libraries(TARGET ogr_MVT
                                LIBRARIES SQLITE3::SQLITE3)
 endif()
+
+add_executable(mvt_tile_test EXCLUDE_FROM_ALL mvt_tile_test.cpp)
+gdal_standard_includes(mvt_tile_test)
+target_link_libraries(mvt_tile_test PRIVATE $<TARGET_NAME:gdal>)
+

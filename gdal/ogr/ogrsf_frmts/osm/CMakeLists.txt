@@ -1,6 +1,8 @@
+# reffered from ogr_MVT
 add_gdal_driver(TARGET ogr_OSM SOURCES
                 gpb.h ogr_osm.h osm_parser.h
-                ogrosmdatasource.cpp ogrosmdriver.cpp ogrosmlayer.cpp osm_parser.cpp)
+                ogrosmdatasource.cpp ogrosmdriver.cpp ogrosmlayer.cpp osm_parser.cpp
+                BUILTIN)
 gdal_standard_includes(ogr_OSM)
 target_include_directories(ogr_OSM PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_SQLite,SOURCE_DIR>)
@@ -15,3 +17,5 @@ if(HAVE_SQLITE3)
 endif()
 
 add_executable(osm2osm EXCLUDE_FROM_ALL osm2osm.cpp)
+gdal_standard_includes(osm2osm)
+target_link_libraries(osm2osm PRIVATE $<TARGET_NAME:gdal>)
