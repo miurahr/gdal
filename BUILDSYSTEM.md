@@ -51,25 +51,24 @@ Known issues and ToDo things
     * variables: HAVE_*
   * Cannot generate gdal-config properly.
     * `gdal-config -libs` returns incorrect list.
-  * Several autotest cases are not passed yet
-    * tiff, hdf5, srs_proj4_epsg, grib, gpkg, pds, hfa
-      mitab, geojson, netcdf, osm, avc, vdv, sqlite, etc.
+  * Some autotest cases are not passed yet
+    * tiff_ovr_4, tiff_read_one_band_from_two_bands, tiff_srs
+    * hdf5_virtual_file, gdrivers/gpkg(checksums)
+    * ogr_rfc41_7, ogr_gpkg_wal, ogr_gft_read, ogr_mvt_*
   * Some drivers are always built-in and cannot build as plugin,
-    because of dependency from other components;
-    ex. geojson
+    because of dependency from other components, ex. geojson
   * GRASS driver cannot build at a same time of libgdal.
-    It is because circular dependency problem exist.
+    It is because of circular dependency.
     
 - ToDo
   * Test and fix for proprietary drivers
-    * Oracle Spatial GeoRaster
+    * Oracle Spatial
     * Kakadu
     * LULA
     * ESRI ArcSDE
     * Multi-resolution Seamless Image Database
     * ERDAS JPEG2000
     * ogr FME driver
-    * Oracle OCI
     * IBM DB2
     * MSSQL spatial
   * build for iOS
