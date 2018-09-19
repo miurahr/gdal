@@ -60,6 +60,10 @@ add_executable(gdal_unit_test
         test_osr_ct.cpp
         test_osr_proj4.cpp
         test_triangulation.cpp
+               test_marching_squares_contour.cpp
+               test_marching_squares_polygon.cpp
+               test_marching_squares_square.cpp
+               test_marching_squares_tile.cpp
         )
 target_link_libraries(gdal_unit_test PRIVATE $<TARGET_NAME:gdal>)
 add_dependencies(gdal_unit_test gdal)
