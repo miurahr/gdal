@@ -1,4 +1,4 @@
-# depends from gpkg
+# depends from gpkg, osm
 ADD_GDAL_DRIVER(TARGET ogr_SQLite BUILTIN SOURCES
         ogr_sqlite.h
         ogrsqlite3ext.h
@@ -49,4 +49,6 @@ if(HAVE_RASTERLITE2)
     gdal_target_link_libraries(TARGET ogr_SQLite LIBRARIES RASTERLITE2::RASTERLITE2)
 endif()
 
-add_executable(test_load_virtual_ogr EXCLUDE_FROM_ALL test_load_virtual_ogr.c)
+add_executable(test_load_virtual_ogr test_load_virtual_ogr.c)
+gdal_standard_includes(test_load_virtual_ogr)
+target_link_libraries(test_load_virtual_ogr PRIVATE SQLITE3::SQLITE3)
