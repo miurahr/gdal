@@ -39,8 +39,8 @@ Development status
 - Bindings: c#, perl, php and python.
 - All quick tests are passed on all built platforms.
 
-Known issues and ToDo things
-----------------------------
+Known issues and ToDo things(help wanted)
+-----------------------------------------
 
 - Issues
   * Mingw: error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
@@ -54,7 +54,9 @@ Known issues and ToDo things
   * Some autotest cases are not passed yet
     * tiff_ovr_4, tiff_read_one_band_from_two_bands, tiff_srs
     * hdf5_virtual_file, gdrivers/gpkg(checksums)
-    * ogr_rfc41_7, ogr_gpkg_wal, ogr_gft_read, ogr_mvt_*
+    * rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles, jp2openjpeg
+    * ogr_rfc41_7, ogr_mvt_*
+    * ogr_gpkg_wal, ogr_gft_read (when building as PLUGIN)
   * Some drivers are always built-in and cannot build as plugin,
     because of dependency from other components, ex. geojson
   * GRASS driver cannot build at a same time of libgdal.
@@ -75,11 +77,6 @@ Known issues and ToDo things
   * build for iOS
     * prepare platform configuration file
     * CI test on Travis
-  * Better documentations.
-  * Add more package/module information for configuration summary.
-  * Improve cmake modules to support better modern cmake style
-    and feedback to upstream cmake project.
-  * Build and install multiple python version bindings
   * Packaging.
 
 Directory structure
