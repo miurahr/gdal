@@ -1,11 +1,10 @@
+# HDF5, BAG and HDF5Image
 ADD_GDAL_DRIVER(TARGET gdal_HDF5
            SOURCES hdf5dataset.h iso19115_srs.h gh5_convenience.h
                    hdf5dataset.cpp hdf5imagedataset.cpp gh5_convenience.cpp
                    iso19115_srs.cpp bagdataset.cpp)
 gdal_standard_includes(gdal_HDF5)
-if(ENABLE_UFFD)
-    target_compile_definitions(gdal_HDF5 PRIVATE -DENABLE_UFFD)
-endif()
+# When build as plugin, initialize all drivers from Register_HDF5
 if(GDAL_ENABLE_PLUGIN)
     target_compile_definitions(gdal_HDF5 PRIVATE -DHDF5_PLUGIN)
 endif()
