@@ -3,7 +3,7 @@
 # Purpose:  CMake build scripts
 # Author:   Dmitry Baryshnikov, polimax@mail.ru, Hiroshi Miura
 ################################################################################
-# Copyright (C) 2017 Hiroshi Miura
+# Copyright (C) 2017,2018 Hiroshi Miura
 # Copyright (C) 2015-2016, NextGIS <info@nextgis.com>
 # Copyright (C) 2012,2013,2014 Dmitry Baryshnikov
 #
@@ -445,6 +445,7 @@ else(MSVC)
         add_definitions(-DDONT_DEPRECATE_SRPINTF)
     endif()
 
+    check_include_file('linux/userfaultfd.h' HAVE_USERFAULTFD_H)
 endif()
 
 if(UNIX)

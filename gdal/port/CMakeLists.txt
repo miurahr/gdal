@@ -234,6 +234,10 @@ if(MSVC)
     endif()
 endif()
 
+if(HAVE_USERFAULTFD_H)
+	target_compile_definitions(cpl PRIVATE -DENABLE_UFFD)
+endif()
+
 ## for plugin DLFCN:
 ##  for win32 https://github.com/dlfcn-win32/dlfcn-win32/archive/v1.1.1.tar.gz
 #if(WIN32)
