@@ -88,6 +88,16 @@ if(APPLE)
    )
 endif()
 
+if(MINGW)
+    list(FIND CMAKE_EXE_LINKER_FLAGS "-municode" has_municode)
+    if(NOT has_unicode)
+        SET(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-municode")
+    endif()
+    if(TARGET_CPU MATCHES "x86_64")
+        add_definitions(-m64)
+    endif()
+endif()
+
 ################################################################################
 # Install properties
 if(APPLE)
