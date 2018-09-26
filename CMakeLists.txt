@@ -172,12 +172,6 @@ if(UNIX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-if(TARGET_CPU MATCHES "x86_64")
-    if(MINGW)
-        add_definitions(-m64)
-    endif()
-endif()
-
 include(FindSSE)
 FindSSE()
 
