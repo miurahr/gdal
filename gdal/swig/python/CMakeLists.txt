@@ -31,24 +31,28 @@ INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS})
 add_subdirectory(osgeo)
 add_subdirectory(scripts)
 
-add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/*.py
-            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
-)
-
+set(_py_depends)
 if(NumPy_FOUND)
-    add_custom_target(python_binding ALL
-                      DEPENDS _gdal _gdalconst _gnm _ogr _osr
-                      _gdal_array
-                      ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py)
-else()
-    add_custom_target(python_binding ALL
-                  DEPENDS _gdal _gdalconst _gnm _ogr _osr
-                      ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py)
+	list(APPEND _py_depends _gdal_array)
 endif()
-
+if(ENABLE_GNM)
+	list(APPEND _py_depends _gnm)
+endif()
+add_custom_target(python_binding ALL DEPENDS _gdal _gdalconst _ogr _osr ${_py_depends})
+add_custom_command(TARGET python_binding PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E make_directory
+				       ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalconst.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalnumeric.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/ogr.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/osr.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gnm.py
+                       ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal_array.py
+                       ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
+)
 
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs/ogr_layer_docs.i
 				   COMMAND ${Python_EXECUTABLE} ../include/python/docs/doxy2swig.py ../../xml/ogrlayer_8cpp.xml ../include/python/docs/ogr_layer_docs.i OGRLayerShadow OGR_L_
