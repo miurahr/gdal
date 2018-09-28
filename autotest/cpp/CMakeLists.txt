@@ -96,7 +96,6 @@ macro(gdal_test_target _target _source)
 endmacro()
 
 gdal_test_target(testblockcache testblockcache.cpp)
-
 add_test(NAME test-block-cache-1
                 COMMAND testblockcache -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES)
 add_test(NAME test-block-cache-2
@@ -110,18 +109,24 @@ add_test(NAME test-block-cache-5
 add_test(NAME test-block-cache-6
                 COMMAND testblockcache --config GDAL_BAND_BLOCK_CACHE HASHSET -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES --config GDAL_RB_LOCK_TYPE SPIN)
 
-gdal_test_target(testsse1 testsse.cpp)
-target_compile_options(testsse1 PRIVATE -mavx2)
-gdal_test_target(testsse2 testsse.cpp)
-target_compile_definitions(testsse2 PRIVATE -DUSE_SSE2_EMULATION)
-gdal_test_target(testsse3 testsse.cpp)
-add_test(NAME testsse1 COMMAND testsse1)
-add_test(NAME testsse2 COMMAND testsse2)
-add_test(NAME testsse3 COMMAND testsse3)
-foreach(tgt IN ITEMS test-block-cache-1 test-block-cache-2 test-block-cache-3 test-block-cache-4 test-block-cache-5
-                     testsse1 testsse2 testsse3)
+foreach(tgt IN ITEMS test-block-cache-1 test-block-cache-2 test-block-cache-3 test-block-cache-4 test-block-cache-5)
     set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
+
+if(NOT MSVC)
+    gdal_test_target(testsse1 testsse.cpp)
+    target_compile_options(testsse1 PRIVATE -mavx2)
+    gdal_test_target(testsse2 testsse.cpp)
+    target_compile_definitions(testsse2 PRIVATE -DUSE_SSE2_EMULATION)
+    gdal_test_target(testsse3 testsse.cpp)
+    add_test(NAME testsse1 COMMAND testsse1)
+    add_test(NAME testsse2 COMMAND testsse2)
+    add_test(NAME testsse3 COMMAND testsse3)
+    set_tests_properties(testsse1 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    set_tests_properties(testsse2 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    set_tests_properties(testsse3 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 macro(gdal_autotest_target _target testlabel _source options)
     if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
         gdal_test_target(${_target} ${_source})
