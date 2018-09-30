@@ -182,4 +182,9 @@ add_subdirectory(gdal)
 enable_testing()
 add_subdirectory(autotest)
 
+# Google OSS-Fuzz project utilities
+add_subdirectory(gdal/fuzzers)
+# Google OSS-Fuzz tests
+add_subdirectory(gdal/fuzzers/tests)
+
 # vim: ts=4 sw=4 sts=4 et

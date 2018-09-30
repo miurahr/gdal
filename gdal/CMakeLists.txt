@@ -176,9 +176,6 @@ add_subdirectory(swig)
 # Utilities
 add_subdirectory(apps)
 
-# Google OSS-Fuzz project utilities
-add_subdirectory(fuzzers)
-
 # Document/Manuals
 if(BUILD_DOCS)
     add_subdirectory(doc)
