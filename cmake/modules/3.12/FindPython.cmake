@@ -1,134 +1,181 @@
-#
-# FindPython
-# - Limited Compatibility module for < 3.12
-#
-# Copyright (C) 2018 Hiroshi Miura
-#
-# Only support as similar behavior as find_package(Python COMPONENTS Development)
-#
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file Copyright.txt or https://cmake.org/licensing for details.
 
-# handle components
-if(NOT Python_FIND_COMPONENTS)
-    set(Python_FIND_COMPONENTS Interpreter)
-endif()
-foreach(_Python_COMPONENT IN LISTS Python_FIND_COMPONENTS)
-    set(Python_${_Python_COMPONENT}_FOUND FALSE)
-endforeach()
+#[=======================================================================[.rst:
+FindPython
+----------
 
-macro(FindPythonSupport)
-    if("Interpreter" IN_LIST Python_FIND_COMPONENTS)
-        find_package(PythonInterp REQUIRED)
-    else()
-        find_package(PythonInterp)
-    endif()
-    set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
-    if(PYTHONINTERP_FOUND)
-        set(Python_Interpreter_FOUND TRUE)
-    endif()
+Find Python interpreter, compiler and development environment (include
+directories and libraries).
 
-    if ("Development" IN_LIST Python_FIND_COMPONENTS)
-        if(PYTHONINTERP_FOUND)
-            find_package(PythonLibs)
-            if(PYTHONLIBS_FOUND)
-                # Set variables as same as one on FindPython in cmake 3.12
-                set(Python_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
-                set(Python_LIBRARIES ${PYTHON_LIBRARIES})
-                set(Python_VERSION ${PYTHONLIBS_VERSION_STRING})
-                set(Python_VERSION_MAJOR ${PYTHON_VERSION_MAJOR})
-                set(Python_VERSION_MINOR ${PYTHON_VERSION_MINOR})
-                set(_version_major_minor "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}")
-                set(Python_Development_FOUND TRUE)
-            endif()
-        endif()
+Three components are supported:
 
-        if(NOT ANDROID AND NOT IOS)
-            execute_process(COMMAND ${Python_EXECUTABLE} -c "from distutils.sysconfig import *; print(get_python_lib(plat_specific=False,standard_lib=True))"
-                            RESULT_VARIABLE _py_process
-                            OUTPUT_VARIABLE _path
-                            OUTPUT_STRIP_TRAILING_WHITESPACE)
-            set(Python_STDLIB "${_path}")
-            execute_process(COMMAND ${Python_EXECUTABLE} -c "from distutils.sysconfig import *; print(get_python_lib(plat_specific=True,standard_lib=True))"
-                            RESULT_VARIABLE _py_process
-                            OUTPUT_VARIABLE _path
-                            OUTPUT_STRIP_TRAILING_WHITESPACE)
-            set(Python_STDARCH "${_path}")
-            execute_process(COMMAND ${Python_EXECUTABLE} -c "from distutils.sysconfig import *; print(get_python_lib(plat_specific=False,standard_lib=False))"
-                            RESULT_VARIABLE _py_process
-                            OUTPUT_VARIABLE _path
-                            OUTPUT_STRIP_TRAILING_WHITESPACE)
-            set(Python_SITELIB "${_path}")
-            execute_process(COMMAND ${Python_EXECUTABLE} -c "from distutils.sysconfig import *; print(get_python_lib(plat_specific=True,standard_lib=False))"
-                            RESULT_VARIABLE _py_process
-                            OUTPUT_VARIABLE _path
-                            OUTPUT_STRIP_TRAILING_WHITESPACE)
-            set(Python_SITEARCH "${_path}")
-            unset(_py_process)
-            unset(_path)
+* ``Interpreter``: search for Python interpreter.
+* ``Compiler``: search for Python compiler. Only offered by IronPython.
+* ``Development``: search for development artifacts (include directories and
+  libraries).
 
-            if(NOT Python_SITEARCH)
-                # Path detection function borrowed from OpenCV
-                if(CMAKE_HOST_UNIX)
-                    execute_process(COMMAND ${_executable} -c "from distutils.sysconfig import *; print(get_python_lib())"
-                                    RESULT_VARIABLE _py_process
-                                    OUTPUT_VARIABLE _path
-                                    OUTPUT_STRIP_TRAILING_WHITESPACE)
-                    if("${_path}" MATCHES "site-packages")
-                        set(_packages_path "python${_version_major_minor}/site-packages")
-                        set(_stdlib_path "python${_version_major_minor}")
-                    else() #debian based assumed, install to the dist-packages.
-                        set(_packages_path "python${_version_major_minor}/dist-packages")
-                        set(_stdlib_path "python${_version_major_minor}")
-                    endif()
-                elseif(CMAKE_HOST_WIN32)
-                    get_filename_component(_path "${Python_EXECUTABLE}" PATH)
-                    file(TO_CMAKE_PATH "${_path}" _path)
-                    if(NOT EXISTS "${_path}/Lib/site-packages")
-                        unset(_path)
-                        get_filename_component(_path "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_version_major_minor}\\InstallPath]" ABSOLUTE)
-                        if(NOT _path)
-                            get_filename_component(_path "[HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_version_major_minor}\\InstallPath]" ABSOLUTE)
-                        endif()
-                        file(TO_CMAKE_PATH "${_path}" _path)
-                    endif()
-                    set(_packages_path "${_path}/Lib/site-packages")
-                    set(_stdlib_path "${_path}/Lib")
-                endif()
-                set(Python_STDLIB "${_stdlib_path}")
-                set(Python_STDARCH "${_stdlib_path}")
-                set(Python_SITELIB "${_packages_path}")
-                set(Python_SITEARCH "${_packages_path}")
-                unset(_path)
-                unset(_stdlib_path)
-                unset(_pacakges_path)
-            endif()
-        endif()
-    endif()
-    if ("Development" IN_LIST Python_FIND_COMPONENTS)
-        if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
-            set(Python_FOUND TRUE)
-        endif()
-    else()
-        if(PYTHONINTERP_FOUND)
-            set(Python_FOUND TRUE)
-        endif()
-    endif()
-endmacro()
+If no ``COMPONENTS`` is specified, ``Interpreter`` is assumed.
+
+To ensure consistent versions between components ``Interpreter``, ``Compiler``
+and ``Development``, specify all components at the same time::
+
+  find_package (Python COMPONENTS Interpreter Development)
+
+This module looks preferably for version 3 of Python. If not found, version 2
+is searched.
+To manage concurrent versions 3 and 2 of Python, use :module:`FindPython3` and
+:module:`FindPython2` modules rather than this one.
+
+Imported Targets
+^^^^^^^^^^^^^^^^
+
+This module defines the following :ref:`Imported Targets <Imported Targets>`:
+
+``Python::Interpreter``
+  Python interpreter. Target defined if component ``Interpreter`` is found.
+``Python::Compiler``
+  Python compiler. Target defined if component ``Compiler`` is found.
+``Python::Python``
+  Python library. Target defined if component ``Development`` is found.
+
+Result Variables
+^^^^^^^^^^^^^^^^
+
+This module will set the following variables in your project
+(see :ref:`Standard Variable Names <CMake Developer Standard Variable Names>`):
+
+``Python_FOUND``
+  System has the Python requested components.
+``Python_Interpreter_FOUND``
+  System has the Python interpreter.
+``Python_EXECUTABLE``
+  Path to the Python interpreter.
+``Python_INTERPRETER_ID``
+  A short string unique to the interpreter. Possible values include:
+    * Python
+    * ActivePython
+    * Anaconda
+    * Canopy
+    * IronPython
+``Python_STDLIB``
+  Standard platform independent installation directory.
+
+  Information returned by
+  ``distutils.sysconfig.get_python_lib(plat_specific=False,standard_lib=True)``.
+``Python_STDARCH``
+  Standard platform dependent installation directory.
+
+  Information returned by
+  ``distutils.sysconfig.get_python_lib(plat_specific=True,standard_lib=True)``.
+``Python_SITELIB``
+  Third-party platform independent installation directory.
+
+  Information returned by
+  ``distutils.sysconfig.get_python_lib(plat_specific=False,standard_lib=False)``.
+``Python_SITEARCH``
+  Third-party platform dependent installation directory.
+
+  Information returned by
+  ``distutils.sysconfig.get_python_lib(plat_specific=True,standard_lib=False)``.
+``Python_Compiler_FOUND``
+  System has the Python compiler.
+``Python_COMPILER``
+  Path to the Python compiler. Only offered by IronPython.
+``Python_COMPILER_ID``
+  A short string unique to the compiler. Possible values include:
+    * IronPython
+``Python_Development_FOUND``
+  System has the Python development artifacts.
+``Python_INCLUDE_DIRS``
+  The Python include directories.
+``Python_LIBRARIES``
+  The Python libraries.
+``Python_LIBRARY_DIRS``
+  The Python library directories.
+``Python_RUNTIME_LIBRARY_DIRS``
+  The Python runtime library directories.
+``Python_VERSION``
+  Python version.
+``Python_VERSION_MAJOR``
+  Python major version.
+``Python_VERSION_MINOR``
+  Python minor version.
+``Python_VERSION_PATCH``
+  Python patch version.
+
+Hints
+^^^^^
+
+``Python_ROOT_DIR``
+  Define the root directory of a Python installation.
+
+``Python_USE_STATIC_LIBS``
+  * If not defined, search for shared libraries and static libraries in that
+    order.
+  * If set to TRUE, search **only** for static libraries.
+  * If set to FALSE, search **only** for shared libraries.
+
+Commands
+^^^^^^^^
+
+This module defines the command ``Python_add_library`` which have the same
+semantic as :command:`add_library` but take care of Python module naming rules
+(only applied if library is of type ``MODULE``) and add dependency to target
+``Python::Python``::
+
+  Python_add_library (my_module MODULE src1.cpp)
+
+If library type is not specified, ``MODULE`` is assumed.
+#]=======================================================================]
+
+
+set (_PYTHON_PREFIX Python)
 
 if (DEFINED Python_FIND_VERSION)
-    set(Python_ADDITIONAL_VERSION ${Python_FIND_VERSION})
-    FindPythonSupport()
+  set (_Python_REQUIRED_VERSION_MAJOR ${Python_FIND_VERSION_MAJOR})
+
+  include (${CMAKE_CURRENT_LIST_DIR}/FindPython/Support.cmake)
 else()
-    set (_Python_REQUIRED_VERSIONS 3 2)
-    foreach (_Python_REQUIRED_VERSION_MAJOR IN LISTS _Python_REQUIRED_VERSIONS)
-        if(_Python_REQUIRED_VERSION_MAJOR EQUAL 2)
-            set(Python_ADDITIONAL_VERSIONS 2.7)
-        elseif(_Python_REQUIRED_VERSION_MAJOR EQUAL 3)
-            set(Python_ADDITIONAL_VERSIONS 3.8 3.7 3.6 3.5 3.4)
-        endif()
-        FindPythonSupport()
-        if(Python_FOUND)
-            break()
-        endif()
+  # iterate over versions in quiet and NOT required modes to avoid multiple
+  # "Found" messages and prematurally failure.
+  set (_Python_QUIETLY ${Python_FIND_QUIETLY})
+  set (_Python_REQUIRED ${Python_FIND_REQUIRED})
+  set (Python_FIND_QUIETLY TRUE)
+  set (Python_FIND_REQUIRED FALSE)
+
+  set (_Python_REQUIRED_VERSIONS 3 2)
+  set (_Python_REQUIRED_VERSION_LAST 2)
+
+  foreach (_Python_REQUIRED_VERSION_MAJOR IN LISTS _Python_REQUIRED_VERSIONS)
+    set (Python_FIND_VERSION ${_Python_REQUIRED_VERSION_MAJOR})
+    include (${CMAKE_CURRENT_LIST_DIR}/FindPython/Support.cmake)
+    if (Python_FOUND OR
+        _Python_REQUIRED_VERSION_MAJOR EQUAL _Python_REQUIRED_VERSION_LAST)
+      break()
+    endif()
+    # clean-up some CACHE variables to ensure look-up restart from scratch
+    foreach (_Python_ITEM IN LISTS _Python_CACHED_VARS)
+      unset (${_Python_ITEM} CACHE)
     endforeach()
+  endforeach()
+
+  unset (Python_FIND_VERSION)
+
+  set (Python_FIND_QUIETLY ${_Python_QUIETLY})
+  set (Python_FIND_REQUIRED ${_Python_REQUIRED})
+  if (Python_FIND_REQUIRED OR NOT Python_FIND_QUIETLY)
+    # call again validation command to get "Found" or error message
+    find_package_handle_standard_args (Python HANDLE_COMPONENTS
+                                              REQUIRED_VARS ${_Python_REQUIRED_VARS}
+                                              VERSION_VAR Python_VERSION)
+  endif()
 endif()
 
+if (COMMAND __Python_add_library)
+  macro (Python_add_library)
+    __Python_add_library (Python ${ARGV})
+  endmacro()
+endif()
+
+unset (_PYTHON_PREFIX)
