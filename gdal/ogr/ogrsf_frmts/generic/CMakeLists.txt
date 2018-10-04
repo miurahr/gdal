@@ -47,11 +47,12 @@ add_library(ogrsf_generic OBJECT
 )
 gdal_standard_includes(ogrsf_generic)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogrsf_generic>)
-install(FILES
+
+include(TargetPublicHeader)
+target_public_header(TARGET gdal HEADERS
 	    ogr_gensql.h
 		ogreditablelayer.h
 		ogremulatedtransaction.h
 		ogrmutexeddatasource.h
 		ogrmutexedlayer.h
-		ogrwarpedlayer.h
-		DESTINATION include/gdal)
+		ogrwarpedlayer.h)
