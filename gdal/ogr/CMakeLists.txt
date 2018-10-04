@@ -169,7 +169,8 @@ else()
     endif()
 endif()
 
-install(FILES
+include(TargetPublicHeader)
+target_public_header(TARGET gdal HEADERS
         ogr_api.h
         ogr_core.h
         ogr_feature.h
@@ -178,5 +179,4 @@ install(FILES
         ogr_p.h
         ogr_spatialref.h
         ogr_srs_api.h
-        ogrsf_frmts/ogrsf_frmts.h
-        DESTINATION include/gdal)
+        ogrsf_frmts/ogrsf_frmts.h)

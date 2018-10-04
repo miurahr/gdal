@@ -125,16 +125,8 @@ if(GDAL_ENABLE_QHULL)
 endif()
 
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
-install(FILES
-		gdalgrid.h
-        gdalwarper.h
-        gdal_alg.h
-        gdal_alg_priv.h
-        gdalgrid.h
-        gdalgrid_priv.h
-        gvgcpfit.h
-        thinplatespline.h
-        gdal_simplesurf.h
-		gdallinearsystem.h
-		gdalpansharpen.h
-	DESTINATION include/gdal)
+include(TargetPublicHeader)
+target_public_header(TARGET gdal HEADERS
+					 gdalgrid.h gdalwarper.h gdal_alg.h gdal_alg_priv.h gdalgrid.h
+					 gdalgrid_priv.h gvgcpfit.h thinplatespline.h gdal_simplesurf.h gdallinearsystem.h
+					 gdalpansharpen.h)

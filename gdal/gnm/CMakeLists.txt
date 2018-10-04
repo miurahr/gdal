@@ -9,7 +9,8 @@ if(ENABLE_GNM)
                 gnmresultlayer.cpp
                 gnmrule.cpp
         )
-        set(LIB_INST_HEADERS
+        include(TargetPublicHeader)
+        target_public_header(TARGET gdal HEADERS
             gnm.h
             gnm_api.h
             gnmgraph.h
@@ -17,5 +18,4 @@ if(ENABLE_GNM)
         gdal_standard_includes(gnm)
         target_include_directories(gnm PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/gnm_frmts)
         target_sources(gdal PRIVATE $<TARGET_OBJECTS:gnm>)
-        install(FILES ${LIB_INST_HEADERS} DESTINATION include/gdal)
 endif()

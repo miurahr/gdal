@@ -25,43 +25,18 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-
-add_library(cpl_headers INTERFACE)
-target_sources(cpl_headers	INTERFACE
-			   cpl_alibaba_oss.h
-               cpl_azure.h
-               cplkeywordparser.h
-               cpl_atomic_ops.h
-               cpl_config_extras.h
-               cpl_conv.h
-               cpl_cpu_features.h
-               cpl_csv.h
-               cpl_error.h
-               cpl_hash_set.h
-               cpl_http.h
-			   cpl_json.h
-			   cpl_json_header.h
-			   cpl_list.h
-			   cpl_minixml.h
-			   cpl_multiproc.h
-			   cpl_port.h
-			   cpl_quad_tree.h
-			   cpl_safemaths.hpp
-			   cpl_sha1.h
-			   cpl_sha256.h
-			   cpl_string.h
-			   cpl_time.h
-			   cpl_vsi.h
-			   cpl_vsi_error.h
-			   cpl_vsi_virtual.h
-			   cpl_virtualmem.h
-			   gdal_csv.h
-			   cpl_spawn.h
-			   cpl_progress.h
-			   cpl_json_streaming_parser.h
-			   cpl_md5.h
-			   cpl_mem_cache.h
-)
+include(TargetPublicHeader)
+target_public_header(TARGET gdal HEADERS
+                     cpl_alibaba_oss.h cpl_aws.h
+                     cpl_azure.h cplkeywordparser.h cpl_atomic_ops.h
+                     cpl_config_extras.h cpl_google_cloud.h
+                     cpl_conv.h cpl_cpu_features.h cpl_csv.h cpl_error.h
+                     cpl_hash_set.h cpl_http.h cpl_json.h cpl_json_header.h cpl_list.h
+                     cpl_minixml.h cpl_multiproc.h cpl_port.h cpl_quad_tree.h cpl_safemaths.hpp
+                     cpl_sha1.h cpl_sha256.h cpl_string.h cpl_time.h cpl_vsi.h
+                     cpl_vsi_error.h cpl_vsi_virtual.h cpl_virtualmem.h gdal_csv.h cpl_spawn.h
+                     cpl_progress.h cpl_json_streaming_parser.h
+                     cpl_md5.h cpl_mem_cache.h cpl_worker_thread_pool.h)
 
 add_library(cpl OBJECT
             cpl_alibaba_oss.cpp
@@ -152,11 +127,11 @@ endif()
 
 if(GDAL_USE_LIBZ)
 	target_compile_definitions(cpl PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
-	target_sources(cpl_headers INTERFACE
-		cpl_minizip_ioapi.h
-		cpl_minizip_unzip.h
-		cpl_minizip_zip.h
-	)
+    target_public_header(TARGET gdal HEADERS
+                          cpl_minizip_ioapi.h
+						  cpl_minizip_unzip.h
+						  cpl_minizip_zip.h
+						  )
 	target_sources(cpl PRIVATE
 		cpl_vsil_gzip.cpp
 		cpl_minizip_ioapi.cpp
@@ -178,9 +153,7 @@ endif()
 if(HAVE_CURL)
     target_include_directories(cpl PRIVATE ${CURL_INCLUDE_DIRS})
     target_compile_definitions(cpl PRIVATE -DHAVE_CURL)
-	target_sources(cpl_headers INTERFACE
-        cpl_vsil_curl_priv.h
-    )
+    target_public_header(TARGET gdal HEADERS cpl_vsil_curl_priv.h)
 	target_sources(cpl PRIVATE
         cpl_vsil_curl.cpp
         cpl_vsil_curl_streaming.cpp
@@ -204,13 +177,8 @@ if(HAVE_ICONV)
 endif()
 
 if(GDAL_USE_ODBC)
-	target_sources(cpl_headers INTERFACE
-		cpl_odbc.h
-	)
-
-	target_sources(cpl PRIVATE
-		cpl_odbc.cpp
-	)
+	target_sources(cpl PRIVATE cpl_odbc.cpp)
+	target_public_header(TARGET gdal HEADERS cpl_odbc.h)
 endif()
 
 if(GDAL_USE_XMLREFORMAT)
@@ -244,7 +212,5 @@ endif()
 #    find_package(dlfcn-win32 REQUIRED)
 #    set(CMAKE_DL_LIBS dlfcn-win32::dl)
 #endif()
-
-install(TARGETS cpl_headers DESTINATION include/gdal)
 
 add_executable(xmlreformat EXCLUDE_FROM_ALL xmlreformat.cpp)

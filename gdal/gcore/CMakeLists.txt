@@ -81,25 +81,23 @@ endif()
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore>
                             $<TARGET_OBJECTS:gdaldrivermanager>
                             $<TARGET_OBJECTS:rasterio>)
-
-install(FILES $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/gdal_version.h>
-        DESTINATION include/gdal)
-install(FILES
-        gdal.h
-        gdaljp2metadata.h
-        gdal_frmts.h
-        gdal_pam.h
-        gdal_priv.h
-        gdal_proxy.h
-        gdal_rat.h
-        gdalexif.h
-        gdalgeorefpamdataset.h
-        gdal_priv_templates.hpp
-        gdal_avx2_emulation.hpp
-        gdal_mdreader.h
-        gdal_pam.h
-        gdalsse_priv.h
-        DESTINATION include/gdal)
+include(TargetPublicHeader)
+target_public_header(TARGET gdal HEADERS
+                    ${CMAKE_CURRENT_BINARY_DIR}/gdal_version.h
+                    gdal.h
+                    gdaljp2metadata.h
+                    gdal_frmts.h
+                    gdal_pam.h
+                    gdal_priv.h
+                    gdal_proxy.h
+                    gdal_rat.h
+                    gdalexif.h
+                    gdalgeorefpamdataset.h
+                    gdal_priv_templates.hpp
+                    gdal_avx2_emulation.hpp
+                    gdal_mdreader.h
+                    gdal_pam.h
+                    gdalsse_priv.h)
 
 gdal_standard_includes(gcore)
 target_include_directories(gcore PRIVATE
