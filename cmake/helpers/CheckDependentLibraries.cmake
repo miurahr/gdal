@@ -24,7 +24,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-include (CheckFunctionExists)
+include(CheckFunctionExists)
 include(FindPackageHandleStandardArgs)
 include(CMakeDependentOption)
 include(FeatureSummary)
@@ -73,8 +73,6 @@ option(GDAL_USE_XMLREFORMAT "Set ON to use xmlreformat" OFF)
 find_package(Boost)
 if(Boost_FOUND)
     set(HAVE_BOOST ON CACHE INTERNAL "HAVE_BOOST")
-        # FIXME: should specify where consumed
-    add_definitions(-DHAVE_BOOST)
 endif()
 gdal_check_package(CURL)
 cmake_dependent_option(GDAL_USE_CURL "Set ON to use libcurl" ON "HAVE_CURL" OFF)
