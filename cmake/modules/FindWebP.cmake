@@ -1,4 +1,4 @@
-# - Try to find the WEBP library
+# - Try to find the WebP library
 #
 # Once done this will define
 #
