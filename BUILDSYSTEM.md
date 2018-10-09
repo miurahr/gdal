@@ -53,7 +53,7 @@ Known issues and ToDo things(help wanted)
     * `gdal-config -libs` returns incorrect list.
   * Some autotest cases are not passed yet
     * tiff_ovr_4, tiff_read_one_band_from_two_bands, tiff_srs
-    * hdf5_virtual_file, gdrivers/gpkg(checksums)
+    * gdrivers/gpkg(checksums)
     * rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles, jp2openjpeg
     * ogr_rfc41_7, ogr_mvt_*
     * ogr_gpkg_wal, ogr_gft_read (when building as PLUGIN)
