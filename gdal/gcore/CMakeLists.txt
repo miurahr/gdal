@@ -136,6 +136,7 @@ if(HAVE_LIBXML2)
 endif()
 if(HAVE_GEOS)
     target_include_directories(gcore PRIVATE ${GEOS_INCLUDE_DIRS})
+    target_compile_definitions(gcore PRIVATE -DHAVE_GEOS)
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARIES})
 endif()
 
