@@ -53,10 +53,9 @@ Known issues and ToDo things(help wanted)
     * `gdal-config -libs` returns incorrect list.
   * Some autotest cases are not passed yet
     * tiff_ovr_4, tiff_read_one_band_from_two_bands, tiff_srs
-    * gdrivers/gpkg(checksums)
-    * rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles, jp2openjpeg
-    * ogr_rfc41_7, ogr_mvt_*
-    * ogr_gpkg_wal, ogr_gft_read (when building as PLUGIN)
+    * gdrivers/gpkg_1,14,22-26,32,43,45(checksums)
+    * gdrivers/rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
+    * ogr_rfc41_7, ogr_gft_read, ogr_gft_write
   * Some drivers are always built-in and cannot build as plugin,
     because of dependency from other components, ex. geojson
   * GRASS driver cannot build at a same time of libgdal.
