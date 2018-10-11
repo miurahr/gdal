@@ -144,6 +144,17 @@ function(ADD_GDAL_DRIVER)
     endif()
 endfunction()
 
+# Detect whether driver is built as PLUGIN or not.
+function(IS_PLUGIN _result _target)
+    get_property(_PLUGIN_MODULES GLOBAL PROPERTY PLUGIN_MODULES)
+    list(FIND _PLUGIN_MODULES ${_target} _IS_DRIVER_PLUGIN)
+    if(_IS_DRIVER_PLUGIN EQUAL -1)
+        set(${_result} FALSE PARENT_SCOPE)
+    else()
+        set(${_result} TRUE PARENT_SCOPE)
+    endif()
+endfunction()
+
 function(GDAL_TARGET_LINK_LIBRARIES)
     set(_oneValueArgs TARGET)
     set(_multiValueArgs LIBRARIES)
@@ -154,13 +165,11 @@ function(GDAL_TARGET_LINK_LIBRARIES)
     if(NOT _DRIVER_LIBRARIES)
         message(FATAL_ERROR "GDAL_TARGET_LINK_LIBRARIES(): LIBRARIES is a mandatory argument.")
     endif()
-    # Detect whether driver is built as PLUGIN or not.
-    get_property(_PLUGIN_MODULES GLOBAL PROPERTY PLUGIN_MODULES)
-    list(FIND _PLUGIN_MODULES ${_DRIVER_TARGET} _IS_DRIVER_PLUGIN)
-    if(_IS_DRIVER_PLUGIN EQUAL -1)
-        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${_DRIVER_LIBRARIES})
-    else()
+    IS_PLUGIN(RES ${_DRIVER_TARGET})
+    if(RES)
         target_link_libraries(${_DRIVER_TARGET} PRIVATE ${_DRIVER_LIBRARIES})
+    else()
+        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${_DRIVER_LIBRARIES})
     endif()
 endfunction()
 
@@ -169,7 +178,6 @@ macro(GDAL_DRIVER_STANDARD_INCLUDES _TARGET)
     gdal_standard_includes(${_TARGET})
 endmacro()
 
-#
 #  Macro for including  driver directories.
 #  Following macro should use only in the directories:
 #
