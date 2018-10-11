@@ -35,7 +35,7 @@ set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(cpp)
 
-if(NOT DEFINED Python_FOUND)
+if(NOT DEFINED Python_EXECUTABLE)
     if(PYTHON_VERSION)
         find_package(Python ${PYTHON_VERSION} COMPONENTS Interpreter)
     else()
@@ -43,7 +43,7 @@ if(NOT DEFINED Python_FOUND)
     endif()
 endif()
 
-if(Python_FOUND)
+if(DEFINED Python_EXECUTABLE)
     add_test(gcore-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
     add_test(gdrivers-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
     add_test(alg-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
