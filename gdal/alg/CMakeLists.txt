@@ -105,7 +105,7 @@ endif()
 
 if(HAVE_PROJ4)
     target_include_directories(alg PRIVATE ${PROJ4_INCLUDE_DIRS})
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${PROJ4_LIBRARYES})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${PROJ4_LIBRARIES})
 endif()
 
 if(GDAL_ENABLE_QHULL)
@@ -124,9 +124,19 @@ if(GDAL_ENABLE_QHULL)
     endif()
 endif()
 
+if(SSE2_FOUND)
+	target_compile_definitions(alg PRIVATE -DHAVE_SSE_AT_COMPILE_TIME)
+	target_sources(alg PRIVATE gdalgridsse.cpp)
+endif()
+
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
 include(TargetPublicHeader)
 target_public_header(TARGET gdal HEADERS
-					 gdalgrid.h gdalwarper.h gdal_alg.h gdal_alg_priv.h gdalgrid.h
-					 gdalgrid_priv.h gvgcpfit.h thinplatespline.h gdal_simplesurf.h gdallinearsystem.h
+					 gdal_alg.h
+					 gdal_alg_priv.h
+					 gdalgrid.h
+					 gdalgrid_priv.h
+					 gdalwarper.h
+					 gdal_simplesurf.h
 					 gdalpansharpen.h)
+
