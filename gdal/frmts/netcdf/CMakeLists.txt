@@ -1,13 +1,10 @@
-
 # There are netCDF, GMT drivers.
 # When PLUGIN specifying NETCDF_PLUGIN then automatically
 # register GMT from netCDF.
-ADD_GDAL_DRIVER(TARGET gdal_netCDF SOURCES netcdfdataset.h
+add_gdal_driver(TARGET gdal_netCDF SOURCES netcdfdataset.h
                 gmtdataset.cpp  netcdfdataset.cpp
                 netcdflayer.cpp netcdfwriterconfig.cpp)
-
-IS_PLUGIN(RES gdal_netCDF)
-if(RES)
+if(GDAL_ENABLE_PLUGIN)
     target_compile_definitions(gdal_netCDF PRIVATE -DNETCDF_PLUGIN)
 endif()
 
