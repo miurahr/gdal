@@ -208,5 +208,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       "postgis.sh"
     ];
     scripts.each { |script| config.vm.provision :shell, :privileged => false, :path => "gdal/scripts/vagrant/" << script }
+    config.vm.provision :shell, :privileged => false, inline: "ln -s /vagrant/gdal/scripts/vagrant/ /home/vagrant/bin"
   end
 end
