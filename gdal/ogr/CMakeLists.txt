@@ -109,6 +109,8 @@ gdal_standard_includes(ogr)
 target_include_directories(ogr PRIVATE $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogr>)
+set_property(TARGET ogr PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 target_compile_definitions(ogr PRIVATE -DHAVE_MITAB)
 
 if(HAVE_GEOS)

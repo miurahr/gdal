@@ -8,3 +8,4 @@ target_include_directories(liblerc PRIVATE
                            $<TARGET_PROPERTY:cpl,SOURCE_DIR>
                            $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:liblerc>)
+set_property(TARGET liblerc PROPERTY POSITION_INDEPENDENT_CODE ON)

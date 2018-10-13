@@ -131,6 +131,7 @@ function(ADD_GDAL_DRIVER)
         set_property(GLOBAL APPEND PROPERTY PLUGIN_MODULES ${_DRIVER_TARGET})
     else()
         add_library(${_DRIVER_TARGET} OBJECT ${_DRIVER_SOURCES})
+        set_property(TARGET ${_DRIVER_TARGET} PROPERTY POSITION_INDEPENDENT_CODE ON)
         target_sources(gdal PRIVATE $<TARGET_OBJECTS:${_DRIVER_TARGET}>)
         if(IS_OGR EQUAL -1) # raster
             string(TOLOWER ${_DRIVER_TARGET} _FORMAT)

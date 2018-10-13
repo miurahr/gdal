@@ -127,11 +127,6 @@ if(MSVC)
     add_definitions(-DNOMINMAX)
 endif()
 
-if(UNIX)
-    add_definitions(-D_FORTIFY_SOURCE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
-
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
     include(OptimizeForArchitecture)
     OptimizeForArchitecture()

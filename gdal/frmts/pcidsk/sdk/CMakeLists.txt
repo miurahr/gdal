@@ -7,17 +7,18 @@ add_library(pcidsk_sdk OBJECT
     pcidsk_segment.h pcidsk_shape.h pcidsk_tex.h pcidsk_toutin.h pcidsk_types.h
     pcidsk_vectorsegment.h
 )
-target_include_directories(pcidsk_sdk PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
-						   $<TARGET_PROPERTY:cpl,BINARY_DIR>
-						   )
-
 if(WIN32)
 	target_sources(pcidsk_sdk PRIVATE port/io_win32.cpp port/win32_mutex.cpp)
 else()
 	target_sources(pcidsk_sdk PRIVATE port/io_stdio.cpp port/pthread_mutex.cpp)
 endif()
+target_include_directories(pcidsk_sdk PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+						   $<TARGET_PROPERTY:cpl,BINARY_DIR>
+						   )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk>)
+set_property(TARGET pcidsk_sdk PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory(channel)
 add_subdirectory(core)
 add_subdirectory(segment)

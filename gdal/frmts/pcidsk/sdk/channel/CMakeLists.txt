@@ -10,3 +10,4 @@ target_include_directories(pcidsk_sdk_channel PRIVATE
                            $<TARGET_PROPERTY:cpl,BINARY_DIR>
                            )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk_channel>)
+set_property(TARGET pcidsk_sdk_channel PROPERTY POSITION_INDEPENDENT_CODE ON)

@@ -27,3 +27,4 @@ endif()
 
 target_compile_definitions(libjpeg PRIVATE -DDEFAULT_MAX_MEM=500000000L)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libjpeg>)
+set_property(TARGET libjpeg PROPERTY POSITION_INDEPENDENT_CODE ON)

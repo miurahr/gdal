@@ -69,11 +69,12 @@ add_library(gdaldrivermanager OBJECT gdaldrivermanager.cpp)
 gdal_standard_includes(gdaldrivermanager)
 target_compile_definitions(gdaldrivermanager PRIVATE
                            -DINST_DATA="${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_DATADIR}")
-
+set_property(TARGET gdaldrivermanager PROPERTY POSITION_INDEPENDENT_CODE ON)
 add_library(rasterio OBJECT rasterio.cpp rasterio_ssse3.cpp)
 gdal_standard_includes(rasterio)
 target_include_directories(rasterio PRIVATE $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)
+set_property(TARGET rasterio PROPERTY POSITION_INDEPENDENT_CODE ON)
 if(USE_SSSE3)
     target_compile_definitions(rasterio PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
     target_compile_options(rasterio PRIVATE -mssse3 -ftrapv -fno-operator-names)
@@ -107,6 +108,7 @@ target_include_directories(gcore PRIVATE
                            $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
+set_property(TARGET gcore PROPERTY POSITION_INDEPENDENT_CODE ON)
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gcore PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
