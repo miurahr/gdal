@@ -87,8 +87,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "libgif-dev",
     "liblzma-dev",
     "libgeos-dev",
+    "libgeos-mingw-w64-dev",
     "libcurl4-gnutls-dev",
     "libproj-dev",
+    "libproj-mingw-w64-dev",
     "libxml2-dev",
     "libexpat-dev",
     "libxerces-c-dev",
@@ -131,6 +133,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "texlive-latex-base",
     "vim",
     "ant",
+    "zip",
     "unzip",
     "mono-devel",
     "libmono-system-drawing4.0-cil",
@@ -196,9 +199,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	  pkg_cmd << "apt-get --no-install-recommends install -q -y " + packageList.join(" ") << " ; "
 	  config.vm.provision :shell, :inline => pkg_cmd
     scripts = [
-      "gdal.sh",
-      "postgis.sh",
-      "gdal-mingw.sh"
+      "install-android-ndk.sh",
+      "install-odbc.sh",
+      "install-cmake-3.12.sh",
+      "install-python-for-wine.sh",
+      "gdal-cmake-gcc4.8.sh",
+      "gdal-gnumake-gcc4.8.sh",
+      "postgis.sh"
     ];
     scripts.each { |script| config.vm.provision :shell, :privileged => false, :path => "gdal/scripts/vagrant/" << script }
   end

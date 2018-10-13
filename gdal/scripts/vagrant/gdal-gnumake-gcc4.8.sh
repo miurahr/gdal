@@ -51,6 +51,7 @@ cd ..
 # A previous version of GDAL has been installed by PostGIS
 sudo rm -f /usr/lib/libgdal.so*
 sudo make install
+sudo ln -s /usr/lib/libgdal.so.2 /usr/lib/libgdal.so.20
 sudo ldconfig
 # not sure why we need to do that
 #sudo cp -r /usr/lib/python2.7/site-packages/*  /usr/lib/python2.7/dist-packages/
