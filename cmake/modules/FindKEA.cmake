@@ -38,10 +38,23 @@ endif(APPLE)
 # file locations
 find_path(KEA_INCLUDE_DIR
           NAMES KEACommon.h kea-config.h
-          SUFFIX_PATHS libkea
+          PATH_SUFFIXES libkea
 )
 find_library(KEA_LIBRARY NAMES kea)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(KEA FOUND_VAR KEA_FOUND
                                   REQUIRED_VARS KEA_LIBRARY KEA_INCLUDE_DIR)
+
+if(KEA_FOUND)
+    set(KEA_INCLUDE_DIRS ${KEA_INCLUDE_DIR})
+    set(KEA_LIBRARIES ${KEA_LIBRARY})
+
+    if(NOT TARGET KEA::KEA)
+        add_library(KEA::KEA UNKNOWN IMPORTED)
+        set_target_properties(KEA::KEA PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES "${KEA_INCLUDE_DIR}"
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION "${KEA_LIBRARY}")
+    endif()
+endif()
