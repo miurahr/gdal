@@ -132,8 +132,10 @@ if(UNIX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-include(FindSSE)
-FindSSE()
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
+    include(OptimizeForArchitecture)
+    OptimizeForArchitecture()
+endif()
 
 ################################################################
 add_subdirectory(gdal)

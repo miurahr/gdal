@@ -55,6 +55,10 @@ else()
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARIES})
 endif()
 
+if(USE_SSE2)
+    target_compile_options(appslib PRIVATE -msse)
+endif()
+
 if(BUILD_APPS)
     add_executable(gdalinfo gdal_utils_priv.h gdalinfo_bin.cpp)
     add_executable(gdalbuildvrt gdal_utils_priv.h gdalbuildvrt_bin.cpp)

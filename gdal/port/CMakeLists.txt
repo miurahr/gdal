@@ -206,6 +206,16 @@ if(HAVE_USERFAULTFD_H)
 	target_compile_definitions(cpl PRIVATE -DENABLE_UFFD)
 endif()
 
+if(USE_SSE2)
+    target_compile_definitions(cpl PRIVATE -DHAVE_SSE_AT_COMPILE_TIME)
+    target_compile_options(cpl PRIVATE -msse)
+endif()
+
+if(USE_SSSE3)
+    target_compile_definitions(cpl PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
+    target_compile_options(cpl PRIVATE -mssse3)
+endif()
+
 ## for plugin DLFCN:
 ##  for win32 https://github.com/dlfcn-win32/dlfcn-win32/archive/v1.1.1.tar.gz
 #if(WIN32)
