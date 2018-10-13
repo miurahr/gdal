@@ -3,7 +3,7 @@ include(GdalStandardIncludes)
 add_library(FuzzingEngine STATIC fuzzingengine.cpp)
 add_executable(gdal_fuzzer gdal_fuzzer.cpp fuzzingengine.cpp)
 target_include_directories(gdal_fuzzer PRIVATE
-						   $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/sqlite>)
+                           $<TARGET_PROPERTY:ogr_SQLite,SOURCE_DIR>)
 add_executable(gdal_translate_fuzzer gdal_translate_fuzzer.cpp fuzzingengine.cpp)
 add_executable(gdal_vector_translate_fuzzer gdal_vector_translate_fuzzer.cpp fuzzingengine.cpp)
 add_executable(ogr_fuzzer ogr_fuzzer.cpp fuzzingengine.cpp)

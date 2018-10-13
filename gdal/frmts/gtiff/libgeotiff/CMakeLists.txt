@@ -7,8 +7,7 @@ add_library(geotiff OBJECT
 include(GdalStandardIncludes)
 gdal_standard_includes(geotiff)
 if(GDAL_USE_LIBTIFF_INTERNAL)
-    target_include_directories(geotiff PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/gtiff/libtiff>)
+    target_include_directories(geotiff PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
     if(RENAME_INTERNAL_LIBTIFF_SYMBOLS)
         target_compile_definitions(geotiff PRIVATE -DRENAME_INTERNAL_LIBTIFF_SYMBOLS)
     endif()

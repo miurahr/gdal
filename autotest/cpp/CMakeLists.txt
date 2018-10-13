@@ -25,10 +25,6 @@
 # ******************************************************************************
 
 
-if(NOT GDAL_ROOT_TEST_DIR)
-    set(GDAL_ROOT_TEST_DIR "${CMAKE_SOURCE_DIR}")
-endif()
-
 if(NOT CMAKE_CROSSCOMPILING)
     if(LINUX)
         add_library(vsipreload MODULE
@@ -70,11 +66,10 @@ add_dependencies(gdal_unit_test gdal)
 gdal_standard_includes(gdal_unit_test)
 target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
 target_include_directories(gdal_unit_test PRIVATE
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/autotest/cpp>
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/autotest/cpp/tut>
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/gdal/apps>
-                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/gdal/frmts/vrt>
-)
+                           ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/tut
+                           $<TARGET_PROPERTY:appslib,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
 add_test(NAME test-unit
          COMMAND gdal_unit_test)
@@ -86,7 +81,7 @@ macro(gdal_test_target _target _source)
     add_executable(${_target} EXCLUDE_FROM_ALL ${_source})
     target_link_libraries(${_target} PRIVATE $<TARGET_NAME:gdal>)
     gdal_standard_includes(${_target})
-    target_include_directories(${_target} PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/apps>)
+    target_include_directories(${_target} PRIVATE $<TARGET_PROPERTY:appslib,SOURCE_DIR>)
     target_compile_definitions(${_target} PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
     add_dependencies(${_target} gdal)
 endmacro()

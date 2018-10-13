@@ -71,11 +71,13 @@ if(HAVE_GEOS)
 							   ${GEOS_ROOT}/capi
 							   ${GEOS_ROOT})
 	target_compile_definitions(alg PRIVATE -DHAVE_GEOS=1)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARY})
 endif(HAVE_GEOS)
 
 if(HAVE_ARMADILLO)
 	target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS})
 	target_compile_definitions(alg PRIVATE -DHAVE_ARMADILLO)
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
 endif()
 
 if(USE_CPL)
@@ -112,13 +114,6 @@ if(GDAL_QHULL)
     endif()
 endif()
 
-if(GEOS_FOUND)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GEOS_LIBRARY})
-endif(GEOS_FOUND)
-
-if(ARMADILLO_FOUND)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
-endif(ARMADILLO_FOUND)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
 install(FILES
 		gdalgrid.h

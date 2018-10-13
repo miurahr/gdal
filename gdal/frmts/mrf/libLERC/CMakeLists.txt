@@ -4,7 +4,7 @@ add_library(liblerc OBJECT
             DefinesV1.h
             Image.h TImage.hpp
             )
-TARGET_INCLUDE_DIRECTORIES(liblerc PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>)
+target_include_directories(liblerc PRIVATE
+                           $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+                           $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:liblerc>)

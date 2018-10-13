@@ -1,22 +1,23 @@
 ADD_GDAL_DRIVER(TARGET ogr_GeoPackage SOURCES
-        ogr_geopackage.h
-        gpkgmbtilescommon.h
-        ogrgeopackageutility.h
-        ogrgeopackagedatasource.cpp
-        ogrgeopackagedriver.cpp
-        ogrgeopackagelayer.cpp
-        ogrgeopackageselectlayer.cpp
-        ogrgeopackagetablelayer.cpp
-        ogrgeopackageutility.cpp
-        gdalgeopackagerasterband.cpp
+                ogr_geopackage.h
+                gpkgmbtilescommon.h
+                ogrgeopackageutility.h
+                ogrgeopackagedatasource.cpp
+                ogrgeopackagedriver.cpp
+                ogrgeopackagelayer.cpp
+                ogrgeopackageselectlayer.cpp
+                ogrgeopackagetablelayer.cpp
+                ogrgeopackageutility.cpp
+                gdalgeopackagerasterband.cpp
                 BUILTIN
-)
+                )
 gdal_driver_standard_includes(ogr_GeoPackage)
 
 target_include_directories(ogr_GeoPackage PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/alg>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/sqlite>)
+                           $<TARGET_PROPERTY:alg,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_SQLite,SOURCE_DIR>)
+
 if(HAVE_SQLITE3)
     target_include_directories(ogr_GeoPackage PRIVATE ${SQLITE3_INCLUDE_DIRS})
     gdal_target_link_libraries(TARGET ogr_GeoPackage PRIVATE LIBRARIES ${SQLITE3_LIBRARY})

@@ -29,20 +29,21 @@
 # Documentation rules
 find_package(Doxygen)
 IF(DOXYGEN_FOUND)
-      file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/html)
+    set(TARGET_HTML_DIR ${CMAKE_BINARY_DIR}/gdal/html)
+      file(MAKE_DIRECTORY ${TARGET_HTML_DIR})
       # Generate translated docs. Should go first, because index.html page should
       # be overwritten with the main one later
        add_custom_command(
           OUTPUT
-              ${GDAL_ROOT_BINARY_DIR}/html/header.html
-              ${GDAL_ROOT_BINARY_DIR}/html/footer.html
-              ${GDAL_ROOT_BINARY_DIR}/html/stylesheet.css
+          ${TARGET_HTML_DIR}/header.html
+          ${TARGET_HTML_DIR}/footer.html
+          ${TARGET_HTML_DIR}/stylesheet.css
           COMMAND ${DOXYGEN_EXECUTABLE} -w html header.html footer.html stylesheet.css
-          WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/html
+          WORKING_DIRECTORY ${TARGET_HTML_DIR}
       )
       #-------------------------------------------------------------------
       # Generate Russian document
-      set(GDAL_DOXYGEN_OUTPUT_DIRECTORY "${GDAL_ROOT_BINARY_DIR}")
+      set(GDAL_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/gdal")
       set(GDAL_DOXYGEN_PROJECT_NAME "RU")
       set(GDAL_DOXYGEN_LANGUAGE "Russian")
       set(GDAL_DOXYGEN_JAVADOC_AUTOBRIEF "NO")
@@ -62,27 +63,26 @@ IF(DOXYGEN_FOUND)
       set(GDAL_GENERATE_MAN "NO")
       configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_ru)
       add_custom_command(
-              OUTPUT ${GDAL_ROOT_BINARY_DIR}/html/index_ru.html
-              COMMAND ${DOXYGEN_EXECUTABLE} ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_ru
-              MAIN_DEPENDENCY ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_ru
-              WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/doc/ru
-      )
+              OUTPUT ${TARGET_HTML_DIR}/index_ru.html
+              COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_ru
+              MAIN_DEPENDENCY ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_ru
+              WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ru)
       add_custom_command(
-              OUTPUT ${GDAL_ROOT_BINARY_DIR}/html/header_ru.html
+              OUTPUT ${TARGET_HTML_DIR}/header_ru.html
               COMMAND ${CMAKE_COMMAND}
               ARGS
-              -Dinfile:FILEPATH=${GDAL_ROOT_BINARY_DIR}/html/header.html
-              -Doutfile:FILEPATH=${GDAL_ROOT_BINARY_DIR}/html/header_ru.html
+              -Dinfile:FILEPATH=${TARGET_HTML_DIR}/header.html
+              -Doutfile:FILEPATH=${TARGET_HTML_DIR}/header_ru.html
               -Dfrom:STRING="iso-8859-1"
               -Dto:STRING="utf-8"
               -P ${CMAKE_CURRENT_SOURCE_DIR}/ReplaceStr.cmake
               MAIN_DEPENDENCY
-              ${GDAL_ROOT_BINARY_DIR}/html/header.html
-              WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/html
+              ${TARGET_HTML_DIR}/header.html
+              WORKING_DIRECTORY ${TARGET_HTML_DIR}
       )
       #-------------------------------------------------------------------
       # generate Brazillian document
-      set(GDAL_DOXYGEN_OUTPUT_DIRECTORY "${GDAL_ROOT_BINARY_DIR}")
+      set(GDAL_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/gdal")
       set(GDAL_DOXYGEN_PROJECT_NAME "BR")
       set(GDAL_DOXYGEN_LANGUAGE "Brazilian")
       set(GDAL_DOXYGEN_JAVADOC_AUTOBRIEF "NO")
@@ -102,22 +102,20 @@ IF(DOXYGEN_FOUND)
       set(GDAL_GENERATE_MAN "NO")
       configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_br)
       add_custom_command(
-              OUTPUT ${GDAL_ROOT_BINARY_DIR}/html/index_br.html
-              COMMAND ${DOXYGEN_EXECUTABLE} ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_br
-              MAIN_DEPENDENCY ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_br
-              WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/doc/br
-      )
+              OUTPUT ${TARGET_HTML_DIR}/index_br.html
+              COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_br
+              MAIN_DEPENDENCY ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_br
+              WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/br)
       add_custom_command(
-              OUTPUT ${GDAL_ROOT_BINARY_DIR}/html/header_br.html
+              OUTPUT ${TARGET_HTML_DIR}/header_br.html
               COMMAND ${CMAKE_COMMAND} -E copy
-              ${GDAL_ROOT_BINARY_DIR}/html/header.html
-              ${GDAL_ROOT_BINARY_DIR}/html/header_br.html
-              DEPENDS ${GDAL_ROOT_BINARY_DIR}/html/header.html
-      )
+              ${TARGET_HTML_DIR}/header.html
+              ${TARGET_HTML_DIR}/header_br.html
+              DEPENDS ${TARGET_HTML_DIR}/header.html)
 
       #-------------------------------------------------------------------
       # run main doxygen
-      set(GDAL_DOXYGEN_OUTPUT_DIRECTORY "${GDAL_ROOT_BINARY_DIR}")
+      set(GDAL_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/gdal")
       set(GDAL_DOXYGEN_PROJECT_NAME "GDAL")
       set(GDAL_DOXYGEN_LANGUAGE "English")
       set(GDAL_DOXYGEN_JAVADOC_AUTOBRIEF "YES")
@@ -125,8 +123,8 @@ IF(DOXYGEN_FOUND)
       set(GDAL_ENABLED_SECTIONS "")
       set(GDAL_GENERATE_HTML "YES")
       set(GDAL_DOXYGEN_INCLUDE_PATH
-          "${GDAL_ROOT_BINARY_DIR}/port \
-           ${GDAL_ROOT_BINARY_DIR}/gcore")
+          "${CMAKE_BINARY_DIR}/gdal/port \
+           ${CMAKE_BINARY_DIR}/gdal/gcore")
       set(GDAL_DOXYGEN_INPUT
           "port gcore frmts/gdalallregister.cpp alg frmts/vrt \
                doc apps ogr ogr/ogrsf_frmts ogr/ogrsf_frmts/generic \
@@ -137,16 +135,16 @@ IF(DOXYGEN_FOUND)
       set(GDAL_DOXYGEN_EXAMPLE_PATH
               "apps frmts frmts/jdem"
               )
-      set(GDAL_DOXYGEN_IMAGE_PATH ${GDAL_ROOT_SOURCE_DIR}/doc/grid)
-      set(GDAL_DOXYGEN_LAYOUT_FILE ${GDAL_ROOT_SOURCE_DIR}/DoxygenLayout.xml)
+      set(GDAL_DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/grid)
+      set(GDAL_DOXYGEN_LAYOUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenLayout.xml)
       set(GDAL_GENERATE_MAN "NO")
-      configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_main)
+      configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_main)
       add_custom_command(
               OUTPUT ${GDAL_ROOT_BINARY_DIR}/html/index.html
-              COMMAND ${DOXYGEN_EXECUTABLE} ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_main
-              MAIN_DEPENDENCY ${GDAL_ROOT_BINARY_DIR}/doc/Doxyfile_main ${GDAL_ROOT_BINARY_DIR}/html/header.html
-                              ${GDAL_ROOT_BINARY_DIR}/html/index_ru.html ${GDAL_ROOT_BINARY_DIR}/html/index_br.html
-              WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}
+              COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_main
+              MAIN_DEPENDENCY ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_main ${TARGET_HTML_DIR}/header.html
+                              ${TARGET_HTML_DIR}/index_ru.html ${TARGET_HTML_DIR}/index_br.html
+              WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gdal
       )
 
       #-------------------------------------------------------------------

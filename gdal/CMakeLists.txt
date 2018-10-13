@@ -39,7 +39,7 @@ if(UNIX AND USE_CPL)
 endif()
 
 ################################################################################
-# generate ${GDAL_ROOT_BINARY_DIR}/gcore/gdal_version.h
+# generate ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_version.h
 # and set GDAL_VERSION variable
 include(GdalVersion)
 set(GDAL_SOVERSION 20 CACHE STRING "")
@@ -48,7 +48,7 @@ set(GDAL_SOVERSION 20 CACHE STRING "")
 # find 3rd party libraries
 include(CheckDependentLibraries)
 
-# generate ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h
+# generate ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h
 include(configure)
 
 ################################################################################
@@ -215,11 +215,9 @@ endif()
 if(MSVC)
     target_sources(gdal PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gcore/Version.rc)
     source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/gcore/Version.rc)
-    target_include_directories(gdal PRIVATE $<TARGET_PROPERTY:gcore,BINARY_DIR>)
+    gdal_standard_includes(gdal)
     if(CMAKE_CL_64)
-		set_target_properties(gdal
-                              PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
-		add_definitions(-D_WIN64)
+		set_target_properties(gdal PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
     endif()
 endif()
 
@@ -230,14 +228,14 @@ endif()
 
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
-               ${GDAL_ROOT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
+               ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
 
 ################################################################################
 #
 # gdal-config utility command generation
 include(GenerateGdalConfig)
 generate_gdal_config()
-install(FILES ${GDAL_ROOT_BINARY_DIR}/port/cpl_config.h DESTINATION ${INSTALL_INC_DIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h DESTINATION ${INSTALL_INC_DIR})
 
 # data resource
 install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
@@ -247,8 +245,8 @@ install(DIRECTORY "${GDAL_ROOT_SOURCE_DIR}/data/"
 # pkg-config resource
 if(UNIX AND NOT OSX_FRAMEWORK)
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
-                   ${GDAL_ROOT_BINARY_DIR}/gdal.pc @ONLY)
-    install(FILES ${GDAL_ROOT_BINARY_DIR}/gdal.pc DESTINATION ${INSTALL_PKGCONFIG_DIR}
+                   ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${INSTALL_PKGCONFIG_DIR}
             COMPONENT libraries)
 endif()
 
@@ -274,7 +272,7 @@ write_basic_package_version_file(GdalConfigVersion.cmake
                                  ## so use ExactVersion instead.
                                  # COMPATIBILITY SameMinorVersion)
                                  COMPATIBILITY ExactVersion)
-install(FILES ${GDAL_ROOT_BINARY_DIR}/GdalConfigVersion.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GdalConfigVersion.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
 
 ################################################################################

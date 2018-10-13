@@ -5,5 +5,5 @@ GDAL_DRIVER(TARGET ogr_WALK
             )
 gdal_driver_standard_includes(ogr_WALK)
 target_include_directories(ogr_WALK PRIVATE
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/pgeo>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/generic>)
+                           $<TARGET_PROPERTY:ogr_GeoPackage,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)

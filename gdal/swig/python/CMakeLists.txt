@@ -30,40 +30,40 @@ find_package(PythonLibs REQUIRED)
 include(GdalSwigBindings)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/osgeo/)
 
 GDAL_SWIG_BINDINGS(
         BINDING python
-        ARGS -I${GDAL_ROOT_SOURCE_DIR}/swig/include/python/docs -threads -outdir ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo
+        ARGS -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}/osgeo
         OUTPUT
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdal.py
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdalconst.py
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gdalnumeric.py
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/gnm.py
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/ogr.py
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/osr.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdal.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdalconst.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gdalnumeric.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/gnm.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/ogr.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/osr.py
 )
 
 # for gdal_array_wrap.cpp
-set(ARRAY_INPUT  ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdal_array.i )
-set(ARRAY_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/python/extensions/gdal_array_wrap.cpp )
+set(ARRAY_INPUT  ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdal_array.i )
+set(ARRAY_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/extensions/gdal_array_wrap.cpp )
 set(GDAL_SWIG_DEPENDS
-        ${GDAL_ROOT_SOURCE_DIR}/swig/include/python/typemaps_python.i
+        ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/typemaps_python.i
 )
 set(SWIG_ARGS -Wall  -I${GDAL_ROOT_SOURCE_DIR}/swig/include
-            -I${GDAL_ROOT_SOURCE_DIR}/swig/include/python -I${GDAL_ROOT_SOURCE_DIR}/swig/include/python/docs
-            -threads -outdir ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo)
+            -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs
+            -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}/osgeo)
 add_custom_command(
     OUTPUT  ${ARRAY_OUTPUT}
-    COMMAND ${SWIG_EXECUTABLE} ${SWIG_ARGS} ${SWIG_DEFINES} -I${GDAL_ROOT_SOURCE_DIR} -c++ -python -o ${ARRAY_OUTPUT} ${ARRAY_INPUT}
-    WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/swig/${binding}
+    COMMAND ${SWIG_EXECUTABLE} ${SWIG_ARGS} ${SWIG_DEFINES} -I${CMAKE_SOURCE_DIR}/gdal -c++ -python -o ${ARRAY_OUTPUT} ${ARRAY_INPUT}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gdal/swig/${binding}
     DEPENDS ${GDAL_SWIG_COMMON_INCLUDE} ${GDAL_SWIG_DEPENDS} ${ARRAY_INPUT}
 )
 add_custom_command(
-        OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/__init__.py
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/__init__.py
          COMMAND ${CMAKE_COMMAND} -E copy
-            ${GDAL_ROOT_SOURCE_DIR}/swig/python/osgeo/__init__.py
-            ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/
+            ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
+            ${CMAKE_CURRENT_BINARY_DIR}/osgeo/
 )
 
 set(PY_SUFFIX so)
@@ -87,7 +87,7 @@ macro(py_ext name source)
     endif()
     target_link_libraries(${name} PRIVATE gdal)
     add_custom_command(
-            OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/python/osgeo/${name}.${PY_SUFFIX}
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/osgeo/${name}.${PY_SUFFIX}
             COMMAND ${CMAKE_COMMAND} -E copy
                ${name}.${PY_SUFFIX} osgeo/
             DEPENDS ${name}

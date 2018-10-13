@@ -158,7 +158,7 @@ if(GDAL_USE_LIBZ)
 		cpl_minizip_zip.cpp
 	)
 	if(GDAL_USE_LIBZ_INTERNAL)
-		target_include_directories(cpl PRIVATE $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/zlib>)
+		target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 	else()
         target_include_directories(cpl PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_compile_definitions(cpl PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
@@ -218,6 +218,12 @@ if(NOT WIN32)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE Threads::Threads)
+endif()
+
+if(MSVC)
+    if(CMAKE_CL_64)
+		target_compile_definitions(cpl PRIVATE -D_WIN64)
+    endif()
 endif()
 
 ## for plugin DLFCN:

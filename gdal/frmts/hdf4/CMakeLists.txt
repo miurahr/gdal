@@ -11,7 +11,7 @@ ADD_GDAL_DRIVER(TARGET gdal_HDF4 SOURCES
             )
 GDAL_STANDARD_INCLUDES(gdal_HDF4)
 target_include_directories(gdal_HDF4 PRIVATE ${HDF4_INCLUDE_DIR}
-            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/hdf4/hdf-eos>
-            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/hdf4>
-            $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/pds>)
+                           $<TARGET_PROPERTY:gdal_PDS,SOURCE_DIR>
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hdf-eos>)
 GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_HDF4 LIBRARIES ${HDF4_LIBRARIES})

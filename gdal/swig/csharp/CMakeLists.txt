@@ -26,33 +26,30 @@
 
 FIND_PACKAGE(SWIG REQUIRED)
 find_package(CSharp REQUIRED)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/)
-
 include(GdalStandardIncludes)
-
 add_custom_command(
-         OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal.snk
+         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk
          COMMAND ${CMAKE_COMMAND} -E copy
-            ${GDAL_ROOT_SOURCE_DIR}/swig/csharp/gdal.snk
-            ${GDAL_ROOT_BINARY_DIR}/swig/csharp/
+            ${CMAKE_CURRENT_SOURCE_DIR}/gdal.snk
+            ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 #############################################################
 # gdal_csharp.dll
 #
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gdal)
 add_custom_command(
-		OUTPUT  ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal/gdal_wrap.cpp
-		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.GDAL -outdir ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal -DSWIG2_CSHARP
-			-dllimport gdal_wrap -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp
-			-I${GDAL_ROOT_SOURCE_DIR} -c++ -csharp -o gdal_wrap.cpp ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdal.i
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal
+		OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/gdal/gdal_wrap.cpp
+		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.GDAL -outdir ${CMAKE_CURRENT_BINARY_DIR}/gdal -DSWIG2_CSHARP
+			-dllimport gdal_wrap -Wall -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp
+			-I${CMAKE_SOURCE_DIR}/gdal -c++ -csharp -o gdal_wrap.cpp ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdal.i
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gdal
 		DEPENDS ${GDAL_SWIG_COMMON_INCLUDE}
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/typemaps_csharp.i
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/gdal_csharp.i
+			${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp/typemaps_csharp.i
+			${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp/gdal_csharp.i
 )
 set_source_files_properties(gdal_wrap PROPERTIES GENERATED 1)
-add_library(gdal_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal/gdal_wrap.cpp)
+add_library(gdal_wrap OBJECT ${CMAKE_CURRENT_BINARY_DIR}/gdal/gdal_wrap.cpp)
 gdal_standard_includes(gdal_wrap)
 add_custom_command(
 		OUTPUT gdal_csharp.dll
@@ -78,26 +75,26 @@ add_custom_command(
                 gdal/GDALTranslateOptions.cs        gdal/XMLNodeType.cs
                 gdal/GDALVectorTranslateOptions.cs
                 ${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cs
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp
-		DEPENDS gdal_wrap ogr_csharp.dll ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal.snk
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gdal_wrap ogr_csharp.dll ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk
 )
 
 #############################################################
 # ogr_csharp.dll
 #
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/ogr)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ogr)
 add_custom_command(
-		OUTPUT  ${GDAL_ROOT_BINARY_DIR}/swig/csharp/ogr/ogr_wrap.cpp
-		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.OGR -outdir ${GDAL_ROOT_BINARY_DIR}/swig/csharp/ogr -DSWIG2_CSHARP
-			-dllimport ogr_wrap -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp
-			-I${GDAL_ROOT_SOURCE_DIR} -c++ -csharp -o ogr_wrap.cpp ${GDAL_ROOT_SOURCE_DIR}/swig/include/ogr.i
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/ogr
+		OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/ogr/ogr_wrap.cpp
+		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.OGR -outdir ${CMAKE_CURRENT_BINARY_DIR}/ogr -DSWIG2_CSHARP
+			-dllimport ogr_wrap -Wall -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp
+			-I${CMAKE_SOURCE_DIR}/gdal -c++ -csharp -o ogr_wrap.cpp ${CMAKE_SOURCE_DIR}/gdal/swig/include/ogr.i
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ogr
 		DEPENDS ${GDAL_SWIG_COMMON_INCLUDE}
 			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/typemaps_csharp.i
 			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/ogr_csharp.i
 )
 set_source_files_properties(ogr_wrap PROPERTIES GENERATED 1)
-add_library(ogr_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/ogr/ogr_wrap.cpp)
+add_library(ogr_wrap OBJECT ${CMAKE_CURRENT_BINARY_DIR}/ogr/ogr_wrap.cpp)
 gdal_standard_includes(ogr_wrap)
 add_custom_command(
 		OUTPUT  ogr_csharp.dll
@@ -109,26 +106,26 @@ add_custom_command(
                 ogr/Feature.cs      ogr/Geometry.cs       ogr/wkbByteOrder.cs
                 ogr/FeatureDefn.cs  ogr/Justification.cs  ogr/wkbGeometryType.cs
 				${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cs
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp
-		DEPENDS ogr_wrap osr_csharp.dll ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal.snk
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ogr_wrap osr_csharp.dll ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk
 )
 
 #############################################################
 # osr_csharp.dll
 #
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/osr)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/osr)
 add_custom_command(
-		OUTPUT  ${GDAL_ROOT_BINARY_DIR}/swig/csharp/osr/osr_wrap.cpp
-		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.OSR -outdir ${GDAL_ROOT_BINARY_DIR}/swig/csharp/osr -DSWIG2_CSHARP
-			-dllimport osr_wrap -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp
-			-I${GDAL_ROOT_SOURCE_DIR} -c++ -csharp -o osr_wrap.cpp ${GDAL_ROOT_SOURCE_DIR}/swig/include/osr.i
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/osr
+		OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/osr/osr_wrap.cpp
+		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.OSR -outdir ${CMAKE_CURRENT_BINARY_DIR}/osr -DSWIG2_CSHARP
+			-dllimport osr_wrap -Wall -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp
+			-I${CMAKE_SOURCE_DIR}/gdal -c++ -csharp -o osr_wrap.cpp ${CMAKE_SOURCE_DIR}/gdal/swig/include/osr.i
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/osr
 		DEPENDS ${GDAL_SWIG_COMMON_INCLUDE}
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/typemaps_csharp.i
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/osr_csharp.i
+			${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp/typemaps_csharp.i
+			${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp/osr_csharp.i
 )
 set_source_files_properties(osr_wrap PROPERTIES GENERATED 1)
-add_library(osr_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/osr/osr_wrap.cpp)
+add_library(osr_wrap OBJECT ${CMAKE_CURRENT_BINARY_DIR}/osr/osr_wrap.cpp)
 gdal_standard_includes(osr_wrap)
 add_custom_command(
 		OUTPUT  osr_csharp.dll
@@ -136,34 +133,34 @@ add_custom_command(
             	osr/AxisOrientation.cs           osr/Osr.cs         osr/SpatialReference.cs
 				osr/CoordinateTransformation.cs  osr/OsrPINVOKE.cs
 				${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cs
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp
-		DEPENDS osr_wrap ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal.snk
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS osr_wrap ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk
 )
 
 #############################################################
 # gdalconst_csharp.dll
 #
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/const)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/const)
 add_custom_command(
-		OUTPUT  ${GDAL_ROOT_BINARY_DIR}/swig/csharp/const/gdalconst_wrap.cpp
-		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.GDAL -outdir ${GDAL_ROOT_BINARY_DIR}/swig/csharp/const -DSWIG2_CSHARP
-			-dllimport gdalconst_wrap -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp
-			-I${GDAL_ROOT_SOURCE_DIR} -c++ -csharp -o gdalconst_wrap.cpp ${GDAL_ROOT_SOURCE_DIR}/swig/include/gdalconst.i
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp/const
+		OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/const/gdalconst_wrap.cpp
+		COMMAND ${SWIG_EXECUTABLE} -namespace OSGeo.GDAL -outdir ${CMAKE_CURRENT_BINARY_DIR}/const -DSWIG2_CSHARP
+			-dllimport gdalconst_wrap -Wall -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp
+			-I${CMAKE_SOURCE_DIR}/gdal -c++ -csharp -o gdalconst_wrap.cpp ${CMAKE_SOURCE_DIR}/gdal/swig/include/gdalconst.i
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/const
 		DEPENDS ${GDAL_SWIG_COMMON_INCLUDE}
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/csharp/typemaps_csharp.i
-			${GDAL_ROOT_SOURCE_DIR}/swig/include/gdalconst.i
+			${CMAKE_SOURCE_DIR}/gdal/swig/include/csharp/typemaps_csharp.i
+			${CMAKE_SOURCE_DIR}/gdal/swig/include/gdalconst.i
 )
 set_source_files_properties(gdalconst_wrap PROPERTIES GENERATED 1)
-add_library(gdalconst_wrap OBJECT ${GDAL_ROOT_BINARY_DIR}/swig/csharp/const/gdalconst_wrap.cpp)
+add_library(gdalconst_wrap OBJECT ${CMAKE_CURRENT_BINARY_DIR}/const/gdalconst_wrap.cpp)
 gdal_standard_includes(gdalconst_wrap)
 add_custom_command(
 		OUTPUT  gdalconst_csharp.dll
 		COMMAND ${CSHARP_COMPILER} /debug:full /target:library /out:gdalconst_csharp.dll
           		const/GdalConst.cs  const/GdalConstPINVOKE.cs
 				${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cs
-		WORKING_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/csharp
-		DEPENDS gdalconst_wrap ${GDAL_ROOT_BINARY_DIR}/swig/csharp/gdal.snk
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS gdalconst_wrap ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk
 )
 
 #############################################################

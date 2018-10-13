@@ -1,4 +1,4 @@
-GDAL_DRIVER(TARGET ogr_DB2  SOURCES  ogr_db2.h
+add_gdal_driver(TARGET ogr_DB2  SOURCES  ogr_db2.h
         gdaldb2rasterband.cpp
         ogrdb2cli.cpp
         ogrdb2datasource.cpp
@@ -7,8 +7,15 @@ GDAL_DRIVER(TARGET ogr_DB2  SOURCES  ogr_db2.h
         ogrdb2geometryvalidator.cpp
         ogrdb2layer.cpp
         ogrdb2selectlayer.cpp
-        ogrdb2tablelayer.cpp
-    INCLUDES $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>
-             $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/ogr/ogrsf_frmts/mem>
-             ${DB2_INCLUDE_DIR}
-    LIBRARIES ${DB2_LIBRARIES})
+        ogrdb2tablelayer.cpp)
+target_include_directories(ogr_DB2 PRIVATE
+                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
+                           ${DB2_INCLUDE_DIR}
+                           )
+gdal_target_link_libraries(TARGET ogr_DB2 LIBRARIES ${DB2_LIBRARIES})
+if(MSVC)
+    if(CMAKE_CL_64)
+		target_compile_definitions(libtiff PRIVATE -D_WIN64)
+    endif()
+endif()

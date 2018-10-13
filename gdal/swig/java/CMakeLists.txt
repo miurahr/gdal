@@ -35,7 +35,7 @@ function(GDAL_JAVA_WRAP)
     set(_multiValueArgs ARGS)
     cmake_parse_arguments(_SWIG "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
    if(_SWIG_CXX)
-        set(SWIG_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.cpp)
+        set(SWIG_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.cpp)
         add_custom_command(
             OUTPUT ${SWIG_OUTPUT}
             COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${GDAL_ROOT_SOURCE_DIR} -c++ -java
@@ -49,36 +49,36 @@ function(GDAL_JAVA_WRAP)
         set_source_files_properties(${SWIG_OUTPUT} PROPERTIES GENERATED 1)
         add_library(${_SWIG_TARGET}jni MODULE ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.cpp)
     else()
-        set(SWIG_OUTPUT ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
+        set(SWIG_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
         add_custom_command(
             OUTPUT ${SWIG_OUTPUT}
-            COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${GDAL_ROOT_SOURCE_DIR} -java
+            COMMAND ${SWIG_EXECUTABLE} ${_SWIG_ARGS} ${SWIG_DEFINES} -I${CMAKE_SOURCE_DIR}/gdal -java
                 -o ${SWIG_OUTPUT}
-                ${GDAL_ROOT_SOURCE_DIR}/swig/include/${_SWIG_TARGET}.i
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_TARGET}.i
             WORKING_DIRECTORY ${GDAL_ROOT_SOURCE_DIR}/swig/java
             DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
-                ${GDAL_ROOT_SOURCE_DIR}/swig/include/java/typemaps_java.i
-                ${GDAL_ROOT_SOURCE_DIR}/swig/include/java/${_SWIG_TARGET}_java.i
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/java/typemaps_java.i
+                ${CMAKE_SOURCE_DIR}/gdal/swig/include/java/${_SWIG_TARGET}_java.i
         )
         set_source_files_properties(${SWIG_OUTPUT} PROPERTIES GENERATED 1)
-        add_library(${_SWIG_TARGET}jni MODULE ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
+        add_library(${_SWIG_TARGET}jni MODULE ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${_SWIG_TARGET}/${_SWIG_TARGET}_wrap.c)
     endif()
     gdal_standard_includes(${_SWIG_TARGET}jni)
     target_include_directories(${_SWIG_TARGET}jni PRIVATE ${JNI_INCLUDE_DIRS})
-    target_include_directories(${_SWIG_TARGET}jni PRIVATE ${GDAL_ROOT_BINARY_DIR}/swig/java/)
+    target_include_directories(${_SWIG_TARGET}jni PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 endfunction()
 
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal)
-file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/org/gdal)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/gdalconst)
 GDAL_JAVA_WRAP(TARGET gdalconst
-               ARGS -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java
-                    -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/gdalconst/ -package "org.gdal.gdalconst"
+               ARGS -Wall -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java
+                    -outdir ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/gdalconst/ -package "org.gdal.gdalconst"
                )
 foreach(tgt IN ITEMS gdal ogr osr gnm)
-    file(MAKE_DIRECTORY ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${tgt})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${tgt})
     GDAL_JAVA_WRAP(TARGET ${tgt} CXX
-                   ARGS -Wall -I${GDAL_ROOT_SOURCE_DIR}/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java
-                        -outdir ${GDAL_ROOT_BINARY_DIR}/swig/java/org/gdal/${tgt}/ -package "org.gdal.${tgt}")
+                   ARGS -Wall -I${CMAKE_SOURCE_DIR}/gdal/swig/include -I${GDAL_ROOT_SOURCE_DIR}/swig/include/java
+                        -outdir ${CMAKE_CURRENT_BINARY_DIR}/org/gdal/${tgt}/ -package "org.gdal.${tgt}")
 endforeach()
 
 add_custom_target(java_binding DEPENDS  gdaljni ogrjni osrjni gnmjni gdalconstjni)

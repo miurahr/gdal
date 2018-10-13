@@ -92,11 +92,10 @@ gdal_standard_includes(gcore)
 target_include_directories(gcore PRIVATE
                            $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/gnm/gnm_frmts>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/gtiff>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mem>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/vrt>
-                           )
+                           $<TARGET_PROPERTY:gnm_frmts,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gcore PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
@@ -106,11 +105,11 @@ endif()
 
 if(USE_CPL)
 	target_compile_definitions(gcore PRIVATE -DUSE_CPL)
-endif(USE_CPL)
+endif()
 
 if(PAM_ENABLED)
 	target_compile_definitions(gcore PRIVATE -DPAM_ENABLED)
-endif(PAM_ENABLED)
+endif()
 
 add_subdirectory(mdreader)
 

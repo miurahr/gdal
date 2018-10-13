@@ -8,8 +8,8 @@ add_library(libjpeg OBJECT
 			)
 target_include_directories(libjpeg PRIVATE
 						   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                           $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/port>
-						   $<BUILD_INTERFACE:${GDAL_ROOT_BINARY_DIR}/port>)
+						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
+						   $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 
 option(GDAL_JPEG12_SUPPORTED "Set ON to use libjpeg12 support" OFF)
 if(GDAL_JPEG12_SUPPORTED)
@@ -19,7 +19,7 @@ if(GDAL_JPEG12_SUPPORTED)
 endif()
 
 if(GDAL_USE_LIBZ_INTERNAL)
-	target_include_directories(libjpeg PRIVATE ${GDAL_ROOT_SOURCE_DIR}/frmts/zlib)
+	target_include_directories(libjpeg PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
 	target_include_directories(libjpeg PRIVATE ${ZLIB_INCLUDE_DIRS})
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)

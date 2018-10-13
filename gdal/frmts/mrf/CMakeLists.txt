@@ -38,7 +38,7 @@ endif()
 if(GDAL_USE_LIBLERC_INTERNAL)
     target_sources(gdal_MRF PRIVATE LERC_band.cpp)
     target_include_directories(gdal_MRF PRIVATE
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/frmts/mrf/libLERC>
-                               $<BUILD_INTERFACE:${GDAL_ROOT_SOURCE_DIR}/third_party/LercLib>)
+                               $<TARGET_PROPERTY:liblerc,SOURCE_DIR>
+                               $<TARGET_PROPERTY:lerc,SOURCE_DIR>)
     target_compile_definitions(gdal_MRF PRIVATE -DLERC)
 endif()
