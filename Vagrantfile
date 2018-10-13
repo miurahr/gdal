@@ -31,7 +31,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provider :virtualbox do |vb,ovrd|
-     ovrd.vm.network :forwarded_port, guest: 80, host: 8080
      ovrd.vm.box = "ubuntu/trusty64"
      vb.customize ["modifyvm", :id, "--memory", vm_ram]
      vb.customize ["modifyvm", :id, "--cpus", vm_cpu]
@@ -40,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provider :lxc do |lxc,ovrd|
-    ovrd.vm.box = "cultuurnet/ubuntu-14.04-64-puppet"
+    ovrd.vm.box = "fgrehm/trusty64-lxc"
     lxc.backingstore = 'dir'
     lxc.customize 'cgroup.memory.limit_in_bytes', vm_ram_bytes
     # LXC 3 or later deprecated old parameter
@@ -65,6 +64,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     hyperv.vmname = "gdal-vagrant"
   end
 
+  config.vm.provider :docker do |docker,ovrd|
+    ovrd.vm.box = "iknite/trusty64"
+    docker.vmname = "gdal-vagrant"
+    docker.memory = vm_ram
+  end
+
   ppaRepos = [
     "ppa:openjdk-r/ppa",
     "ppa:ubuntugis/ubuntugis-unstable",
@@ -78,7 +83,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "subversion",
     "python-numpy",
     "python-dev",
+    "python3-dev",
     "python-lxml",
+    "python3-numpy",
+    "python3-lxml",
     "postgis",
     "postgresql-server-dev-9.3",
     "postgresql-9.3-postgis-2.2",
@@ -90,8 +98,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "libgif-dev",
     "liblzma-dev",
     "libgeos-dev",
+    "libgeos-mingw-w64-dev",
     "libcurl4-gnutls-dev",
-    # "libproj-dev",
     "libxml2-dev",
     "libexpat-dev",
     "libxerces-c-dev",
@@ -134,6 +142,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "texlive-latex-base",
     "vim",
     "ant",
+    "zip",
     "unzip",
     "mono-devel",
     "libmono-system-drawing4.0-cil",
@@ -169,13 +178,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "sqlite3-pcre",
     "libpcre3-dev",
     "libspatialite-dev",
+    "libsqlite3-mod-spatialite",
     "librasterlite2-dev",
+    "libsqlite3-mod-rasterlite2",
+    "rasterlite2-bin",
     "libkea-dev",
     "libzstd-dev"
   ];
 
   if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :box
+    config.cache.scope = :machine
     config.cache.enable :generic, {
         "wget" => { cache_dir: "/var/cache/wget" },
       }
@@ -201,11 +213,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	  config.vm.provision :shell, :inline => pkg_cmd
     scripts = [
       "install-proj6.sh",
-      "gdal.sh",
-      "postgis.sh",
+      "install-android-ndk.sh",
+      "install-odbc.sh",
+      "install-cmake-3.12.sh",
+      "install-python-for-wine.sh",
       "install-proj6-mingw.sh",
-      "gdal-mingw.sh"
+      "gdal-cmake-gcc4.8.sh",
+      "gdal-gnumake-gcc4.8.sh",
+      "postgis.sh"
     ];
     scripts.each { |script| config.vm.provision :shell, :privileged => false, :path => "gdal/scripts/vagrant/" << script }
+    config.vm.provision :shell, :privileged => false, inline: "ln -s /vagrant/gdal/scripts/vagrant/ /home/vagrant/bin"
   end
 end

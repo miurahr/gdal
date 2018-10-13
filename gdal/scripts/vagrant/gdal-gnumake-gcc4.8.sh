@@ -13,9 +13,9 @@ fi
 export NUMTHREADS
 
 rsync -a /vagrant/gdal/ /home/vagrant/gnumake-build-gcc4.8
-rsync -a --exclude='__pycache__' /vagrant/autotest/ /home/vagrant/gnumake-build-gcc4.8/autotest
+rsync -a --include='tmp/cache/' --exclude='tmp/*' --exclude='__pycache__' /vagrant/autotest/ /home/vagrant/gnumake-build-gcc4.8/autotest
 echo rsync -a /vagrant/gdal/ /home/vagrant/gnumake-build-gcc4.8/ > /home/vagrant/gnumake-build-gcc4.8/resync.sh
-echo rsync -a --exclude='__pycache__'  /vagrant/autotest/ /home/vagrant/gnumake-build-gcc4.8/autotest >> /home/vagrant/gnumake-build-gcc4.8/resync.sh
+echo rsync -a  --include='tmp/cache/' --exclude='tmp/*' --exclude='__pycache__'  /vagrant/autotest/ /home/vagrant/gnumake-build-gcc4.8/autotest >> /home/vagrant/gnumake-build-gcc4.8/resync.sh
 
 chmod +x /home/vagrant/gnumake-build-gcc4.8/resync.sh
 cd /home/vagrant/gnumake-build-gcc4.8
@@ -51,6 +51,7 @@ cd ..
 # A previous version of GDAL has been installed by PostGIS
 sudo rm -f /usr/lib/libgdal.so*
 sudo make install
+sudo ln -s /usr/lib/libgdal.so.2 /usr/lib/libgdal.so.20
 sudo ldconfig
 # not sure why we need to do that
 #sudo cp -r /usr/lib/python2.7/site-packages/*  /usr/lib/python2.7/dist-packages/
