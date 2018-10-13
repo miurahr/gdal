@@ -34,6 +34,7 @@ ADD_GDAL_DRIVER(TARGET gdal_raw SOURCES
         rrasterdataset.cpp
         snodasdataset.cpp
                 byndataset.cpp
+                byndataset.cpp ntv1dataset.cpp
                 BUILTIN)
 gdal_standard_includes(gdal_raw)
 target_include_directories(gdal_raw PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
