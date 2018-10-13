@@ -74,7 +74,7 @@ add_library(rasterio OBJECT rasterio.cpp rasterio_ssse3.cpp)
 gdal_standard_includes(rasterio)
 target_include_directories(rasterio PRIVATE $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)
-if(SSSE3_FOUND)
+if(USE_SSSE3)
     target_compile_definitions(rasterio PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
     target_compile_options(rasterio PRIVATE -mssse3 -ftrapv -fno-operator-names)
 endif()
