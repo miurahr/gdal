@@ -6,6 +6,72 @@ matrix:
   include:
 
     - os: linux
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:openjdk-r/ppa"
+            - sourceline: "ppa:ubuntugis/ubuntugis-unstable"
+            - sourceline: "ppa:miurahr/gdal-depends"
+          packages:
+            - openjdk-8-jdk
+      language: cpp
+      compiler: gcc
+      sudo: required
+      dist: trusty
+      cache:
+        apt: true
+        directories:
+          - $HOME/.ccache
+      env:
+        - BUILD_NAME=cmake-gcc
+        - DETAILS="Build with cmake on trusty"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:openjdk-r/ppa"
+            - sourceline: "ppa:ubuntugis/ubuntugis-unstable"
+            - sourceline: "ppa:miurahr/gdal-depends"
+          packages:
+            - openjdk-8-jdk
+      language: cpp
+      compiler: clang
+      sudo: required
+      dist: trusty
+      cache:
+        apt: true
+        directories:
+          - $HOME/.ccache
+      env:
+        - BUILD_NAME=cmake
+        - DETAILS="Build with cmake (clang) on trusty"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:miurahr/gdal-depends"
+      compiler: gcc
+      language: cpp
+      sudo: required
+      dist: trusty
+      cache:
+        apt: true
+        directories:
+          - $HOME/.ccache
+      env:
+        - BUILD_NAME=cmake-cross
+        - DETAILS="Build with cmake cross(mingw64, android)"
+    - os: osx
+      osx_image: xcode8
+      language: objective-c
+      compiler: clang
+      cache:
+        directories:
+          - $HOME/.ccache
+      env:
+        - BUILD_NAME=cmake-osx
+        - DETAILS="Build with cmake on OS X"
+    - os: linux
       compiler: gcc
       language: cpp
       sudo: required
