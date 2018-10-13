@@ -24,18 +24,10 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 #
-# Default configuration for building for andorid
-
-SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
+# Default configuration for building for android
 
 #SET(CMAKE_RULE_MESSAGES OFF CACHE BOOL "")
 #SET(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "")
-#
-# BINDINGS
-SET(SWIG_PYTHON OFF CACHE BOOL "")
-SET(SWIG_PERL OFF CACHE BOOL "")
-SET(SWIG_PHP OFF CACHE BOOL "")
-SET(SWIG_JAVA OFF CACHE BOOL "")
 
 #DISABLE PLUGIN
 SET(GDAL_ENABLE_PLUGIN OFF CACHE BOOL "")

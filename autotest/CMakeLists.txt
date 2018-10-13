@@ -72,14 +72,16 @@ if(PythonInterp_FOUND)
                        testsse3)
 endif()
 
-if(ANDROID)
-find_program(ADB adb)
-add_custom_command(TARGET android_unit_test POST_BUILD
-                   COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
-                   COMMAND ${ADB} push $<TARGET_FILE:gdal> /data/local/tmp/${ANDROID_ABI}/
-                   COMMAND ${ADB} push $<TARGET_FILE:gdal_unit_test> /data/local/tmp/${ANDROID_ABI}/
-                   COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/gdal_unit_test\")
-endif()
+#if(ANDROID)
+#find_program(ADB adb)
+#if(ADB)
+#add_custom_command(TARGET gdal_unit_test POST_BUILD
+#                   COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
+#                   COMMAND ${ADB} push $<TARGET_FILE:gdal> /data/local/tmp/${ANDROID_ABI}/
+#                   COMMAND ${ADB} push $<TARGET_FILE:gdal_unit_test> /data/local/tmp/${ANDROID_ABI}/
+#                   COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/gdal_unit_test\")
+#endif()
+#endif()
 
 add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} -R '^test-.*|^block-.*'
               DEPENDS
