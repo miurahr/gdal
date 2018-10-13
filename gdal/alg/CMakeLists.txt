@@ -66,6 +66,7 @@ target_include_directories(alg PRIVATE
 						   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/marching_squares>
 						   $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
 						   $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
+set_property(TARGET alg PROPERTY POSITION_INDEPENDENT_CODE ON)
 if(HAVE_GEOS)
     target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS}
 							   ${GEOS_INCLUDE_DIRS}/capi)

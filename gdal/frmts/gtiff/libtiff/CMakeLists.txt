@@ -54,3 +54,4 @@ endif()
 
 set_target_properties(libtiff PROPERTIES CXX_STANDARD 11)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libtiff>)
+set_property(TARGET libtiff PROPERTY POSITION_INDEPENDENT_CODE ON)

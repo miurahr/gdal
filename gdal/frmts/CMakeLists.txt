@@ -192,4 +192,5 @@ target_include_directories(gdal_frmts PRIVATE
                            $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gdal_frmts>)
+set_property(TARGET gdal_frmts PROPERTY POSITION_INDEPENDENT_CODE ON)
 #---------------------------------------------

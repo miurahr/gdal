@@ -4,3 +4,4 @@ add_library(libz OBJECT
     adler32.c compress.c crc32.c deflate.c gzio.c infback.c inffast.c inflate.c inftrees.c trees.c
     uncompr.c zutil.c)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libz>)
+set_property(TARGET libz PROPERTY POSITION_INDEPENDENT_CODE ON)

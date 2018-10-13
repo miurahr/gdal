@@ -54,3 +54,4 @@ add_library(gcore_mdreader  OBJECT
 gdal_standard_includes(gcore_mdreader)
 target_include_directories(gcore_mdreader PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore_mdreader>)
+set_property(TARGET gcore_mdreader PROPERTY POSITION_INDEPENDENT_CODE ON)

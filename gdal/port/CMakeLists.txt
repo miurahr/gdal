@@ -102,7 +102,7 @@ add_library(cpl OBJECT
             cpl_vsil_oss.cpp
             cpl_vsil_swift.cpp
 )
-set_target_properties(cpl PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+set_target_properties(cpl PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON POSITION_INDEPENDENT_CODE ON)
 if(UNIX)
     target_compile_options(cpl PRIVATE -DCPL_LSB)
 endif()

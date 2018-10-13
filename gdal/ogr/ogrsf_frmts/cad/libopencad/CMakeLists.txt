@@ -34,3 +34,4 @@ target_include_directories(libopencad PRIVATE
                            ${CMAKE_CURRENT_SOURCE_DIR}
                            ${CMAKE_CURRENT_SOURCE_DIR}/dwg)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libopencad>)
+set_property(TARGET libopencad PROPERTY POSITION_INDEPENDENT_CODE ON)

@@ -7,6 +7,7 @@ add_library(qhull OBJECT
 include(GdalStandardIncludes)
 gdal_standard_includes(qhull)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:qhull>)
+set_property(TARGET qhull PROPERTY POSITION_INDEPENDENT_CODE ON)
 iF(MSVC)
     target_compile_definitions(qhull PRIVATE -D_USE_MATH_DEFINES)
     if(CMAKE_CL_64)

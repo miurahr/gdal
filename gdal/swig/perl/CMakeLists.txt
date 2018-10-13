@@ -65,7 +65,7 @@ else()
 endif()
 
 target_include_directories(swig_perl_wrap PRIVATE ${PERL_INCLUDE_PATH})
-set_target_properties(swig_perl_wrap PROPERTIES CXX_STANDARD 98)
+set_target_properties(swig_perl_wrap PROPERTIES CXX_STANDARD 98 POSITION_INDEPENDENT_CODE ON)
 gdal_standard_includes(swig_perl_wrap)
 target_compile_definitions(swig_perl_wrap PRIVATE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE)
 # Generate Makefile.PL

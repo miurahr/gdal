@@ -13,3 +13,4 @@ target_include_directories(libcsf PRIVATE
                            $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 target_compile_definitions(libcsf PRIVATE -DUSE_IN_GDAL)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libcsf>)
+set_property(TARGET libcsf PROPERTY POSITION_INDEPENDENT_CODE ON)

@@ -47,6 +47,7 @@ add_library(ogrsf_generic OBJECT
 )
 gdal_standard_includes(ogrsf_generic)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogrsf_generic>)
+set_property(TARGET ogrsf_generic PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 include(TargetPublicHeader)
 target_public_header(TARGET gdal HEADERS

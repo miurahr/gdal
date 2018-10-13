@@ -21,3 +21,4 @@ target_include_directories(pcidsk_sdk_segment PRIVATE
 						   $<TARGET_PROPERTY:cpl,BINARY_DIR>
 						   )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk_segment>)
+set_property(TARGET pcidsk_sdk_segment PROPERTY POSITION_INDEPENDENT_CODE ON)
