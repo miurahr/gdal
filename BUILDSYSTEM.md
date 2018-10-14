@@ -52,9 +52,10 @@ Known issues and ToDo things(help wanted)
   * Cannot generate gdal-config properly.
     * `gdal-config -libs` returns incorrect list.
   * Some autotest cases are not passed yet
-    * tiff_ovr_4, tiff_read_one_band_from_two_bands, tiff_srs
-    * gdrivers/gpkg_1,14,22-26,32,43,45(checksums)
-    * gdrivers/rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
+    * gcore:rasterio_9,11,12,13 tiff_ovr_32(blowup)
+    * tiff_read_one_band_from_two_bands, tiff_srs
+    * gdrivers:gpkg_1,14,22-26,32,43,45(checksums)
+    * gdrivers:rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
     * ogr_rfc41_7, ogr_rfc41_8, ogr_gpkg_wal, ogr_gft_read, ogr_gft_write
   * Some drivers are always built-in and cannot build as plugin,
     because of dependency from other components, ex. geojson
