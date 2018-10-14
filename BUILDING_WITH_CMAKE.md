@@ -28,7 +28,7 @@ CMake build script for GDAL supports and tested following targets for both 64bit
 - Windows (Visual Studio 2015, Visual Studio 2017)
 - Windows (MSYS2/Mingw, Cygwin)
 - Windows cross build on Linux (mingw-w64)
-- Linux (Makefiles or Ninja with GCC 4.8+, Clang 3.8+)
+- Linux (GNU make or Ninja with GCC 4.8+, Clang 3.8+)
 - Mac OS X (XCode 8+)
 - Android (Android NDK and Ninja on Linux)
 - iOS (XCode 8+) (not tested yet)
@@ -45,9 +45,21 @@ Requirements for building with CMake
 ====================================
 
 1. GDAL with CMake support
-2. CMake 3.5+ for your platform of choice. http://www.cmake.org
-   For android, CMake 3.6+ is required.
+2. CMake http://www.cmake.org
 3. Dependency libraries of your choice.
+
+CMake versions and limitations
+------------------------------
+
+- 3.5.0: Ubuntu 14.04(LTS) has `cmake3` package.
+  Minimum for GDAL project.
+
+- 3.7.1: Minimum for android build.
+
+- 3.9.2: Minimum for android SDK r16+.
+
+- 3.12.0: Introduce `<package>_ROOT` variable and environment
+  variables to configure 3rd-party libraries.
 
 Using CMake
 ===========
@@ -82,13 +94,38 @@ $ cmake --build . --target quicktest
 $ cmake --build . --target autotest
 ```
 
+If you want to see output as same behavior as original autotest,
+you can run `autotest-compat` target.
+When you build with ninja,
+you can run `$ ninja quicktest` instead of `cmake` command.
+Also `$ make quicktest` when configure to generate for GNU make.
+
 Known issues and TODOs
 ----------------------
 
-- Perl binding installation fails because of dependency incompleteness.
-  Please call `cmake --build . --target perl_binding  && cmake --build . --target install`
+- Issues
+  * gdal-config returns wrong -libs parameter.
+  * Mingw: known error on unit-test.
+  * Some autotest cases are not passed yet
+    * gcore:rasterio_9,11,12,13(w/ sse2 and ssse3)(blowup)
+    * tiff_ovr_32, tiff_direct_and_virtual_mem_io(blowup)
+    * tiff_read_one_band_from_two_bands, tiff_srs
+    * gdrivers:gpkg_1,14,22-26,32,43,45(checksums)
+    * gdrivers:rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
+    * ogr_rfc41_7, ogr_rfc41_8, ogr_gpkg_wal, ogr_gft_read, ogr_gft_write
 
-- There are not enough tests or not tested for proprietary drivers such as Oracle OCI, and Kakadu library.
+- ToDo
+  * Test and fix for proprietary drivers
+    * Oracle Spatial
+    * Kakadu
+    * LULA
+    * ESRI ArcSDE
+    * Multi-resolution Seamless Image Database
+    * ERDAS JPEG2000
+    * ogr FME driver
+    * IBM DB2
+    * MSSQL spatial
+    * RASDAMAN
 
 
 CMake options

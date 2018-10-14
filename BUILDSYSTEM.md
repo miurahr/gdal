@@ -38,30 +38,29 @@ Development status
 - Work on current master branch.
 - Bindings: c#, perl, php and python.
 - All quick tests are passed on all built platforms.
+- There are some limitations
+  * Python: install no backward compatibility modules
+    only install files under osgeo folder.
+  * Some drivers are always built-in and cannot build as plugin,
+    because of dependency from other components, ex. geojson
+  * GRASS driver cannot build at a same time of libgdal.
+    It is because of circular dependency.
 
 Known issues and ToDo things(help wanted)
 -----------------------------------------
 
 - Issues
-  * Mingw: error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
-  * Python: No installs backward compatibility modules
-    only install files under osgeo folder.
-  * Global variables and definitions still exists;
-    * definitions: -DCPL_LSB -D_FORTIFY_SOURCE
-    * variables: HAVE_*
-  * Cannot generate gdal-config properly.
-    * `gdal-config -libs` returns incorrect list.
+  * gdal-config returns wrong -libs parameter.
+  * Mingw: known error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
+  * Global variables HAVE_* still exists which is not good for Modern CMake way
   * Some autotest cases are not passed yet
-    * gcore:rasterio_9,11,12,13 tiff_ovr_32(blowup)
+    * gcore:rasterio_9,11,12,13(w/ sse2 and ssse3)(blowup)
+    * tiff_ovr_32, tiff_direct_and_virtual_mem_io(blowup)
     * tiff_read_one_band_from_two_bands, tiff_srs
     * gdrivers:gpkg_1,14,22-26,32,43,45(checksums)
     * gdrivers:rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
     * ogr_rfc41_7, ogr_rfc41_8, ogr_gpkg_wal, ogr_gft_read, ogr_gft_write
-  * Some drivers are always built-in and cannot build as plugin,
-    because of dependency from other components, ex. geojson
-  * GRASS driver cannot build at a same time of libgdal.
-    It is because of circular dependency.
-    
+
 - ToDo
   * Test and fix for proprietary drivers
     * Oracle Spatial
@@ -82,6 +81,8 @@ Known issues and ToDo things(help wanted)
 Directory structure
 -------------------
 
+The cmake related files are located in following directories;
+
 ```
 <root>
  - cmake:   cmake modules and helper scripts
@@ -95,8 +96,8 @@ Directory structure
    - templates: template source files to generate when configure
  - autotest: test suites
  - gdal: source files
-   - scripts
-     - vagrant
+   - ci/travis
+   - scripts/vagrant
 ```
 
 Build configuration files
@@ -109,8 +110,8 @@ It has all configuration for compilation and link for the directory, with small 
 Logical hierarchy for cmake
 ----------------------------
 
-CMake has a logical hierarchy constucted with `add_subdirectory(sub directory path)` function.
-Here is a logical hierarchy diagram which is different with phisical one.
+CMake has a logical hierarchy built with `add_subdirectory(sub directory path)` function.
+Here is a logical hierarchy diagram which is different with physical one.
 
 ```
 <root>
@@ -180,7 +181,7 @@ $ cmake --build . --target quicktest
 ```
 
 There are several good example in `gdal/scripts/vagrant` directory.
-For example, `gdal-clang.sh` is a build script with CLang and configured to generate gdal plugins for drivers.
+For example, `gdal-cmake-clang.sh` is a build script with CLang and configured to generate gdal plugins for drivers.
 
 ```
 cmake \
@@ -191,7 +192,7 @@ cmake \
   -DCMAKE_C_COMPILER_LAUNCHER=ccache \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DSWIG_PYTHON=ON \
-  -DPYTHON_VERSION=2.7 \  
+  -DPYTHON_VERSION=2.7 \
   -DSWIG_PERL=ON \
   -DSWIG_JAVA=ON \
   -DSWIG_CSHARP=ON \
@@ -384,7 +385,7 @@ These libraries are automatically detected and when not exist in system, enables
 
 - RENAME_INTERNAL_LIBTIFF_SYMBOLS: set ON to rename internal symbols in libtiff
 
-- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC 
+- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC
 
 - SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
 
