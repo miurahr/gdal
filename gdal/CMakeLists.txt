@@ -37,13 +37,6 @@ option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal 
 
 # Default definitions during build
 add_definitions(-DGDAL_COMPILATION)
-if(UNIX)
-    add_definitions(-D_FORTIFY_SOURCE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-    if(USE_CPL)
-        add_definitions(-DCPL_LSB)
-    endif()
-endif()
 
 ################################################################################
 # generate ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_version.h
