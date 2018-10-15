@@ -34,9 +34,20 @@ option(BUILD_DOCS "Build documents" ON)
 option(GDAL_ENABLE_PLUGIN "Set ON prefer to build drivers as plugin" OFF)
 option(GDAL_ENABLE_QHULL "use qhull" ON)
 option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal sdk" OFF)
+option(ENABLE_LTO "Enable Link-Time Optimization if possible" ON)
 
 # Default definitions during build
 add_definitions(-DGDAL_COMPILATION)
+
+if(ENABLE_LTO)
+    if (POLICY CMP0069)
+      include(CheckIPOSupported)
+      check_ipo_supported(RESULT result)
+      if(result)
+       set(CMAKE_INTERPROCEDURAL_OPTIMIZATION True)
+      endif()
+    endif()
+endif()
 
 ################################################################################
 # generate ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_version.h
