@@ -1,4 +1,10 @@
-###############################################################################
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file COPYING-CMAKE-SCRIPTS or https://cmake.org/licensing for details.
+
+#.rst
+# FindSQLITE3
+# -----------
+#
 # - Try to find Sqlite3
 # Once done this will define
 #
@@ -8,37 +14,31 @@
 #
 #  Copyright (c) 2008 Andreas Schneider <mail@cynapses.org>
 #  Copyright (c) 2016, NextGIS <info@nextgis.com>
+#  Copyright (c) 2018, Hiroshi Miura
 #
-#  Redistribution and use is allowed according to the terms of the New
-#  BSD license.
-#  For details see the accompanying COPYING-CMAKE-SCRIPTS file.
-###############################################################################
 
 if(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-  # Already in cache, be silent
   set(SQLITE3_FIND_QUIETLY TRUE)
 endif()
 
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-    # try using pkg-config to get the directories and then use these values
-    # in the FIND_PATH() and FIND_LIBRARY() calls
     pkg_check_modules(PC_SQLITE3 QUIET sqlite3)
-    SET(SQLITE3_VERSION_STRING ${PC_SQLITE3_VERSION} CACHE INTERNAL "")
+    set(SQLITE3_VERSION_STRING ${PC_SQLITE3_VERSION} CACHE INTERNAL "")
 endif()
 
 find_path(SQLITE3_INCLUDE_DIR
           NAMES  sqlite3.h
-          HINTS ${PC_SQLITE3_INCLUDE_DIR}
-)
+          HINTS ${PC_SQLITE3_INCLUDE_DIRS}
+                ${SQLITE3_ROOT})
 
 find_library(SQLITE3_LIBRARY
              NAMES sqlite3 sqlite3_i
-             HINTS ${PC_SQLITE3_LIBRARY}
-)
+             HINTS ${PC_SQLITE3_LIBRARY_DIRS}
+                   ${SQLITE3_ROOT})
 if(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
     get_filename_component(SQLITE3_LIBRARY_DIR ${SQLITE3_LIBRARY} DIRECTORY)
-    find_PATH(SQLITE3_PCRE_LIBRARY
+    find_path(SQLITE3_PCRE_LIBRARY
               NAMES pcre.${CMAKE_SHARED_LIBRARY_SUFFIX}
               SUFFIX_PATHS sqlite3
               PATHS /usr/lib
@@ -64,8 +64,8 @@ return sqlite3_column_table_name ();
 endif()
 mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR SQLITE3_PCRE_LIBRARY SQLITE_HAS_COLUMN_METADATA)
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(SQLITE3
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SQLITE3
                                   FOUND_VAR SQLITE3_FOUND
                                   REQUIRED_VARS SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR
                                   VERSION_VAR SQLITE3_VERSION_STRING)

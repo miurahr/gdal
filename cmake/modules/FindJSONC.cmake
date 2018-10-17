@@ -1,9 +1,11 @@
-# Find json-c
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file COPYING-CMAKE-SCRIPTS or https://cmake.org/licensing for details.
+
+#.rst
+# FindJSONC
 # ~~~~~~~~~
-# Copyright (C) 2017, Hiroshi Miura
+# Copyright (C) 2017-2018, Hiroshi Miura
 # Copyright (c) 2012, Dmitry Baryshnikov <polimax at mail.ru>
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
 # CMake module to search for jsonc library
 #
@@ -12,42 +14,44 @@
 #    JSONC_INCLUDE_DIR
 #    JSONC_LIBRARY
 
-# FIND_PATH and FIND_LIBRARY normally search standard locations
-# before the specified paths. To search non-standard paths first,
-# FIND_* is invoked first with specified paths and NO_DEFAULT_PATH
-# and then again with no specified paths to search the default
-# locations. When an earlier FIND_* succeeds, subsequent FIND_*s
-# searching for the same item do nothing. 
-
 # try to use framework on mac
 # want clean framework path, not unix compatibility path
-IF (APPLE)
-  IF (CMAKE_FIND_FRAMEWORK MATCHES "FIRST"
+if(APPLE)
+  if(CMAKE_FIND_FRAMEWORK MATCHES "FIRST"
       OR CMAKE_FRAMEWORK_PATH MATCHES "ONLY"
       OR NOT CMAKE_FIND_FRAMEWORK)
-    SET (CMAKE_FIND_FRAMEWORK_save ${CMAKE_FIND_FRAMEWORK} CACHE STRING "" FORCE)
-    SET (CMAKE_FIND_FRAMEWORK "ONLY" CACHE STRING "" FORCE)
-    FIND_LIBRARY(JSONC_LIBRARY JSONC)
-    IF (JSONC_LIBRARY)
-      # FIND_PATH doesn't add "Headers" for a framework
-      SET (JSONC_INCLUDE_DIR ${JSONC_LIBRARY}/Headers CACHE PATH "Path to a file.")
-    ENDIF (JSONC_LIBRARY)
-    SET (CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
-  ENDIF ()
-ENDIF (APPLE)
+    set(CMAKE_FIND_FRAMEWORK_save ${CMAKE_FIND_FRAMEWORK} CACHE STRING "" FORCE)
+    set(CMAKE_FIND_FRAMEWORK "ONLY" CACHE STRING "" FORCE)
+    find_library(JSONC_LIBRARY JSONC)
+    if(JSONC_LIBRARY)
+      set(JSONC_INCLUDE_DIR ${JSONC_LIBRARY}/Headers CACHE PATH "Path to a file.")
+    endif(JSONC_LIBRARY)
+    set(CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
+  endif()
+endif()
 
-FIND_PATH(JSONC_INCLUDE_DIR
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+  pkg_check_modules(PC_JSONC QUIET json-c)
+endif()
+
+find_path(JSONC_INCLUDE_DIR
           NAMES json.h
-          HINTS /usr/include /usr/include/json-c)
-FIND_LIBRARY(JSONC_LIBRARY NAMES json-c json)
-MARK_AS_ADVANCED(JSONC_LIBRARY JSONC_INCLUDE_DIR)
+          HINTS ${PC_JSONC_INCLUDE_DIRS}
+                ${JSONC_ROOT}/include
+          PATH_SUFFIXES json-c)
+find_library(JSONC_LIBRARY
+             NAMES json-c json
+             HINTS ${PC_JSONC_LIBRARY_DIRS}
+                   ${JSONC_ROOT}/lib)
+mark_as_advanced(JSONC_LIBRARY JSONC_INCLUDE_DIR)
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(JSONC DEFAULT_MSG JSONC_LIBRARY JSONC_INCLUDE_DIR)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(JSONC DEFAULT_MSG JSONC_LIBRARY JSONC_INCLUDE_DIR)
 
-IF(JSONC_FOUND)
-  SET(JSONC_INCLUDE_DIRS ${JSONC_INCLUDE_DIR})
-  SET(JSONC_LIBRARIES ${JSONC_LIBRARY})
+if(JSONC_FOUND)
+  set(JSONC_INCLUDE_DIRS ${JSONC_INCLUDE_DIR})
+  set(JSONC_LIBRARIES ${JSONC_LIBRARY})
   if(NOT TARGET JSONC::JSONC)
       add_library(JSONC::JSONC UNKNOWN IMPORTED)
       set_target_properties(JSONC::JSONC PROPERTIES
@@ -55,4 +59,4 @@ IF(JSONC_FOUND)
                             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                             IMPORTED_LOCATION "${JSONC_LIBRARY}")
   endif()
-ENDIF()
+endif()

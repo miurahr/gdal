@@ -1,7 +1,7 @@
 # Find DAP - Data Access Protocol library
 # ~~~~~~~~~
 #
-# Copyright (c) 2017, Hiroshi Miura <miurahr@linux.com>
+# Copyright (c) 2017-2018, Hiroshi Miura <miurahr@linux.com>
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
@@ -13,12 +13,6 @@
 #    DAP_SERVER_LIBRARY
 #    DAP_VERSION
 #
-# FIND_PATH and FIND_LIBRARY normally search standard locations
-# before the specified paths. To search non-standard paths first,
-# FIND_* is invoked first with specified paths and NO_DEFAULT_PATH
-# and then again with no specified paths to search the default
-# locations. When an earlier FIND_* succeeds, subsequent FIND_*s
-# searching for the same item do nothing.
 
 # try to use framework on mac
 # want clean framework path, not unix compatibility path
@@ -65,7 +59,7 @@ find_library(DAP_SERVER_LIBRARY
         NAMES dapserver
         HINTS ${PC_DAP_LIBRARY_DIRS}
 )
-MARK_AS_ADVANCED(DAP_INCLUDE_DIR DAP_LIBRARY DAP_CLIENT_LIBRARY DAP_SERVER_LIBRARY)
+mark_as_advanced(DAP_INCLUDE_DIR DAP_LIBRARY DAP_CLIENT_LIBRARY DAP_SERVER_LIBRARY)
 
 if(DAP_INCLUDE_DIR AND DAP_LIBRARY)
     set(DAP_CONFIG_EXE dap-config)
@@ -75,7 +69,7 @@ if(DAP_INCLUDE_DIR AND DAP_LIBRARY)
     )
 endif()
 
-INCLUDE(FindPackageHandleStandardArgs)
+include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(DAP DEFAULT_MSG DAP_LIBRARY DAP_CLIENT_LIBRARY DAP_SERVER_LIBRARY DAP_INCLUDE_DIR)
 
 if(DAP_FOUND)
@@ -106,5 +100,5 @@ if(DAP_FOUND)
                                   IMPORTED_LOCATION "${DAP_SERVER_LIBRARY}")
         endif()
     endif()
-endif(DAP_FOUND)
+endif()
 

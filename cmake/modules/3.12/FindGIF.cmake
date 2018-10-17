@@ -21,27 +21,21 @@
 # The minimum required version of giflib can be specified using the
 # standard syntax, e.g.  find_package(GIF 4)
 #
-# $GIF_DIR is an environment variable that would correspond to the
-# ./configure --prefix=$GIF_DIR
 
 # Created by Eric Wing.
 # Modifications by Alexander Neundorf, Ben Campbell
 
 find_path(GIF_INCLUDE_DIR gif_lib.h
-  HINTS
-    ENV GIF_DIR
-  PATH_SUFFIXES include
-)
+  HINTS ${GIF_ROOT}
+  PATH_SUFFIXES include)
 
 # the gif library can have many names :-/
 set(POTENTIAL_GIF_LIBS gif libgif ungif libungif giflib giflib4)
 
 find_library(GIF_LIBRARY
   NAMES ${POTENTIAL_GIF_LIBS}
-  HINTS
-    ENV GIF_DIR
-  PATH_SUFFIXES lib
-)
+  HINTS ${GIF_ROOT}
+  PATH_SUFFIXES lib)
 
 # see readme.txt
 set(GIF_LIBRARIES ${GIF_LIBRARY})

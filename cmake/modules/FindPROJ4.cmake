@@ -1,27 +1,24 @@
-###############################################################################
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file COPYING-CMAKE-SCRIPTS or https://cmake.org/licensing for details.
+
+#.rst:
+# FindPROJ4
+# ---------
+#
 # CMake module to search for PROJ.4 library
 #
 # On success, the macro sets the following variables:
-# PROJ4_FOUND       = if the library found
-# PROJ4_LIBRARY     = full path to the library
-# PROJ4_INCLUDE_DIR = where to find the library headers 
-# also defined, but not for general use are
-# PROJ4_LIBRARY, where to find the PROJ.4 library.
+# PROJ4_FOUND        = if the library found
+# PROJ4_LIBRARIES    = full path to the library
+# PROJ4_INCLUDE_DIRS = where to find the library headers
 #
 # Copyright (c) 2009 Mateusz Loskot <mateusz@loskot.net>
 # Copyright (c) 2015 NextGIS <info@nextgis.com>
+# Copyright (c) 2018 Hiroshi Miura
 #
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
-###############################################################################
 
-# Search OSGeo4W path when MSVC build
 if(MSVC)
-    SET(PROJ4_OSGEO4W_HOME "C:/OSGeo4W") 
-    IF($ENV{OSGEO4W_HOME})
-        SET(PROJ4_OSGEO4W_HOME "$ENV{OSGEO4W_HOME}")
-    ENDIF()
     set(PROJ4_NAMES proj proj_i)
 elseif(MINGW OR CYGWIN)
     set(PROJ4_NAMES proj libproj-9)
@@ -29,13 +26,13 @@ else()
     set(PROJ4_NAMES proj)
 endif()
 
-FIND_PATH(PROJ4_INCLUDE_DIR proj_api.h
-    PATHS ${PROJ4_OSGEO4W_HOME}/include
+find_path(PROJ4_INCLUDE_DIR proj_api.h
+    PATHS ${PROJ4_ROOT}/include
     DOC "Path to PROJ.4 library include directory")
 
-FIND_LIBRARY(PROJ4_LIBRARY
+find_library(PROJ4_LIBRARY
     NAMES ${PROJ4_NAMES}
-    PATHS ${PROJ4_OSGEO4W_HOME}/lib
+    PATHS ${PROJ4_ROOT}/lib
     DOC "Path to PROJ.4 library file")
 
 if(PROJ4_INCLUDE_DIR)
@@ -67,10 +64,10 @@ find_package_handle_standard_args(PROJ4
                                   REQUIRED_VARS PROJ4_LIBRARY PROJ4_INCLUDE_DIR 
                                   VERSION_VAR PROJ4_VERSION_STRING)
 
-IF(PROJ4_FOUND)
+if(PROJ4_FOUND)
   set(PROJ4_LIBRARIES ${PROJ4_LIBRARY})
   set(PROJ4_INCLUDE_DIRS ${PROJ4_INCLUDE_DIR})
-ENDIF()
+endif()
 
 # Hide internal variables
 mark_as_advanced(
