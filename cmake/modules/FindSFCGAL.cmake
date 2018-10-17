@@ -1,4 +1,10 @@
-#-- SFCGAL finder
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file COPYING-CMAKE-SCRIPTS or https://cmake.org/licensing for details.
+
+#.rst
+# FindSFCGAL
+# ~~~~~~~~~
+# Copyright (C) 2017-2018, Hiroshi Miura
 #
 
 find_program(SFCGAL_CONFIG sfcgal-config DOC "SFCGAL config command")
@@ -61,7 +67,7 @@ select_library_configurations(SFCGAL)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SFCGAL
                                   FOUND_VAR SFCGAL_FOUND
-                                  REQUIRED_VARS SFCGAL_INCLUDE_DIR SFCGAL_LIBRARY
+                                  REQUIRED_VARS SFCGAL_LIBRARY SFCGAL_INCLUDE_DIR
                                   VERSION_VAR SFCGAL_VERSION_STRING
                                   )
 mark_as_advanced(SFCGAL_INCLUDE_DIR SFCGAL_LIBRARY)

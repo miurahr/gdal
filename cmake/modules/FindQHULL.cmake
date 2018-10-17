@@ -1,9 +1,11 @@
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file COPYING-CMAKE-SCRIPTS or https://cmake.org/licensing for details.
+
+#.rst
 # Find QHULL library
 # ~~~~~~~~~
 #
-# Copyright (c) 2017, Hiroshi Miura <miurahr@linux.com>
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+# Copyright (c) 2017,2018, Hiroshi Miura <miurahr@linux.com>
 #
 # If it's found it sets QHULL_FOUND to TRUE
 # and following variables are set:

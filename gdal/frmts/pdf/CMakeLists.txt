@@ -22,9 +22,9 @@ target_include_directories(gdal_PDF PRIVATE
 
 if(HAVE_POPPLER OR HAVE_PODOFO OR HAVE_PDFIUM)
     if(HAVE_POPPLER)
-        target_include_directories(gdal_PDF PRIVATE ${POPPLER_INCLUDE_DIRS})
+        target_include_directories(gdal_PDF PRIVATE ${Poppler_INCLUDE_DIRS})
         target_compile_definitions(gdal_PDF PRIVATE -DHAVE_POPPLER)
-        gdal_target_link_libraries(TARGET gdal_PDF LIBRARIES POPPLER::POPPLER)
+        gdal_target_link_libraries(TARGET gdal_PDF LIBRARIES POPPLER::Poppler)
     endif()
     if(HAVE_PODOFO)
         target_include_directories(gdal_PDF PRIVATE ${PODOFO_INCLUDE_DIR})

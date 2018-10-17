@@ -43,10 +43,8 @@
 # ``LIBXML2_LIBRARY``
 #   path to the LibXml2 library
 
-# use pkg-config to get the directories and then use these values
-# in the find_path() and find_library() calls
 find_package(PkgConfig QUIET)
-PKG_CHECK_MODULES(PC_LIBXML QUIET libxml-2.0)
+pkg_check_modules(PC_LIBXML QUIET libxml-2.0)
 set(LIBXML2_DEFINITIONS ${PC_LIBXML_CFLAGS_OTHER})
 
 find_path(LIBXML2_INCLUDE_DIR NAMES libxml/xpath.h
@@ -88,7 +86,7 @@ set(LIBXML2_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIR} ${PC_LIBXML_INCLUDE_DIRS})
 set(LIBXML2_LIBRARIES ${LIBXML2_LIBRARY})
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibXml2
+find_package_handle_standard_args(LibXml2
                                   REQUIRED_VARS LIBXML2_LIBRARY LIBXML2_INCLUDE_DIR
                                   VERSION_VAR LIBXML2_VERSION_STRING)
 

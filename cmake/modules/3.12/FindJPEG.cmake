@@ -49,7 +49,9 @@
 # ``JPEG_LIBRARY``
 #   where to find the JPEG library.
 
-find_path(JPEG_INCLUDE_DIR jpeglib.h)
+find_path(JPEG_INCLUDE_DIR jpeglib.h
+          HINTS ${JPEG_ROOT}
+          PATH_SUFFIXES include)
 
 set(jpeg_names ${JPEG_NAMES} jpeg jpeg-static libjpeg libjpeg-static)
 foreach(name ${jpeg_names})
@@ -57,8 +59,10 @@ foreach(name ${jpeg_names})
 endforeach()
 
 if(NOT JPEG_LIBRARY)
-  find_library(JPEG_LIBRARY_RELEASE NAMES ${jpeg_names})
-  find_library(JPEG_LIBRARY_DEBUG NAMES ${jpeg_names_debug})
+  find_library(JPEG_LIBRARY_RELEASE NAMES ${jpeg_names}
+               HINTS ${JPEG_ROOT} PATH_SUFFIXES lib)
+  find_library(JPEG_LIBRARY_DEBUG NAMES ${jpeg_names_debug}
+               HINTS ${JPEG_ROOT} PATH_SUFFIXES lib)
   include(SelectLibraryConfigurations)
   select_library_configurations(JPEG)
   mark_as_advanced(JPEG_LIBRARY_RELEASE JPEG_LIBRARY_DEBUG)
