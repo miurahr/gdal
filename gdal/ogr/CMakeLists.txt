@@ -122,7 +122,7 @@ endif()
 if(HAVE_SFCGAL)
     target_include_directories(ogr PRIVATE ${SFCGAL_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_SFCGAL=1)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${SFCGAL_LIBRARIES})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE SFCGAL::SFCGAL)
 endif()
 
 if(HAVE_PROJ4)

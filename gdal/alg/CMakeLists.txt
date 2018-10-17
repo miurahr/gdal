@@ -77,7 +77,7 @@ endif()
 if(HAVE_SFCGAL)
 	target_include_directories(alg PRIVATE ${SFCGAL_INCLUDE_DIRS})
 	target_compile_definitions(alg PRIVATE -DHAVE_SFCGAL=1)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${SFCGAL_LIBRARIES})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE SFCGAL::SFCGAL)
 endif()
 
 if(HAVE_ARMADILLO)
