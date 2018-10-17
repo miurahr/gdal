@@ -138,6 +138,7 @@ if(OGR_ENABLE_GRASS)
 endif()
 
 ogr_dependent_driver(xlsx "Microsoft Office Excel(xlsx)" "HAVE_EXPAT")
+ogr_dependent_driver(xls "Microsoft Office Excel(xls)" "HAVE_FREEXL")
 ogr_optional_driver(mongodb "MongoDB")
 ogr_optional_driver(cad "OpenCAD")
 
