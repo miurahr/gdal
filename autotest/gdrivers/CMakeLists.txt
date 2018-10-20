@@ -18,7 +18,7 @@ foreach(test_target IN ITEMS
         snodas srp srtmhgt terragen test_validate_jp2 tiff_profile til usgsdem
         vicar vrtderived vrtfilt vrtlut vrtmask vrtovr vrtpansharpen vrtrawlink
         vrtwarp wcs webp wms wmts xmp xpm xyz
-        zmap)
+        zmap ignfheightasciigrid)
     add_test(gdriver_${test_target} ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
     set_property(TEST gdriver_${test_target} PROPERTY LABELS gdrivers-test)
     set_autotest_properties(TESTS gdriver_${test_target})

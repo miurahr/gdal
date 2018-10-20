@@ -104,6 +104,7 @@ gdal_format(grib "WMO General Regularly-distributed Information in Binary form")
 gdal_format(pcraster "PCRaster CSF 2.0 raster file driver")
 gdal_format(gif "Graphics Interchange Format")
 gdal_format(bmp "Microsoft Windows Device Independent Bitmap")
+gdal_format(ignfheightasciigrid "IGNF Height ASCII Grid")
 
 # optioal Formats
 gdal_optional_format(bsb "Maptech/NOAA BSB Nautical Chart Format")
@@ -117,7 +118,6 @@ gdal_optional_format(eeda "Earth Engine Data API")
 gdal_optional_format(rda "RDA (DigitalGlobe Raster Data Access)")
 gdal_optional_format(sigdem "Scaled Integer Gridded DEM .sigdem Driver")
 gdal_optional_format(msg "Meteosat Second Generation")
-
 
 # formats with external library dependency
 gdal_dependent_format(fits "FIT Driver" "HAVE_CFITSIO")
