@@ -2,5 +2,5 @@
 
 set -e
 
-cd cmake-build-trusty-clang-full-debug
+cd cmake-build-trusty-clang-debug
 cmake --build . --target autotest

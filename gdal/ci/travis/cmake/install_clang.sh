@@ -2,7 +2,7 @@
 
 set -e
 
-cd cmake-build-trusty-clang-full-debug
+cd cmake-build-trusty-clang-debug
 echo "------------------------------------------"
 echo "Install a gdal library"
 echo "------------------------------------------"
