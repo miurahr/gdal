@@ -25,48 +25,22 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-add_library(alg OBJECT
-        contour.cpp
-        delaunay.c
-        gdal_crs.c
-        gdal_octave.cpp
-        gdal_rpc.cpp
-        gdal_tps.cpp
-        gdalapplyverticalshiftgrid.cpp
-        gdalchecksum.cpp
-        gdalcutline.cpp
-        gdaldither.cpp
-        gdalgeoloc.cpp
-        gdalgrid.cpp
-		gdalgridavx.cpp
-		gdalgridsse.cpp
-		gdallinearsystem.cpp
-		gdalmatching.cpp
-        gdalmediancut.cpp
-		gdalpansharpen.cpp
-        gdalproximity.cpp
-        gdalrasterize.cpp
-        gdalrasterpolygonenumerator.cpp
-        gdalsievefilter.cpp
-        gdalsimplewarp.cpp
-        gdaltransformer.cpp
-		gdaltransformgeolocs.cpp
-        gdalwarper.cpp
-        gdalwarpkernel.cpp
-        gdalwarpoperation.cpp
-        llrasterize.cpp
-        polygonize.cpp
-        rasterfill.cpp
-        thinplatespline.cpp
-        gdal_simplesurf.cpp
-)
 include(GdalStandardIncludes)
+add_library(alg OBJECT
+			contour.cpp delaunay.c gdal_crs.c gdal_octave.cpp gdal_rpc.cpp
+			gdal_tps.cpp gdalapplyverticalshiftgrid.cpp gdalchecksum.cpp gdalcutline.cpp gdaldither.cpp
+			gdalgeoloc.cpp gdalgrid.cpp gdalgridavx.cpp gdalgridsse.cpp gdallinearsystem.cpp
+			gdalmatching.cpp gdalmediancut.cpp gdalpansharpen.cpp gdalproximity.cpp gdalrasterize.cpp
+			gdalrasterpolygonenumerator.cpp gdalsievefilter.cpp gdalsimplewarp.cpp gdaltransformer.cpp
+			gdaltransformgeolocs.cpp gdalwarper.cpp gdalwarpkernel.cpp gdalwarpoperation.cpp llrasterize.cpp
+			polygonize.cpp rasterfill.cpp thinplatespline.cpp gdal_simplesurf.cpp )
 gdal_standard_includes(alg)
 target_include_directories(alg PRIVATE
 						   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/marching_squares>
 						   $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
 						   $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 set_property(TARGET alg PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 if(HAVE_GEOS)
     target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS}
 							   ${GEOS_INCLUDE_DIRS}/capi)
