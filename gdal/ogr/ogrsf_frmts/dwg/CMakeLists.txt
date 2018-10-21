@@ -1,5 +1,5 @@
-add_gdal_driver(TARGET ogr_DWG SOURCES
-                dgnv8_headers.h
+option(OGR_ENABLE_DWG_PLUGIN "Enable plugin for dwg driver" ON)
+set(_SOURCES    dgnv8_headers.h
                 dwg_headers.h
                 ogr_dgnv8.h
                 ogr_dwg.h
@@ -11,6 +11,12 @@ add_gdal_driver(TARGET ogr_DWG SOURCES
                 ogrdwgblockslayer.cpp
                 ogrdwgdatasource.cpp
                 ogrdwgdriver.cpp)
+if(OGR_ENABLE_DWG_PLUGIN)
+    add_gdal_driver(TARGET ogr_DWG SOURCES ${_SOURCES} PLUGIN)
+else()
+    add_gdal_driver(TARGET ogr_DWG SOURCES ${_SOURCES})
+endif()
+unset(_SOURCES)
 gdal_standard_includes(ogr_DWG)
 target_include_directories(ogr_DWG PRIVATE $<TARGET_PROPERTY:ogr_DXF,SOURCE_DIR>
                            ${TEIGHA_INCLUDE_DIR})

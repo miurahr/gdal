@@ -1,13 +1,20 @@
 # HDF5, BAG and HDF5Image
-ADD_GDAL_DRIVER(TARGET gdal_HDF5
-           SOURCES hdf5dataset.h iso19115_srs.h gh5_convenience.h
-                   hdf5dataset.cpp hdf5imagedataset.cpp gh5_convenience.cpp
-                   iso19115_srs.cpp bagdataset.cpp)
-gdal_standard_includes(gdal_HDF5)
+option(GDAL_ENABLE_FRMT_HDF5_PLUGIN "build HDF5 driver as plugin" ON)
+set(_SOURCES hdf5dataset.h iso19115_srs.h gh5_convenience.h
+             hdf5dataset.cpp hdf5imagedataset.cpp gh5_convenience.cpp
+             iso19115_srs.cpp bagdataset.cpp)
+if(GDAL_ENABLE_FRMT_HDF5_PLUGIN)
+    add_gdal_driver(TARGET gdal_HDF5 SOURCES ${_SOURCES} PLUGIN)
+else()
+    add_gdal_driver(TARGET gdal_HDF5 SOURCES ${_SOURCES})
+endif()
+unset(_SOURCES)
 # When build as plugin, initialize all drivers from Register_HDF5
-if(GDAL_ENABLE_PLUGIN)
+if(GDAL_ENABLE_PLUGIN OR GDAL_ENABLE_FRMT_HDF5_PLUGIN)
     target_compile_definitions(gdal_HDF5 PRIVATE -DHDF5_PLUGIN)
 endif()
+
+gdal_standard_includes(gdal_HDF5)
 if(WIN32)
     target_compile_definitions(gdal_HDF5 PRIVATE -DWIN32 -D_HDF5USEDLL_)
 endif()

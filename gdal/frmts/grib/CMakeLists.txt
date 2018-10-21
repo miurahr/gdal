@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_GRIB SOURCES
+add_gdal_driver(TARGET gdal_GRIB SOURCES
                 gribdataset.cpp
                 gribcreatecopy.cpp
                 degrib/degrib/clock.c
@@ -7,8 +7,6 @@ ADD_GDAL_DRIVER(TARGET gdal_GRIB SOURCES
                 degrib/degrib/inventory.cpp
                 degrib/degrib/metaname.cpp
                 degrib/degrib/myerror.c
-                degrib/degrib/filedatasource.cpp
-                degrib/degrib/memorydatasource.cpp
                 degrib/degrib/grib1tab.cpp
                 degrib/degrib/myutil.c
                 degrib/degrib/metaparse.cpp
