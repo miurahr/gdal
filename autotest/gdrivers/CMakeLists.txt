@@ -10,7 +10,7 @@ foreach(test_target IN ITEMS
         jp2lura jp2metadata jp2openjpeg jpeg jpeg2000 jpeg_profile jpegls jpipkak
         kea kmlsuperoverlay kro l1b lan lcp leveller loslas
         mbtiles mem mff mff2 mg4lidar mrf mrsid ndf
-        netcdf netcdf_cf netcdf_cfchecks ngsgeoid nitf ntv1 ntv2 nwt_grc
+        netcdf netcdf_cf ngsgeoid nitf ntv1 ntv2 nwt_grc
         nwt_grd ozi paux pcidsk pcraster pdf pds pds4
         plmosaic png png_profile pnm postgisraster prf r rasdaman
         rasterlite rda rik rl2 rmf roipac rpftoc rraster
