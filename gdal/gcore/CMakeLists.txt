@@ -34,7 +34,6 @@ add_library(gcore OBJECT
         gdalrasterblock.cpp
         gdalcolortable.cpp
         gdalmajorobject.cpp
-        overview.cpp
         gdaldefaultoverviews.cpp
         gdalpamdataset.cpp
         gdalpamrasterband.cpp
@@ -63,13 +62,34 @@ add_library(gcore OBJECT
         gdalabstractbandblockcache.cpp
         gdalarraybandblockcache.cpp
         gdalhashsetbandblockcache.cpp
+            overview.cpp
 )
+
+gdal_standard_includes(gcore)
+target_include_directories(gcore PRIVATE
+                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
+                           $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gnm_frmts,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
+                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
+set_property(TARGET gcore PROPERTY POSITION_INDEPENDENT_CODE ON)
+if(USE_SSE2)
+    target_compile_definitions(gcore PRIVATE -DUSE_SSE2)
+    target_compile_options(gcore PRIVATE -msse2)
+endif()
 
 add_library(gdaldrivermanager OBJECT gdaldrivermanager.cpp)
 gdal_standard_includes(gdaldrivermanager)
 target_compile_definitions(gdaldrivermanager PRIVATE
                            -DINST_DATA="${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_DATADIR}")
 set_property(TARGET gdaldrivermanager PROPERTY POSITION_INDEPENDENT_CODE ON)
+if(HAVE_XERCESC)
+    target_include_directories(gdaldrivermanager PRIVATE ${XercesC_INCLUDE_DIRS}/xercesc)
+    target_compile_definitions(gdaldrivermanager PRIVATE -DHAVE_XERCES)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE XercesC::XercesC)
+endif()
+
 add_library(rasterio OBJECT rasterio.cpp rasterio_ssse3.cpp)
 gdal_standard_includes(rasterio)
 target_include_directories(rasterio PRIVATE $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
@@ -100,15 +120,6 @@ target_public_header(TARGET gdal HEADERS
                     gdal_pam.h
                     gdalsse_priv.h)
 
-gdal_standard_includes(gcore)
-target_include_directories(gcore PRIVATE
-                           $<TARGET_PROPERTY:ogrsf_generic,SOURCE_DIR>
-                           $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
-                           $<TARGET_PROPERTY:gnm_frmts,SOURCE_DIR>
-                           $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
-                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
-                           $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
-set_property(TARGET gcore PROPERTY POSITION_INDEPENDENT_CODE ON)
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gcore PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
@@ -122,6 +133,15 @@ endif()
 
 if(ENABLE_PAM)
 	target_compile_definitions(gcore PRIVATE -DPAM_ENABLED)
+endif()
+if(USE_AVX)
+    target_compile_options(gcore PRIVATE -mavx)
+endif()
+if(USE_AVX2)
+    target_compile_options(gcore PRIVATE -mavx2)
+endif()
+if(USE_SSE4_1)
+    target_compile_options(gcore PRIVATE -msse4.1)
 endif()
 
 add_subdirectory(mdreader)
