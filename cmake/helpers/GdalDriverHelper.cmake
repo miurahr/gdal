@@ -89,7 +89,7 @@
 #   gdal_include_directories(gdal_CALS PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
 
 function(ADD_GDAL_DRIVER)
-    set(_options BUILTIN)
+    set(_options BUILTIN PLUGIN)
     set(_oneValueArgs TARGET DESCRIPTION OPTION_NAME OPTION_DESC)
     set(_multiValueArgs SOURCES)
     cmake_parse_arguments(_DRIVER "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
@@ -101,7 +101,10 @@ function(ADD_GDAL_DRIVER)
         message(FATAL_ERROR "ADD_GDAL_DRIVER(): SOURCES is a mandatory argument.")
     endif()
     # Determine whether plugin or built-in
-    if((NOT GDAL_ENABLE_PLUGIN) OR _DRIVER_BUILTIN)
+    if(_DRIVER_PLUGIN)
+        # When specified PLUGIN, always build as plugin
+        set(_DRIVER_PLUGIN_BUILD TRUE)
+    elseif((NOT GDAL_ENABLE_PLUGIN) OR _DRIVER_BUILTIN)
         set(_DRIVER_PLUGIN_BUILD FALSE)
     else()
         set(_DRIVER_PLUGIN_BUILD TRUE)
