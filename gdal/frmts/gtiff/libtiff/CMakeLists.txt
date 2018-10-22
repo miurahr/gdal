@@ -11,13 +11,19 @@ add_library(libtiff OBJECT
 target_include_directories(libtiff PRIVATE
 						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
 						   $<TARGET_PROPERTY:cpl,BINARY_DIR>)
+target_compile_definitions(libtiff PRIVATE -DDONT_DEPRECATE_SPRINTF)
+
 if(GDAL_USE_LIBZ_INTERNAL)
 	target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
 	target_include_directories(libtiff PRIVATE ZLIB::ZLIB)
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
 endif()
+
+# Always use ZLIB
+#if(USE_ZLIB)
 target_compile_definitions(libtiff PRIVATE -DPIXARLOG_SUPPORT -DZIP_SUPPORT)
+#endif()
 
 if(GDAL_USE_LIBJPEG_INTERNAL)
 	target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
@@ -42,6 +48,12 @@ if(HAVE_ZSTD)
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ZSTD_LIBRARIES})
 endif()
 
+if(HAVE_WEBP)
+    target_compile_definitions(libtiff PRIVATE -DWEBP_SUPPORT)
+	target_include_directories(libtiff PRIVATE ${WEBP_INCLUDE_DIRS})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${WEBP_LIBRARIES})
+endif()
+
 if(RENAME_INTERNAL_LIBTIFF_SYMBOLS)
     target_compile_definitions(libtiff PRIVATE -DRENAME_INTERNAL_LIBTIFF_SYMBOLS)
     target_sources(libtiff PRIVATE gdal_libtiff_symbol_rename.h)
@@ -55,3 +67,15 @@ endif()
 set_target_properties(libtiff PROPERTIES CXX_STANDARD 11)
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:libtiff>)
 set_property(TARGET libtiff PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+#ifeq ($(RENAME_INTERNAL_LIBTIFF_SYMBOLS),yes)
+#../../o/tif_jpeg.$(OBJ_EXT) : tif_jpeg.c t4.h tif_config.h tif_dir.h tif_fax3.h tif_predict.h tiff.h tiffconf.h tiffio.h tiffiop.h tiffvers.h uvcode.h
+#	sed "s/defined(TIFFInitJPEG)/0/" < tif_jpeg.c > tmp_tif_jpeg.c
+#	$(CC) -c -I../../port $(ALL_C_FLAGS) tmp_tif_jpeg.c -o $@
+#	rm tmp_tif_jpeg.c
+#
+#../../o/tif_jpeg_12.$(OBJ_EXT) : tif_jpeg_12.c t4.h tif_config.h tif_dir.h tif_fax3.h tif_predict.h tiff.h tiffconf.h tiffio.h tiffiop.h tiffvers.h uvcode.h
+#	sed "s/#  define TIFFInitJPEG/#undef TIFFInitJPEG\n#  define TIFFInitJPEG/" < tif_jpeg_12.c > tmp_tif_jpeg_12.c
+#	$(CC) -c -I../../port $(ALL_C_FLAGS) tmp_tif_jpeg_12.c -o $@
+#	rm tmp_tif_jpeg_12.c
+#endif
