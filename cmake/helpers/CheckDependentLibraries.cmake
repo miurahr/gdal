@@ -207,6 +207,18 @@ mark_as_advanced(SPATIALITE_AMALGAMATION)
 gdal_check_package(Rasterlite2 "Enable rasterlite2 support for sqlite3")
 gdal_check_package(LIBKML "")
 gdal_check_package(Jasper "Enable JPEG2000 support")
+
+if(HAVE_JASPER)
+    # Detect GeoJP2 UUID hack
+    include(CheckCSourceCompiles)
+    set(CMAKE_REQUIRED_QUIET "yes")
+    set(CMAKE_REQUIRED_LIBRARIES jasper)
+    check_c_source_compiles("#ifdef __cplusplus\nextern \"C\"\n#endif\n char jp2_encode_uuid ();int main () {return jp2_encode_uuid ();;return 0;}" HAVE_JASPER_UUID)
+    if(HAVE_JASPER_UUID)
+        message(STATUS "Jasper GeoJP2 UUID hack detected.")
+    endif()
+endif()
+
 gdal_check_package(PROJ4 "")
 gdal_check_package(WebP "")
 gdal_check_package(FreeXL "Enable XLS driver")
