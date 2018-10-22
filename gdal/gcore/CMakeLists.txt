@@ -62,7 +62,7 @@ add_library(gcore OBJECT
         gdalabstractbandblockcache.cpp
         gdalarraybandblockcache.cpp
         gdalhashsetbandblockcache.cpp
-            overview.cpp
+        overview.cpp
 )
 
 gdal_standard_includes(gcore)
@@ -74,10 +74,6 @@ target_include_directories(gcore PRIVATE
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 set_property(TARGET gcore PROPERTY POSITION_INDEPENDENT_CODE ON)
-if(USE_SSE2)
-    target_compile_definitions(gcore PRIVATE -DUSE_SSE2)
-    target_compile_options(gcore PRIVATE -msse2)
-endif()
 
 add_library(gdaldrivermanager OBJECT gdaldrivermanager.cpp)
 gdal_standard_includes(gdaldrivermanager)
@@ -95,10 +91,6 @@ gdal_standard_includes(rasterio)
 target_include_directories(rasterio PRIVATE $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)
 set_property(TARGET rasterio PROPERTY POSITION_INDEPENDENT_CODE ON)
-if(USE_SSSE3)
-    target_compile_definitions(rasterio PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
-    target_compile_options(rasterio PRIVATE -mssse3 -ftrapv -fno-operator-names)
-endif()
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:gcore>
                             $<TARGET_OBJECTS:gdaldrivermanager>
                             $<TARGET_OBJECTS:rasterio>)
@@ -139,6 +131,14 @@ if(USE_AVX)
 endif()
 if(USE_AVX2)
     target_compile_options(gcore PRIVATE -mavx2)
+endif()
+if(USE_SSE2)
+    target_compile_definitions(gcore PRIVATE -DUSE_SSE2)
+    target_compile_options(gcore PRIVATE -msse2)
+endif()
+if(USE_SSSE3)
+    target_compile_definitions(rasterio PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
+    target_compile_options(rasterio PRIVATE -mssse3 -ftrapv -fno-operator-names)
 endif()
 if(USE_SSE4_1)
     target_compile_options(gcore PRIVATE -msse4.1)
