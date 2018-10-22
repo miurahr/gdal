@@ -94,7 +94,10 @@ if(BUILD_APPS)
         add_executable(gnmanalyse gnmanalyse.cpp)
         add_executable(gnmmanage gnmmanage.cpp)
         list(APPEND APPS_TARGETS gnmanalyse gnmmanage)
+        target_include_directories(gnmanalyse PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
+        target_include_directories(gnmmanage PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
     endif()
+
     add_custom_target(gdalapps DEPENDS ${APPS_TARGETS})
     foreach(UTILCMD IN ITEMS ${APPS_TARGETS})
         gdal_standard_includes(${UTILCMD})
@@ -129,8 +132,6 @@ if(BUILD_APPS)
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-    target_include_directories(gnmanalyse PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
-    target_include_directories(gnmmanage PRIVATE $<TARGET_PROPERTY:gnm,SOURCE_DIR>)
 
     # NON-Default Apps
     add_executable(dumpoverviews EXCLUDE_FROM_ALL dumpoverviews.cpp)
