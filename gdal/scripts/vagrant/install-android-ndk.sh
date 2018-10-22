@@ -2,7 +2,8 @@
 
 set -o errexit
 
-NDK=android-ndk-r17b
+NDK=android-ndk-r18b
+#NDK=android-ndk-r17b
 #NDK=android-ndk-r16b
 #NDK=android-ndk-r15c
 #NDK=android-ndk-r14b

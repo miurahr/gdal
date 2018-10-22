@@ -3,7 +3,7 @@
 # abort install if any errors occur and enable tracing
 set -o errexit
 CMAKEVER=3.12
-CMAKEREV=1
+CMAKEREV=3
 
 echo "Downloading cmake binary package version ${CMAKEVER}.${CMAKEREV}..."
 wget -nc -c -P /var/cache/wget https://cmake.org/files/v${CMAKEVER}/cmake-${CMAKEVER}.${CMAKEREV}-Linux-x86_64.tar.gz
