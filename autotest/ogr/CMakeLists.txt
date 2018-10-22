@@ -13,14 +13,15 @@ foreach(test_target IN ITEMS
         ogr_shape_qix ogr_shape_sbn ogr_sosi ogr_sql_rfc28 ogr_sql_sqlite ogr_sql_test ogr_style
         ogr_sua ogr_svg ogr_sxf ogr_tiger ogr_vdv ogr_vfk ogr_virtualogr ogr_vrt
         ogr_wasp ogr_wfs ogr_wfs3 ogr_wkbwkt_geom ogr_wktempty ogr_xls ogr_xlsx ogr_xplane
-        ograpi ogr_gft ogr_gml_read ogr_gmlas ogr_oci ogr_plscenes ogr_shape ogr_sqlite
+        ograpispy ogr_gft ogr_gml_read ogr_gmlas ogr_oci ogr_plscenes ogr_shape ogr_sqlite
        )
     add_test(${test_target} ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
     set_property(TEST ${test_target} PROPERTY LABELS ogr-test)
     set_autotest_properties(TESTS ${test_target})
 endforeach()
-foreach(test_target IN ITEMS ogr_carto ogr_gft ogr_sql_sqlite ogr_gpkg ogr_gml_read ogr_gmlas ogr_libkml ogr_oci ogr_mitab ogr_plscenes ogr_shape ogr_sqlite)
+foreach(test_target IN ITEMS ogr_carto ogr_gft ogr_sql_sqlite ogr_gpkg ogr_gml_read ogr_libkml ogr_oci ogr_mitab ogr_plscenes ogr_shape ogr_sqlite)
     set_property(TEST ${test_target} PROPERTY TIMEOUT 20)
 endforeach()
 set_property(TEST ogr_gft PROPERTY TIMEOUT 30)
+set_property(TEST ogr_gmlas PROPERTY TIMEOUT 40)
 set_property(TEST ogr_cloudant PROPERTY TIMEOUT 30)
