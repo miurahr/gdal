@@ -122,29 +122,27 @@ else()
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARY})
 endif()
 
-if(GDAL_USE_LIBZ)
-	target_compile_definitions(cpl PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
-    target_public_header(TARGET gdal HEADERS
-                          cpl_minizip_ioapi.h
-						  cpl_minizip_unzip.h
-						  cpl_minizip_zip.h
-						  )
-	target_sources(cpl PRIVATE
-		cpl_vsil_gzip.cpp
-		cpl_minizip_ioapi.cpp
-		cpl_minizip_unzip.cpp
-		cpl_minizip_zip.cpp
-	)
-	if(GDAL_USE_LIBZ_INTERNAL)
-		target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
-	else()
-        target_include_directories(cpl PRIVATE ${ZLIB_INCLUDE_DIRS})
-        target_compile_definitions(cpl PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
-        if(MSVC)
-            target_compile_definitions(cpl PRIVATE -DZLIB_DLL)
-        endif(MSVC)
-	    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
-	endif()
+target_compile_definitions(cpl PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
+target_public_header(TARGET gdal HEADERS
+                      cpl_minizip_ioapi.h
+                      cpl_minizip_unzip.h
+                      cpl_minizip_zip.h
+                      )
+target_sources(cpl PRIVATE
+    cpl_vsil_gzip.cpp
+    cpl_minizip_ioapi.cpp
+    cpl_minizip_unzip.cpp
+    cpl_minizip_zip.cpp
+)
+if(GDAL_USE_LIBZ_INTERNAL)
+    target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
+else()
+    target_include_directories(cpl PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_compile_definitions(cpl PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
+    if(MSVC)
+        target_compile_definitions(cpl PRIVATE -DZLIB_DLL)
+    endif(MSVC)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
 endif()
 
 if(HAVE_CURL)
