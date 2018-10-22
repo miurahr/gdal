@@ -23,9 +23,10 @@ foreach(test_target IN ITEMS
     set_property(TEST gdriver_${test_target} PROPERTY LABELS gdrivers-test)
     set_autotest_properties(TESTS gdriver_${test_target})
 endforeach()
-foreach(test_target IN ITEMS gdalhttp georaster mbtiles wms dods gpkg jp2openjpeg nitf pdf pds4 rl2 rmf sentinel2 vrtderived wcs wmts)
+foreach(test_target IN ITEMS ecw gdalhttp grib mbtiles wms dods gpkg jp2openjpeg nitf pdf pds4 rl2 rmf sentinel2
+        vrtpansharpen vrtderived wcs wmts)
     set_property(TEST gdriver_${test_target} PROPERTY TIMEOUT 20)
 endforeach()
 set_property(TEST gdriver_georaster PROPERTY TIMEOUT 40)
 set_property(TEST gdriver_mrf PROPERTY TIMEOUT 30)
-set_property(TEST gdriver_wms PROPERTY TIMEOUT 30)
+set_property(TEST gdriver_wms PROPERTY TIMEOUT 60)
