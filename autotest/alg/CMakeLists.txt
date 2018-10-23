@@ -6,3 +6,4 @@ foreach(test_target IN ITEMS
     set_property(TEST alg_${test_target} PROPERTY LABELS alg-test)
     set_autotest_properties(TESTS alg_${test_target})
 endforeach()
+set_property(TEST alg_warp PROPERTY TIMEOUT 10)

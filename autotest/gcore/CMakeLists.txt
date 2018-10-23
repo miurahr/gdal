@@ -11,7 +11,7 @@ foreach(test_target IN ITEMS
     set_property(TEST gcore_${test_target} PROPERTY LABELS gcore-test)
     set_autotest_properties(TESTS gcore_${test_target})
 endforeach()
-foreach(test_target IN ITEMS gdal_api_proxy misc rasterio thread_test tiff_ovr tiff_read tiff_srs tiff_write virtualmem
+foreach(test_target IN ITEMS gdal_api_proxy hdf4_read misc rasterio thread_test tiff_ovr tiff_read tiff_srs tiff_write virtualmem
         vsiaz vsicurl vsicurl_streaming vsigs vsioss vsis3 vsiwebhdfs)
     set_property(TEST gcore_${test_target} PROPERTY TIMEOUT 20)
 endforeach()

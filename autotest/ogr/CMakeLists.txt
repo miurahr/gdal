@@ -19,7 +19,8 @@ foreach(test_target IN ITEMS
     set_property(TEST ${test_target} PROPERTY LABELS ogr-test)
     set_autotest_properties(TESTS ${test_target})
 endforeach()
-foreach(test_target IN ITEMS ogr_carto ogr_gft ogr_sql_sqlite ogr_gpkg ogr_gml_read ogr_libkml ogr_oci ogr_mitab ogr_plscenes ogr_shape ogr_sqlite)
+foreach(test_target IN ITEMS ogr_carto ogr_dgn ogr_gft ogr_sql_sqlite ogr_gpkg ogr_gml_read ogr_libkml ogr_nas ogr_ntf
+        ogr_ogdi ogr_oci ogr_mitab ogr_plscenes ogr_shape ogr_sqlite)
     set_property(TEST ${test_target} PROPERTY TIMEOUT 20)
 endforeach()
 set_property(TEST ogr_gft PROPERTY TIMEOUT 30)
