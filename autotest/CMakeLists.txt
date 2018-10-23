@@ -33,7 +33,9 @@ enable_testing()
 
 option(AUTOTEST_DOWNLOAD_TEST_DATA "Autotest to download test data" OFF)
 option(AUTOTEST_SLOW_TEST "Autotest to run slow test" OFF)
-
+if(NOT DEFINED ENV{CTEST_PARALLEL_LEVEL})
+    set(PARALLEL_OPTION "-j1")
+endif()
 set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_LIST_DIR}")
 add_subdirectory(cpp)
 
@@ -46,7 +48,7 @@ if(NOT DEFINED Python_EXECUTABLE)
 endif()
 
 function(set_autotest_properties)
-    cmake_parse_arguments(_SAP "" "TIMEOUT" "TESTS" ${ARGN})
+    cmake_parse_arguments(_SAP "SLOW_TESTS;DOWNLOAD_TEST_DATA" "TIMEOUT" "TESTS" ${ARGN})
     get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
     if(_SAP_TIMEOUT)
         set(TTO ${_SAP_TIMEOUT})
@@ -67,23 +69,21 @@ function(set_autotest_properties)
                 "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
         )
 
-    if(AUTOTEST_DOWNLOAD_TEST_DATA)
-        list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=1)
+    if(_SAP_DOWNLOAD_TEST_DATA)
+        list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=YES)
+    else()
+        list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=NO)
     endif()
-    if(AUTOTEST_SLOW_TEST)
-        list(APPEND _TEST_ENV GDAL_SLOW_TESTSA=1)
-        set_tests_properties(${_SAP_TESTS}
-                             PROPERTIES
-                             ENVIRONMENT "${_TEST_ENV}"
-                             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-                             TIMEOUT ${TTO})
-     else()
-        set_tests_properties(${_SAP_TESTS}
-                             PROPERTIES
-                             ENVIRONMENT "${_TEST_ENV}"
-                             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-                             TIMEOUT ${TTO})
+    if(_SAP_SLOW_TESTS)
+        list(APPEND _TEST_ENV GDAL_RUN_SLOW_TESTS=YES)
+    else()
+        list(APPEND _TEST_ENV GDAL_RUN_SLOW_TESTS=NO)
     endif()
+    set_tests_properties(${_SAP_TESTS}
+                         PROPERTIES
+                         ENVIRONMENT "${_TEST_ENV}"
+                         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+                         TIMEOUT ${TTO})
 endfunction()
 
 if(DEFINED Python_EXECUTABLE)
@@ -95,7 +95,7 @@ if(DEFINED Python_EXECUTABLE)
     add_subdirectory(gnm)
     add_subdirectory(utilities)
     add_subdirectory(pyscripts)
-    add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -L "\"(gcore|gdrivers|alg|osr|ogr|utilities|pyscripts)-test\""
+    add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} -L "\"(gcore|gdrivers|alg|osr|ogr|utilities|pyscripts)-test\""
                       --force-new-ctest-process --output-on-failure)
 
     # compat definitions
@@ -139,12 +139,12 @@ add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-pro
                 testblockcachelimits
                 testmultithreadedwriting
                 testdestroy)
-add_custom_target(test_misc COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R '^testa-.*'
+add_custom_target(test_misc COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} --force-new-ctest-process --output-on-failure -R '^testa-.*'
         DEPENDS
             test_include_from_c_file
             test_c_include_from_cpp_file
             testperfcopywords)
-add_custom_target(test_sse COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R '^testsse.*'
+add_custom_target(test_sse COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} --force-new-ctest-process --output-on-failure -R '^testsse.*'
         DEPENDS
             testsse1
             testsse2
