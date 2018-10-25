@@ -15,7 +15,7 @@ target_compile_definitions(gdal_ECW_JP2ECW PRIVATE
 gdal_target_link_libraries(TARGET gdal_ECW_JP2ECW LIBRARIES
                            ECW::ECW ECW::ECWC ECW::ECWnet ECW::NCSUtil)
 
-if(HAVE_ECW_BUILDNUMBER_H)
+if(ECW_BUILDNUMBER_H)
     target_compile_definitions(gdal_ECW_JP2ECW PRIVATE -DHAVE_ECW_BUILDNUMBER_H)
 endif()
 
