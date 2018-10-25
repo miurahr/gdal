@@ -54,18 +54,16 @@ Known issues and ToDo things(help wanted)
   * Mingw: known error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
   * Global variables HAVE_* still exists which is not good for Modern CMake way
   * Some autotest cases are not passed yet
-    * numpy_rw_5(blowup)
-    * gcore:rasterio_9,11,12,13(w/ sse2 and ssse3)(blowup)
-    * tiff_ovr_32, tiff_direct_and_virtual_mem_io, vrt_read_23(blowup)
-    * tiff_srs_proj4_of_epsg_2066,2057,2056,3994
-    * tiff_read_one_band_from_two_bands
-    * gdrivers_georaster
-    * gdrivers:gpkg_18,22-26,32,43,45(checksums)
-    * gdrivers:rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
-    * ogr_rfc41_7, ogr_rfc41_8, ogr_gpkg_wal, ogr_gft_read, ogr_gft_write
+    * gcore: tiff_srs
+    * gdrivers: georaster, loslas, nwt_grd, rl2, wms
+    * ogr: ogr_as_sqlite_extension
+    * ogr: ogr_idrisi(on mac osx)
+    * utilities: test_gdalwarp, test_gdalwarp_lib, test_ogr2ogr_lib, test_ogrinfo(on mac osx)
+    * pyscripts: test_gdal_polygonize, test_gdal_retile(on mac osx)
 
 - ToDo
   * Test and fix for proprietary drivers
+    * ERDAS ECW
     * Oracle Spatial
     * Kakadu
     * LULA
