@@ -29,7 +29,7 @@
 #      name ogr_* as vector one.
 #  and lookup register function from filename.
 #
-#  Symptoms ADD_GDAL_DRIVER( TARGET <target_name>
+#  Symptoms add_gdal_driver( TARGET <target_name>
 #                            [SOURCES <source file> [<source file>[...]]]
 #                            [BUILTIN]
 #                          )
@@ -40,7 +40,7 @@
 #
 #  All in one macro; not recommended.
 #
-#  Symptoms GDAL_DRIVER( TARGET <target_name>
+#  Symptoms gdal_driver( TARGET <target_name>
 #                        [SOURCES <source file> [<source file>[...]]]
 #                        [INCLUDES <include_dir> [<include dir2> [...]]]
 #                        [LIBRARIES <library1> [<library2> [...]][
@@ -88,7 +88,7 @@
 #   gdal_standard_includes(gdal_CALS)
 #   gdal_include_directories(gdal_CALS PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
 
-function(ADD_GDAL_DRIVER)
+function(add_gdal_driver)
     set(_options BUILTIN PLUGIN)
     set(_oneValueArgs TARGET DESCRIPTION OPTION_NAME OPTION_DESC)
     set(_multiValueArgs SOURCES)
@@ -149,7 +149,7 @@ function(ADD_GDAL_DRIVER)
 endfunction()
 
 # Detect whether driver is built as PLUGIN or not.
-function(IS_PLUGIN _result _target)
+function(is_plugin _result _target)
     get_property(_PLUGIN_MODULES GLOBAL PROPERTY PLUGIN_MODULES)
     list(FIND _PLUGIN_MODULES ${_target} _IS_DRIVER_PLUGIN)
     if(_IS_DRIVER_PLUGIN EQUAL -1)
@@ -159,7 +159,7 @@ function(IS_PLUGIN _result _target)
     endif()
 endfunction()
 
-function(GDAL_TARGET_LINK_LIBRARIES)
+function(gdal_target_link_libraries)
     set(_oneValueArgs TARGET)
     set(_multiValueArgs LIBRARIES)
     cmake_parse_arguments(_DRIVER "" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
@@ -169,7 +169,7 @@ function(GDAL_TARGET_LINK_LIBRARIES)
     if(NOT _DRIVER_LIBRARIES)
         message(FATAL_ERROR "GDAL_TARGET_LINK_LIBRARIES(): LIBRARIES is a mandatory argument.")
     endif()
-    IS_PLUGIN(RES ${_DRIVER_TARGET})
+    is_plugin(RES ${_DRIVER_TARGET})
     if(RES)
         target_link_libraries(${_DRIVER_TARGET} PRIVATE ${_DRIVER_LIBRARIES})
     else()
@@ -177,8 +177,8 @@ function(GDAL_TARGET_LINK_LIBRARIES)
     endif()
 endfunction()
 
-include(GdalStandardIncludes)
-macro(GDAL_DRIVER_STANDARD_INCLUDES _TARGET)
+macro(gdal_driver_standard_includes _TARGET)
+    include(GdalStandardIncludes)
     gdal_standard_includes(${_TARGET})
 endmacro()
 
@@ -191,14 +191,14 @@ endmacro()
 
 include(CMakeDependentOption)
 
-# GDAL_DEPENDENT_FORMAT(format desc depend) do followings:
+# gdal_dependent_format(format desc depend) do followings:
 # - add subdirectory 'format'
 # - define option "GDAL_ENABLE_FRMT_NAME" then set to default OFF/ON
 # - when enabled, add definition"-DFRMT_format"
 # - when dependency specified by depend fails, force OFF
-macro(GDAL_DEPENDENT_FORMAT format desc depends)
+macro(gdal_dependent_format format desc depends)
     string(TOUPPER ${format} key)
-    CMAKE_DEPENDENT_OPTION(GDAL_ENABLE_FRMT_${key} "Set ON to build ${desc} format" ON
+    cmake_dependent_option(GDAL_ENABLE_FRMT_${key} "Set ON to build ${desc} format" ON
                            "${depends}" OFF)
     add_feature_info(gdal_${key} GDAL_ENABLE_FRMT_${key} "${desc}")
     if(GDAL_ENABLE_FRMT_${key})
@@ -222,14 +222,14 @@ macro(gdal_optional_format format desc)
     endif()
 endmacro()
 
-# OGR_DEPENDENT_DRIVER(NAME desc depend) do followings:
+# ogr_dependent_driver(NAME desc depend) do followings:
 # - define option "OGR_ENABLE_<name>" with default OFF
 # - add subdirectory 'name'
 # - when dependency specified by depend fails, force OFF
 
-macro(OGR_DEPENDENT_DRIVER name desc depend)
+macro(ogr_dependent_driver name desc depend)
     string(TOUPPER ${name} key)
-    CMAKE_DEPENDENT_OPTION(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" ON
+    cmake_dependent_option(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" ON
                            "${depend}" OFF)
     add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     if (OGR_ENABLE_${key})
@@ -237,10 +237,10 @@ macro(OGR_DEPENDENT_DRIVER name desc depend)
     endif()
 endmacro()
 
-# OGR_OPTIONAL_DRIVER(name desc) do followings:
+# ogr_optional_driver(name desc) do followings:
 # - define option "OGR_ENABLE_<name>" with default OFF
 # - add subdirectory 'name' when enabled
-macro(OGR_OPTIONAL_DRIVER name desc)
+macro(ogr_optional_driver name desc)
     string(TOUPPER ${name} key)
     option(OGR_ENABLE_${key} "Set ON to build OGR ${desc} driver" OFF)
     add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
@@ -249,23 +249,23 @@ macro(OGR_OPTIONAL_DRIVER name desc)
     endif()
 endmacro()
 
-# OGR_DEFAULT_DRIVER(name desc)
+# ogr_default_driver(name desc)
 # - set "OGR_ENABLE_<name>" is ON but configurable.
 # - add subdirectory "name"
-macro(OGR_DEFAULT_DRIVER name desc)
+macro(ogr_default_driver name desc)
     string(TOUPPER ${name} key)
     set(OGR_ENABLE_${key} ON CACHE BOOL "${desc}" FORCE)
     add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     add_subdirectory(${name})
 endmacro()
-macro(OGR_DEFAULT_DRIVER2 name key desc)
+macro(ogr_default_driver2 name key desc)
     set(OGR_ENABLE_${key} ON CACHE BOOL "${desc}" FORCE)
     add_feature_info(ogr_${key} OGR_ENABLE_${key} "${desc}")
     add_subdirectory(${name})
 endmacro()
 
 
-macro(GDAL_DRIVER)
+macro(gdal_driver)
     set(_options BUILTIN)
     set(_oneValueArgs TARGET)
     set(_multiValueArgs SOURCES INCLUDES LIBRARIES DEFINITIONS)
@@ -277,16 +277,16 @@ macro(GDAL_DRIVER)
         message(FATAL_ERROR "GDAL_DRIVER(): SOURCES is a mandatory argument.")
     endif()
     if(_DRIVER_FORCE_BUILTIN)
-        ADD_GDAL_DRIVER(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES} BUILTIN)
+        add_gdal_driver(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES} BUILTIN)
     else()
-        ADD_GDAL_DRIVER(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES})
+        add_gdal_driver(TARGET ${_DRIVER_TARGET} SOURCES ${_DRIVER_SOURCES})
     endif()
     gdal_driver_standard_includes(${_DRIVER_TARGET})
     if(_DRIVER_INCLUDES)
         target_include_directories(${_DRIVER_TARGET} PRIVATE ${_DRIVER_INCLUDES})
     endif()
     if(_DRIVER_LIBRARIES)
-        GDAL_target_link_libraries(TARGET ${_DRIVER_TARGET} LIBRARIES ${_DRIVER_LIBRARIES})
+        gdal_target_link_libraries(TARGET ${_DRIVER_TARGET} LIBRARIES ${_DRIVER_LIBRARIES})
     endif()
     if(_DRIVER_DEFINITIONS)
         target_compile_definitions(${_DRIVER_TARGET} PRIVATE ${_DRIVER_DEFINITIONS})
