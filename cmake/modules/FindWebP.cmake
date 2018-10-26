@@ -6,35 +6,32 @@
 #  WEBP_INCLUDE_DIR - The libgta include directory
 #  WEBP_LIBRARIES - The libraries needed to use libgta
 
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_WEBP QUIET libwebp)
+    set(WEBP_VERSION_STRING ${PC_WEBP_VERSION})
+endif()
 
-IF(WEBP_INCLUDE_DIR AND WEBP_LIBRARY)
-    # in cache already
-    SET(WEBP_FIND_QUIETLY TRUE)
-ENDIF()
+find_path(WEBP_INCLUDE_DIR webp/encode.h HINTS ${PC_WEBP_INCLUDE_DIRS})
 
-FIND_PACKAGE(PkgConfig QUIET)
-IF(PKG_CONFIG_FOUND)
-    # try using pkg-config to get the directories and then use these values
-    # in the FIND_PATH() and FIND_LIBRARY() calls
-    PKG_CHECK_MODULES(PC_WEBP QUIET libwebp)
-    SET(WEBP_VERSION_STRING ${PC_WEBP_VERSION})
-ENDIF()
+find_library(WEBP_LIBRARY NAMES webp libwebp HINTS ${PC_WEBP_LIBRARY_DIRS})
 
-FIND_PATH(WEBP_INCLUDE_DIR webp/encode.h HINTS ${PC_WEBP_INCLUDE_DIRS})
+mark_as_advanced(WEBP_INCLUDE_DIR WEBP_LIBRARY)
 
-FIND_LIBRARY(WEBP_LIBRARY NAMES webp libwebp HINTS ${PC_WEBP_LIBRARY_DIRS})
-
-MARK_AS_ADVANCED(WEBP_INCLUDE_DIR WEBP_LIBRARY)
-
-# handle the QUIETLY and REQUIRED arguments and set CFITSIO_FOUND to TRUE if
-# all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(WEBP
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(WEBP
     REQUIRED_VARS WEBP_LIBRARY WEBP_INCLUDE_DIR
     VERSION_VAR WEBP_VERSION_STRING
 )
 
-IF(WEBP_FOUND)
-    SET(WEBP_LIBRARIES ${WEBP_LIBRARY})
-    SET(WEBP_INCLUDE_DIRS ${WEBP_INCLUDE_DIR})
-ENDIF()
+if(WEBP_FOUND)
+    set(WEBP_LIBRARIES ${WEBP_LIBRARY})
+    set(WEBP_INCLUDE_DIRS ${WEBP_INCLUDE_DIR})
+    if(NOT TARGET WEBP::WebP)
+        add_library(WEBP::WebP UNKNOWN IMPORTED)
+        set_target_properties(WEBP::WebP PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES ${WEBP_INCLUDE_DIRS}
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION ${WEBP_LIBRARIES})
+    endif()
+endif()

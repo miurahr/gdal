@@ -65,6 +65,12 @@ else()
 	gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES ZLIB::ZLIB)
 endif()
 
+if(HAVE_WEBP)
+    target_compile_definitions(gdal_GTIFF PRIVATE -DWEBP_SUPPORT)
+    target_include_directories(gdal_GTIFF PRIVATE ${WEBP_INCLUDE_DIRS})
+    gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES WEBP::WebP)
+endif()
+
 if(HAVE_ZSTD)
     target_compile_definitions(gdal_GTIFF PRIVATE -DZSTD_SUPPORT)
     target_include_directories(gdal_GTIFF PRIVATE ${ZSTD_INCLUDE_DIRS})
