@@ -1,5 +1,5 @@
 foreach(test_target IN ITEMS
-        ogr_arcgen ogr_as_sqlite_extension ogr_avc ogr_basic_test ogr_bna ogr_cad ogr_carto ogr_cloudant
+        ogr_arcgen ogr_avc ogr_basic_test ogr_bna ogr_cad ogr_carto ogr_cloudant
         ogr_couchdb ogr_csv ogr_csw ogr_db2 ogr_db2_hack ogr_dgn ogr_dgnv8 ogr_dods
         ogr_dxf ogr_edigeo ogr_eeda ogr_elasticsearch ogr_factory ogr_feature ogr_fgdb ogr_fgdb_stress_test
         ogr_geoconcept ogr_geojson ogr_geojsonseq ogr_geom ogr_georss ogr_geos ogr_gml_fgd_read
@@ -20,7 +20,7 @@ foreach(test_target IN ITEMS
     set_autotest_properties(TESTS ${test_target})
 endforeach()
 foreach(test_target IN ITEMS ogr_carto ogr_dgn ogr_gft ogr_sql_sqlite ogr_gpkg ogr_gml_read ogr_libkml ogr_nas ogr_ntf
-        ogr_ogdi ogr_oci ogr_mitab ogr_plscenes ogr_shape ogr_sqlite)
+        ogr_ogdi ogr_oci ogr_pdf ogr_mitab ogr_plscenes ogr_shape ogr_sqlite ogr_s57 ogr_tiger)
     set_property(TEST ${test_target} PROPERTY TIMEOUT 20)
 endforeach()
 set_property(TEST ogr_gft PROPERTY TIMEOUT 30)
