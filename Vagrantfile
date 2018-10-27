@@ -168,7 +168,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "sqlite3-pcre",
     "libpcre3-dev",
     "libspatialite-dev",
+    "libsqlite3-mod-spatialite",
     "librasterlite2-dev",
+    "libsqlite3-mod-rasterlite2",
+    "rasterlite2-bin",
     "libkea-dev",
     "libzstd-dev"
   ];
