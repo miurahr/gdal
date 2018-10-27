@@ -152,7 +152,6 @@ ogr_dependent_driver(idb "IDB" "HAVE_IDB")
 if(WIN32)
     ogr_optional_driver(arcobjects ARCOBJECTS)
 endif()
-ogr_optional_driver(mssqlspatial "MSSQLSpatial")
 ogr_optional_driver(ods ODS)
 ogr_dependent_driver(ogdi "OGDI" "HAVE_OGDI;HAVE_PROJ4")
 
