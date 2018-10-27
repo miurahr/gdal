@@ -50,16 +50,18 @@ Known issues and ToDo things(help wanted)
 -----------------------------------------
 
 - Issues
-  * gdal-config returns wrong -libs parameter.
   * Mingw: known error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
-  * Global variables HAVE_* still exists which is not good for Modern CMake way
   * Some autotest cases are not passed yet
-    * gcore: tiff_srs
-    * gdrivers: georaster, loslas, nwt_grd, rl2, wms
-    * ogr: ogr_as_sqlite_extension
-    * ogr: ogr_idrisi(on mac osx)
-    * utilities: test_gdalwarp, test_gdalwarp_lib, test_ogr2ogr_lib, test_ogrinfo(on mac osx)
-    * pyscripts: test_gdal_polygonize, test_gdal_retile(on mac osx)
+    * gcore: tiff_srs_proj4_epsg_*
+    * gdrivers: dods, georaster, kea, loslas, rl2, wms
+    * ogr: avc, gmlas, oci
+    * numerical and other errors on Mac OSX in Travis-CI test
+        * gcore: hfa_rfc40, tiff_write_13, rasterio
+        * gdrivers: aigrid, ozi, pcidsk, usgsdem 
+        * alg: applyverticalshiftgrid, reproject, warp
+        * ogr: avc, idrisi, osm, pds, rfc41
+        * utilities: test_gdalwarp, test_gdalwarp_lib, test_ogr2ogr_lib
+        * pyscripts: test_gdal_polygonize, test_gdal_retile
 
 - ToDo
   * Test and fix for proprietary drivers
