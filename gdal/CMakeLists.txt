@@ -199,8 +199,10 @@ configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
 ################################################################################
 #
 # gdal-config utility command generation
-include(GenerateGdalConfig)
-generate_gdal_config()
+if(UNIX AND NOT MACOSX_FRAMEWORK)
+    include(GenerateGdalConfig)
+    generate_gdal_config()
+endif()
 
 set_property(TARGET gdal APPEND PROPERTY PUBLIC_HEADER ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h)
 
