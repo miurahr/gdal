@@ -1,15 +1,6 @@
 #!/bin/sh
 
 cd cmake-build-osx-debug
-cmake --build .
-err=$?
-if [ $err -eq 0 ]
-then
-echo "success to bulid"
-else
-echo "fails to bulid"
-exit 1
-fi
 
 env GDAL_SKIP=JP2ECW cmake --build . --target quicktest
 err=$?
@@ -19,7 +10,7 @@ echo "quick test success"
 else
 echo "quick test fails"
 cat autotest/Testing/Temporary/LastTest.log
-exit 2
+exit 1
 fi
 
 cmake --build . --target gdalapps
@@ -36,6 +27,6 @@ echo "test success"
 else
 echo "test fails"
 cat autotest/Testing/Temporary/LastTest.log
-exit 3
+exit 2
 fi
 
