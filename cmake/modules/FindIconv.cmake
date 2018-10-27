@@ -138,61 +138,12 @@ else()
 endif()
 
 IF(Iconv_FOUND)
-  set(CMAKE_REQUIRED_INCLUDES ${Iconv_INCLUDE_DIR})
-  set(CMAKE_REQUIRED_LIBRARIES ${Iconv_LIBRARY})
-  if(MSVC)
-      set(CMAKE_REQUIRED_FLAGS "/WX")
-  else()
-      set(CMAKE_REQUIRED_FLAGS "-Werror")
-  endif()
-  set(ICONV_CONST_TEST_CODE "#include <stdlib.h>
-    #include <iconv.h>
-    #ifdef __cplusplus
-    extern \"C\"
-    #endif
-
-    int main(){
-    #if defined(__STDC__) || defined(__cplusplus)
-      iconv_t conv = 0;
-      char* in = 0;
-      size_t ilen = 0;
-      char* out = 0;
-      size_t olen = 0;
-      size_t ret = iconv(conv, &in, &ilen, &out, &olen);
-    #else
-      size_t ret = iconv();
-    #endif
-      return 0;
-    }")
-  if(CMAKE_C_COMPILER_LOADED)
-    check_c_source_compiles("${ICONV_CONST_TEST_CODE}"
-                            _ICONV_SECOND_ARGUMENT_IS_NOT_CONST)
-  elseif(CMAKE_CXX_COMPILER_LOADED)
-    check_cxx_source_compiles("${ICONV_CONST_TEST_CODE}"
-                              _ICONV_SECOND_ARGUMENT_IS_NOT_CONST)
-  endif()
-  if(_ICONV_SECOND_ARGUMENT_IS_NOT_CONST)
-    set(ICONV_CONST "" CACHE STRING "")
-    set(ICONV_CPP_CONST "" CACHE STRING "")
-    set(ICONV_SECOND_ARGUMENT_IS_CONST OFF CACHE BOOL "")
-  else()
-    set(ICONV_CONST CACHE STRING "const")
-    set(ICONV_CPP_CONST CACHE STRING "const")
-    set(ICONV_SECOND_ARGUMENT_IS_CONST ON CACHE BOOL "")
-  endif()
-  unset(ICONV_CONST_TEST_CODE)
-  unset(_ICONV_SECOND_ARGUMENT_IS_NOT_CONST)
-  unset(CMAKE_REQUIRED_INCLUDES)
-  unset(CMAKE_REQUIRED_LIBRARIES)
-  unset(CMAKE_REQUIRED_FLAGS)
-  mark_as_advanced(ICONV_CONST ICONV_CPP_CONST ICONV_SECOND_ARGUMENT_IS_CONST)
-
   set(Iconv_INCLUDE_DIRS "${Iconv_INCLUDE_DIR}")
   set(Iconv_LIBRARIES "${Iconv_LIBRARY}")
   if(NOT TARGET Iconv::Iconv)
     add_library(Iconv::Iconv UNKNOWN IMPORTED)
-    set_property(TARGET Iconv::Iconv PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${Iconv_INCLUDE_DIRS}")
-    set_property(TARGET Iconv::Iconv PROPERTY
+    set_target_properties(Iconv::Iconv PROPERTIES
+                 INTERFACE_INCLUDE_DIRECTORIES "${Iconv_INCLUDE_DIRS}"
                  IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                  IMPORTED_LOCATION "${Iconv_LIBRARIES}")
   endif()
