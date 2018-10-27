@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_SAFE SOURCES safedataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_SAFE)
+add_gdal_driver(TARGET gdal_SAFE SOURCES safedataset.cpp)
+gdal_standard_includes(gdal_SAFE)

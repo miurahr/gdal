@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_WMTS SOURCES wmtsdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_WMTS)
+add_gdal_driver(TARGET gdal_WMTS SOURCES wmtsdataset.cpp)
+gdal_standard_includes(gdal_WMTS)

@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_TSX SOURCES tsxdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_TSX)
+add_gdal_driver(TARGET gdal_TSX SOURCES tsxdataset.cpp)
+gdal_standard_includes(gdal_TSX)

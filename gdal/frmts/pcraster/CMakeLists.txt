@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_PCRaster SOURCES
+add_gdal_driver(TARGET gdal_PCRaster SOURCES
         pcrasterdataset.h
         pcrasterrasterband.h
         pcrasterutil.h

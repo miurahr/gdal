@@ -1,18 +1,8 @@
 # depends from ogr/sdts
-ADD_GDAL_DRIVER(TARGET gdal_SDTS SOURCES
-                sdts_al.h
-        sdtsiref.cpp
-        sdtscatd.cpp
-        sdtslinereader.cpp
-        sdtslib.cpp
-        sdtspointreader.cpp
-        sdtsattrreader.cpp
-        sdtstransfer.cpp
-        sdtspolygonreader.cpp
-        sdtsxref.cpp
-        sdtsrasterreader.cpp
-        sdtsindexedreader.cpp
-        sdtsdataset.cpp
+add_gdal_driver(TARGET gdal_SDTS SOURCES
+                sdts_al.h sdtsiref.cpp sdtscatd.cpp sdtslinereader.cpp sdtslib.cpp
+                sdtspointreader.cpp sdtsattrreader.cpp sdtstransfer.cpp sdtspolygonreader.cpp
+                sdtsxref.cpp sdtsrasterreader.cpp sdtsindexedreader.cpp sdtsdataset.cpp
                 BUILTIN
 )
 gdal_standard_includes(gdal_SDTS)

@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_vrt BUILTIN SOURCES
+add_gdal_driver(TARGET gdal_vrt BUILTIN SOURCES
                 gdal_vrt.h
                 vrtdataset.h
                 vrtderivedrasterband.cpp
@@ -18,6 +18,6 @@ target_include_directories(gdal_vrt PRIVATE $<TARGET_PROPERTY:gdal_raw,SOURCE_DI
 
 if(HAVE_GEOS)
     target_include_directories(gdal_vrt PRIVATE  ${GEOS_INCLUDE_DIRS})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_vrt LIBRARIES ${GEOS_LIBRARIES})
+    gdal_target_link_libraries(TARGET gdal_vrt LIBRARIES ${GEOS_LIBRARIES})
     target_compile_definitions(gdal_vrt PRIVATE	-DHAVE_GEOS=1)
 endif()

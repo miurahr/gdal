@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_JPEG SOURCES
+add_gdal_driver(TARGET gdal_JPEG SOURCES
                     vsidataio.h
                     jpgdataset.h
                     vsidataio.cpp
@@ -17,12 +17,12 @@ if(GDAL_USE_LIBJPEG_INTERNAL)
 	target_include_directories(gdal_JPEG PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
 	target_include_directories(gdal_JPEG PRIVATE ${JPEG_INCLUDE_DIRS})
-	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_JPEG LIBRARIES JPEG::JPEG)
+	gdal_target_link_libraries(TARGET gdal_JPEG LIBRARIES JPEG::JPEG)
 endif()
 
 if(GDAL_USE_LIBZ_INTERNAL)
 	target_include_directories(gdal_JPEG PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
 	target_include_directories(gdal_JPEG PRIVATE ZLIB::ZLIB)
-	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_JPEG LIBRARIES ZLIB::ZLIB)
+	gdal_target_link_libraries(TARGET gdal_JPEG LIBRARIES ZLIB::ZLIB)
 endif()

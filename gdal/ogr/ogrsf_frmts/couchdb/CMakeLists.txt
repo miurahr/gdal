@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET ogr_CouchDB SOURCES
+add_gdal_driver(TARGET ogr_CouchDB SOURCES
         ogr_couchdb.h
         ogrcouchdbdatasource.cpp
         ogrcouchdbdriver.cpp

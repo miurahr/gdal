@@ -3,4 +3,4 @@ target_include_directories(ogr_SXF PRIVATE $<TARGET_PROPERTY:ogrsf_generic,SOURC
 gdal_standard_includes(ogr_SXF)
 if(USE_CPL)
 	target_compile_definitions(ogr_SXF PRIVATE -DUSE_CPL)
-endif(USE_CPL)
+endif()

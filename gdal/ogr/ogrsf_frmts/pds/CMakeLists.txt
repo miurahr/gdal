@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET ogr_PDS SOURCES
+add_gdal_driver(TARGET ogr_PDS SOURCES
         ogrpdsdatasource.cpp
         ogr_pds.h
         ogrpdsdriver.cpp

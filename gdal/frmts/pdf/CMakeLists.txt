@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_PDF SOURCES
+add_gdal_driver(TARGET gdal_PDF SOURCES
         gdal_pdf.h
         pdfcreatecopy.h
         pdfio.h

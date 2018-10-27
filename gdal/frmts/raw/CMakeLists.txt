@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_raw SOURCES
+add_gdal_driver(TARGET gdal_raw SOURCES
         atlsci_spheroid.h
         rawdataset.h
         ace2dataset.cpp

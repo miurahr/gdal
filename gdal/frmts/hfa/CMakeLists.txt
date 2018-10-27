@@ -1,6 +1,6 @@
 
 #depend from gcore
-ADD_GDAL_DRIVER(TARGET gdal_HFA SOURCES
+add_gdal_driver(TARGET gdal_HFA SOURCES
                 hfa.h
                 hfa_p.h
                 hfadataset.h

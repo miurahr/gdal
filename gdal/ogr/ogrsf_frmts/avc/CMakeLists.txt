@@ -1,5 +1,5 @@
 #depend from frmts/aigrid
-ADD_GDAL_DRIVER(TARGET  ogr_AVCBin
+add_gdal_driver(TARGET  ogr_AVCBin DEF AVC_ENABLED
     SOURCES
         avc.h
         ogr_avc.h

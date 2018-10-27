@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET ogr_MVT SOURCES
+add_gdal_driver(TARGET ogr_MVT SOURCES
                 mvt_tile.cpp mvt_tile.h mvtutils.cpp mvtutils.h
                 ogrmvtdataset.cpp
                 BUILTIN)

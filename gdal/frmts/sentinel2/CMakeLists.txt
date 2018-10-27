@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_SENTINEL2 SOURCES sentinel2dataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_SENTINEL2)
+add_gdal_driver(TARGET gdal_SENTINEL2 SOURCES sentinel2dataset.cpp)
+gdal_standard_includes(gdal_SENTINEL2)

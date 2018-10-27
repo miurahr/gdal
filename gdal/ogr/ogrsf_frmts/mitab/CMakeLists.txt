@@ -1,5 +1,6 @@
 # referenced from frmts/northwood driver
-add_gdal_driver(TARGET ogr_TAB BUILTIN SOURCES
+add_gdal_driver(TARGET ogr_TAB DEF TAB_ENABLED BUILTIN
+                SOURCES
     mitab.h                mitab_geometry.cpp       mitab_mapfile.cpp         mitab_miffile.cpp         mitab_spatialref.cpp   mitab_utils.h
     mitab_bounds.cpp       mitab_geometry.h         mitab_mapheaderblock.cpp  mitab_ogr_datasource.cpp  mitab_tabfile.cpp
     mitab_coordsys.cpp     mitab_idfile.cpp         mitab_mapindexblock.cpp   mitab_ogr_driver.cpp      mitab_tabseamless.cpp
