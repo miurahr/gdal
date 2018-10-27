@@ -68,11 +68,8 @@ function(generate_gdal_config)
     file(GENERATE OUTPUT
          ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
          CONTENT "${GDAL_CONFIG_CONTENT}")
-
-    if(UNIX AND NOT MACOSX_FRAMEWORK)
-        install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
-                DESTINATION bin
-                PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-                COMPONENT applications)
-    endif()
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
+            DESTINATION bin
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+            COMPONENT applications)
 endfunction()
