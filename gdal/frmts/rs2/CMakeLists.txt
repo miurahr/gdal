@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_RS2 SOURCES rs2dataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_RS2)
+add_gdal_driver(TARGET gdal_RS2 SOURCES rs2dataset.cpp)
+gdal_standard_includes(gdal_RS2)

@@ -1,5 +1,5 @@
-ADD_GDAL_DRIVER(TARGET gdal_RIK SOURCES rikdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_RIK)
+add_gdal_driver(TARGET gdal_RIK SOURCES rikdataset.cpp)
+gdal_standard_includes(gdal_RIK)
 
 if(GDAL_USE_LIBZ_INTERNAL)
     target_include_directories(gdal_RIK PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)

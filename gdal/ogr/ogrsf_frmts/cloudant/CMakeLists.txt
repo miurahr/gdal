@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET ogr_Cloudant
+add_gdal_driver(TARGET ogr_Cloudant
         SOURCES ogr_cloudant.h
                 ogrcloudantdatasource.cpp
                 ogrcloudantdriver.cpp

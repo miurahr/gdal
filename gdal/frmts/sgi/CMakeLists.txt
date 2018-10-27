@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_SGI SOURCES sgidataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_SGI)
+add_gdal_driver(TARGET gdal_SGI SOURCES sgidataset.cpp)
+gdal_standard_includes(gdal_SGI)

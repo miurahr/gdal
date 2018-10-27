@@ -1,5 +1,5 @@
 # depends from gpkg, osm
-ADD_GDAL_DRIVER(TARGET ogr_SQLite BUILTIN SOURCES
+add_gdal_driver(TARGET ogr_SQLite BUILTIN SOURCES
         ogr_sqlite.h
         ogrsqlite3ext.h
         ogrsqliteexecutesql.h

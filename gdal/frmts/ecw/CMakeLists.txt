@@ -4,7 +4,7 @@ set(_SOURCES ecwsdk_headers.h gdal_ecw.h
 if(GDAL_ENABLE_ECW_PLUGIN)
     add_gdal_driver(TARGET gdal_ECW_JP2ECW SOURCES ${_SOURCES} PLUGIN)
 else()
-    add_gdal_driver(TARGET gdal_ECW_JP2ECW SOURCES ${_SOURCES})
+    add_gdal_driver(TARGET gdal_ECW_JP2ECW SOURCES ${_SOURCES} DEF FRMT_ecw)
 endif()
 unset(_SOURCES)
 gdal_standard_includes(gdal_ECW_JP2ECW)

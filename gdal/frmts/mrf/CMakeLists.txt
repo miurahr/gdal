@@ -1,12 +1,12 @@
 
-ADD_GDAL_DRIVER(TARGET gdal_MRF SOURCES
+add_gdal_driver(TARGET gdal_MRF SOURCES
                 BitMask2D.h
                 JPEG_band.cpp PNG_band.cpp LERC_band.cpp marfa.h
                 marfa_dataset.cpp mrf_band.cpp mrf_overview.cpp mrf_util.cpp
                 Packer.h Packer_RLE.cpp Packer_RLE.h JPNG_band.cpp
                 Tif_band.cpp Raw_band.cpp
                 BUILTIN)
-GDAL_STANDARD_INCLUDES(gdal_MRF)
+gdal_standard_includes(gdal_MRF)
 
 if(GDAL_JPEG12_SUPPORTED)
     target_sources(gdal_MRF PRIVATE JPEG12_band.cpp)
@@ -17,22 +17,22 @@ if(GDAL_USE_LIBJPEG_INTERNAL)
     target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 else()
     target_include_directories(gdal_MRF PRIVATE ${JPEG_INCLUDE_DIRS})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES JPEG::JPEG)
+    gdal_target_link_libraries(TARGET gdal_MRF LIBRARIES JPEG::JPEG)
 endif()
 
 if(GDAL_USE_LIBPNG_INTERNAL)
     target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libpng,SOURCE_DIR>)
-    TARGET_COMPILE_DEFINITIONS(gdal_MRF PRIVATE -DINTERNAL_PNG)
+    target_compile_definitions(gdal_MRF PRIVATE -DINTERNAL_PNG)
 else()
     target_include_directories(gdal_MRF PRIVATE ${PNG_INCLUDE_DIRS})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES ${PNG_LIBRARIES})
+    gdal_target_link_libraries(TARGET gdal_MRF LIBRARIES ${PNG_LIBRARIES})
 endif()
 
 if(GDAL_USE_LIBZ_INTERNAL)
     target_include_directories(gdal_MRF PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
     target_include_directories(gdal_MRF PRIVATE ${ZLIB_INCLUDE_DIRS})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_MRF LIBRARIES ${ZLIB_LIBRARIES})
+    gdal_target_link_libraries(TARGET gdal_MRF LIBRARIES ${ZLIB_LIBRARIES})
 endif()
 
 if(GDAL_USE_LIBLERC_INTERNAL)

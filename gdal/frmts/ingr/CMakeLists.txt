@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_INGR SOURCES
+add_gdal_driver(TARGET gdal_INGR SOURCES
                 IngrTypes.cpp IngrTypes.h IntergraphBand.cpp IntergraphBand.h IntergraphDataset.cpp IntergraphDataset.h
                 JpegHelper.cpp JpegHelper.h
                 )
@@ -12,5 +12,5 @@ if(GDAL_USE_LIBTIFF_INTERNAL)
     endif()
 else()
     target_include_directories(gdal_INGR PRIVATE ${TIFF_INCLUDE_DIRS})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_INGR LIBRARIES ${TIFF_LIBRARIES})
+    gdal_target_link_libraries(TARGET gdal_INGR LIBRARIES ${TIFF_LIBRARIES})
 endif()

@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_iso8211
+add_gdal_driver(TARGET gdal_iso8211
     SOURCES
         iso8211.h
         ddfmodule.cpp

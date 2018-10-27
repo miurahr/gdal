@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_XYZ SOURCES xyzdataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_XYZ)
+add_gdal_driver(TARGET gdal_XYZ SOURCES xyzdataset.cpp)
+gdal_standard_includes(gdal_XYZ)

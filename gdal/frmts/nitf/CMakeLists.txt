@@ -25,7 +25,7 @@ if(GDAL_USE_LIBTIFF_INTERNAL)
     endif()
 else()
     target_include_directories(gdal_NITF PRIVATE ${TIFF_INCLUDE_DIR})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_NITF LIBRARIES ${TIFF_LIBRARY})
+    gdal_target_link_libraries(TARGET gdal_NITF LIBRARIES ${TIFF_LIBRARY})
 endif()
 
 if(GDAL_USE_LIBJPEG_INTERNAL)

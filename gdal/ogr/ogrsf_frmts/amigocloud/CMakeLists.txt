@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET ogr_AmigoCloud
+add_gdal_driver(TARGET ogr_AmigoCloud
     SOURCES
         ogr_amigocloud.h
         ogramigoclouddatasource.cpp

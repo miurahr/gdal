@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_SAGA SOURCES sagadataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_SAGA)
+add_gdal_driver(TARGET gdal_SAGA SOURCES sagadataset.cpp)
+gdal_standard_includes(gdal_SAGA)

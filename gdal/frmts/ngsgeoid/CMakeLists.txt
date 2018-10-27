@@ -1,2 +1,2 @@
-ADD_GDAL_DRIVER(TARGET gdal_NGSGEOID SOURCES ngsgeoiddataset.cpp)
+add_gdal_driver(TARGET gdal_NGSGEOID SOURCES ngsgeoiddataset.cpp)
 gdal_standard_includes(gdal_NGSGEOID)

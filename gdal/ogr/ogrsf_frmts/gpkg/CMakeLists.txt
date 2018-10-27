@@ -1,6 +1,7 @@
 # GeoPackage has raster and vector drivers in single module
 # and referred from mbtiles driver
-ADD_GDAL_DRIVER(TARGET ogr_GeoPackage SOURCES
+add_gdal_driver(TARGET ogr_GeoPackage DEF GPKG_ENALBED
+                SOURCES
                 ogr_geopackage.h
                 gpkgmbtilescommon.h
                 ogrgeopackageutility.h

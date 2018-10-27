@@ -1,5 +1,5 @@
-ADD_GDAL_DRIVER(TARGET gdal_RDA SOURCES rdadataset.cpp)
-GDAL_STANDARD_INCLUDES(gdal_RDA)
+add_gdal_driver(TARGET gdal_RDA SOURCES rdadataset.cpp)
+gdal_standard_includes(gdal_RDA)
 target_include_directories(gdal_RDA PRIVATE $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>)
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(gdal_RDA PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
