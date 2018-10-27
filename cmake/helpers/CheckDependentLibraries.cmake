@@ -70,7 +70,7 @@ if(_lib)
 endif()
 endfunction()
 
-option(GDAL_USE_ODBC "Set ON to use odbc" OFF)
+option(GDAL_USE_ODBC "Set ON to use odbc" ON)
 option(GDAL_USE_XMLREFORMAT "Set ON to use xmlreformat" OFF)
 
 # basic libaries
