@@ -18,6 +18,7 @@ else()
 endif()
 unset(_SOURCES)
 gdal_standard_includes(ogr_DWG)
+target_compile_definitions(ogr_DWG PRIVATE -DDO_NOT_USE_DEBUG_BOOL)
 target_include_directories(ogr_DWG PRIVATE $<TARGET_PROPERTY:ogr_DXF,SOURCE_DIR>
                            ${TEIGHA_INCLUDE_DIR})
 gdal_target_link_libraries(ogr_DWG LIBRARIES ${TEIGHA_LIBRARIES})
