@@ -11,9 +11,8 @@ add_gdal_driver(TARGET ogr_DB2  SOURCES  ogr_db2.h
 target_include_directories(ogr_DB2 PRIVATE
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
-                           ${DB2_INCLUDE_DIR}
-                           )
-gdal_target_link_libraries(TARGET ogr_DB2 LIBRARIES ${DB2_LIBRARIES})
+                           ${ODBC_INCLUDE_DIR})
+gdal_target_link_libraries(TARGET ogr_DB2 LIBRARIES ODBC::ODBC)
 if(MSVC)
     if(CMAKE_CL_64)
 		target_compile_definitions(libtiff PRIVATE -D_WIN64)
