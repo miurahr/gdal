@@ -2,7 +2,7 @@
 
 # SWIG generates wrapper sources
 include(GdalSwigBindings)
-GDAL_SWIG_BINDINGS(
+gdal_swig_bindings(
         BINDING python
         ARGS -I${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs -threads -outdir ${CMAKE_CURRENT_BINARY_DIR}
         OUTPUT
@@ -99,7 +99,7 @@ install(TARGETS _gdal _gdalconst _gnm _osr _ogr DESTINATION ${Python_SITEARCH}/o
 
 if(NumPy_FOUND)
     py_ext(_gdal_array gdal_array_wrap.cpp)
-    target_include_directories(_gdal_array PRIVATE ${NumPy_INCLUDE_DIR})
+    target_include_directories(_gdal_array PRIVATE ${NumPy_INCLUDE_DIRS})
     install(TARGETS _gdal_array DESTINATION ${Python_SITEARCH}/osgeo)
 endif()
 
