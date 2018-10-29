@@ -100,40 +100,12 @@ When you build with ninja,
 you can run `$ ninja quicktest` instead of `cmake` command.
 Also `$ make quicktest` when configure to generate for GNU make.
 
-Known issues and TODOs
-----------------------
-
-- Issues
-  * gdal-config returns wrong -libs parameter.
-  * Mingw: known error on unit-test.
-  * Some autotest cases are not passed yet
-    * gcore:rasterio_9,11,12,13(w/ sse2 and ssse3)(blowup)
-    * tiff_ovr_32, tiff_direct_and_virtual_mem_io(blowup)
-    * tiff_read_one_band_from_two_bands, tiff_srs
-    * gdrivers:gpkg_1,14,22-26,32,43,45(checksums)
-    * gdrivers:rl2_16,19, wms_15, isis_6, netcdf_17,22, pds_10, grib, mbtiles_5,10, jp2openjpeg_24
-    * ogr_rfc41_7, ogr_rfc41_8, ogr_gpkg_wal, ogr_gft_read, ogr_gft_write
-
-- ToDo
-  * Test and fix for proprietary drivers
-    * Oracle Spatial
-    * Kakadu
-    * LULA
-    * ESRI ArcSDE
-    * Multi-resolution Seamless Image Database
-    * ERDAS JPEG2000
-    * ogr FME driver
-    * IBM DB2
-    * MSSQL spatial
-    * RASDAMAN
-
-
 CMake options
 -------------
 
-- BUILD_SHARED_LIBS (Off by Default for Windows, 
-                     On by Default for Unix/Linux) 
-                     
+- BUILD_SHARED_LIBS (Off by Default for Windows,
+                     On by Default for Unix/Linux)
+
 
 To see a full list of options, run 'cmake -L' from the command line, or use a CMake GUI.
 
@@ -256,7 +228,7 @@ Configuration parameters
 
 - RENAME_INTERNAL_LIBTIFF_SYMBOLS: set ON to rename internal symbols in libtiff
 
-- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC 
+- GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC
 
 - SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
 
@@ -275,8 +247,8 @@ Configuration parameters
 - GDAL_ENABLE_FRMT_COASP
 - GDAL_ENABLE_FRMT_COSAR
 - GDAL_ENABLE_FRMT_CTG
-- DAL_ENABLE_FRMT_DDS
-- DAL_ENABLE_FRMT_DIMAP
+- GDAL_ENABLE_FRMT_DDS
+- GDAL_ENABLE_FRMT_DIMAP
 - GDAL_ENABLE_FRMT_DODS
 - GDAL_ENABLE_FRMT_DTED
 - GDAL_ENABLE_FRMT_E00GRID
@@ -300,6 +272,7 @@ Configuration parameters
 - GDAL_ENABLE_FRMT_HF2
 - GDAL_ENABLE_FRMT_HFA
 - GDAL_ENABLE_FRMT_IDRISI
+- GDAL_ENABLE_FRMT_IGNFHEIGHTASCIIGRID
 - GDAL_ENABLE_FRMT_ILWIS
 - GDAL_ENABLE_FRMT_INGR
 - GDAL_ENABLE_FRMT_IRIS
@@ -316,8 +289,6 @@ Configuration parameters
 - GDAL_ENABLE_FRMT_MBTILES
 - GDAL_ENABLE_FRMT_MEM
 - GDAL_ENABLE_FRMT_MRF
-- GDAL_ENABLE_FRMT_MRSID
-- GDAL_ENABLE_FRMT_MRSID_LIDAR
 - GDAL_ENABLE_FRMT_MSGN
 - GDAL_ENABLE_FRMT_NETCDF
 - GDAL_ENABLE_FRMT_NGSGEOID
@@ -326,7 +297,7 @@ Configuration parameters
 - GDAL_ENABLE_FRMT_OZI
 - GDAL_ENABLE_FRMT_PCIDSK
 - GDAL_ENABLE_FRMT_PCRASTER
-- GDAL_ENABLE_FRMT_POSTGISRASTER)
+- GDAL_ENABLE_FRMT_POSTGISRASTER
 - GDAL_ENABLE_FRMT_PDF
 - GDAL_ENABLE_FRMT_PDS
 - GDAL_ENABLE_FRMT_PLMOSAIC
@@ -356,8 +327,6 @@ Configuration parameters
 - GDAL_ENABLE_FRMT_WMTS
 - GDAL_ENABLE_FRMT_XPM
 - GDAL_ENABLE_FRMT_XYZ
-- GDAL_ENABLE_FRMT_ECW
-- GDAL_ENABLE_FRMT_SDE
 
 - OGR_ENABLE_AMIGOCLOUD
 - OGR_ENABLE_CAD
@@ -365,7 +334,6 @@ Configuration parameters
 - OGR_ENABLE_CLOUDANT
 - OGR_ENABLE_CSW
 - OGR_ENABLE_DODS
-- OGR_ENABLE_DWG)
 - OGR_ENABLE_ELASTIC
 - OGR_ENABLE_GEOJSON
 - OGR_ENABLE_GEOMEDIA
@@ -376,7 +344,7 @@ Configuration parameters
 - OGR_ENABLE_MITAB
 - OGR_ENABLE_MONGODB
 - OGR_ENABLE_MYSQL
-- OGR_ENABLE_NAS)
+- OGR_ENABLE_NAS
 - OGR_ENABLE_PDS
 - OGR_ENABLE_PG
 - OGR_ENABLE_PLSCENES
@@ -386,15 +354,21 @@ Configuration parameters
 - OGR_ENABLE_SVG
 - OGR_ENABLE_VFK
 - OGR_ENABLE_WFS
+- OGR_ENALBE_XLS
 - OGR_ENABLE_XLSX
 
-- OGR_ENABLE_SDE
+- GDAL_ENABLE_FRMT_ECW
+- GDAL_ENABLE_FRMT_MRSID
+- GDAL_ENABLE_FRMT_MRSID_LIDAR
+- GDAL_ENABLE_FRMT_SDE
+- OGR_ENABLE_DWG
 - OGR_ENABLE_FME
 - OGR_ENABLE_OCI
 - OGR_ENABLE_DB2
 - OGR_ENABLE_MSSQLSPATIAL
 - OGR_ENABLE_ODS
 - OGR_ENABLE_OGDI
+- OGR_ENABLE_SDE
 
 - GDAL_ENABLE_FRMT_GRASS
 - OGR_ENABLE_GRASS
