@@ -11,7 +11,7 @@
 #
 # Copyright (c) 2009 Mateusz Loskot <mateusz@loskot.net>
 # Copyright (c) 2016 NextGIS <info@nextgis.com>
-# Copyright (C) 2017 Hiroshi Miura
+# Copyright (C) 2017,2018 Hiroshi Miura
 #
 # Origin from
 # https://svn.osgeo.org/metacrs/geotiff/trunk/libgeotiff/cmake/FindGeoTIFF.cmake
@@ -22,8 +22,8 @@
 #
 ###############################################################################
 
-FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_SUFFIXES geotiff)
-FIND_LIBRARY(GEOTIFF_LIBRARY geotiff geotiff_i)
+find_path(GEOTIFF_INCLUDE_DIR geotiff.h PATH_SUFFIXES geotiff)
+find_library(GEOTIFF_LIBRARY geotiff geotiff_i)
 
 if(GEOTIFF_INCLUDE_DIR)
     set(GEOTIFF_MAJOR_VERSION 0)
@@ -51,11 +51,12 @@ if(GEOTIFF_INCLUDE_DIR)
 endif()
 mark_as_advanced(GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTIFF REQUIRED_VARS GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(GEOTIFF REQUIRED_VARS GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR
                                           VERSION_VAR GEOTIFF_VERSION_STRING)
 
-IF(GEOTIFF_FOUND)
-  SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
-ENDIF()
+if(GEOTIFF_FOUND)
+    set(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
+    set(GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR})
+endif()
 

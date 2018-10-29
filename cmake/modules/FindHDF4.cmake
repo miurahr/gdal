@@ -74,11 +74,8 @@ mfhdf_fortran    : Fortran multi-file library
 #
 
 
-include(FindPackageHandleStandardArgs)
 include(SelectLibraryConfigurations)
 
-# Hard-coded guesses should still go in PATHS. This ensures that the user
-# environment can always override hard guesses.
 set(HDF4_PATHS
     /usr/lib/hdf4
     /usr/share/hdf4
@@ -215,6 +212,7 @@ if(HDF4_INCLUDE_DIR AND HDF4_LIBRARY)
     mark_as_advanced(HDF4_FORTRAN_INCLUDE_DIR HDF4_FORTRAN_LIBRARY )
 endif()
 
+include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(HDF4
                                   FOUND_VAR HDF4_FOUND
                                   REQUIRED_VARS HDF4_LIBRARY HDF4_INCLUDE_DIR
@@ -223,7 +221,7 @@ find_package_handle_standard_args(HDF4
                                   )
 
 # set output variables
-IF(HDF4_FOUND)
+if(HDF4_FOUND)
     set(HDF4_LIBRARIES ${HDF4_LIBRARY})
     set(HDF4_INCLUDE_DIRS ${HDF4_INCLUDE_DIR})
     if(NOT TARGET HDF4::HDF4)
@@ -236,4 +234,4 @@ IF(HDF4_FOUND)
         if(NOT TARGET HDF4::FORTRAN)
         endif()
     endif()
-ENDIF()
+endif()

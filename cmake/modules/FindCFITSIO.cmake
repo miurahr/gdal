@@ -1,4 +1,11 @@
-# - Try to find the CFITSIO library
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file Copyright.txt or https://cmake.org/licensing for details.
+
+#.rst:
+# FindCFITSIO
+# -----------
+#
+# Find the CFITSIO library
 #
 # Once done this will define
 #
@@ -6,35 +13,31 @@
 #  CFITSIO_INCLUDE_DIR - The libgta include directory
 #  CFITSIO_LIBRARIES - The libraries needed to use libgta
 
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_CFITSIO QUIET cfitsio)
+    set(CFITSIO_VERSION_STRING ${PC_CFITSIO_VERSION})
+endif()
 
-IF(CFITSIO_INCLUDE_DIR AND CFITSIO_LIBRARY)
-    # in cache already
-    SET(CFITSIO_FIND_QUIETLY TRUE)
-ENDIF()
+find_path(CFITSIO_INCLUDE_DIR fitsio.h
+          HINTS ${PC_CFITSIO_INCLUDE_DIRS})
+find_library(CFITSIO_LIBRARY NAMES cfitsio libcfitsio
+             HINTS ${PC_CFITSIO_LIBRARY_DIRS})
+mark_as_advanced(CFITSIO_INCLUDE_DIR CFITSIO_LIBRARY)
 
-FIND_PACKAGE(PkgConfig QUIET)
-IF(PKG_CONFIG_FOUND)
-    # try using pkg-config to get the directories and then use these values
-    # in the FIND_PATH() and FIND_LIBRARY() calls
-    PKG_CHECK_MODULES(PC_CFITSIO QUIET cfitsio)
-    SET(CFITSIO_VERSION_STRING ${PC_CFITSIO_VERSION})
-ENDIF()
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(CFITSIO
+                                  REQUIRED_VARS CFITSIO_LIBRARY CFITSIO_INCLUDE_DIR
+                                  VERSION_VAR CFITSIO_VERSION_STRING)
 
-FIND_PATH(CFITSIO_INCLUDE_DIR fitsio.h HINTS ${PC_CFITSIO_INCLUDE_DIRS})
-
-FIND_LIBRARY(CFITSIO_LIBRARY NAMES cfitsio libcfitsio HINTS ${PC_CFITSIO_LIBRARY_DIRS})
-
-MARK_AS_ADVANCED(CFITSIO_INCLUDE_DIR CFITSIO_LIBRARY)
-
-# handle the QUIETLY and REQUIRED arguments and set CFITSIO_FOUND to TRUE if
-# all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(CFITSIO
-    REQUIRED_VARS CFITSIO_LIBRARY CFITSIO_INCLUDE_DIR
-    VERSION_VAR CFITSIO_VERSION_STRING
-)
-
-IF(CFITSIO_FOUND)
-    SET(CFITSIO_LIBRARIES ${CFITSIO_LIBRARY})
-    SET(CFITSIO_INCLUDE_DIRS ${CFITSIO_INCLUDE_DIR})
-ENDIF()
+if(CFITSIO_FOUND)
+    set(CFITSIO_LIBRARIES ${CFITSIO_LIBRARY})
+    set(CFITSIO_INCLUDE_DIRS ${CFITSIO_INCLUDE_DIR})
+    if(NOT TARGET CFITSIO::CFITSIO)
+        add_library(CFITSIO::CFITSIO UNKNOWN IMPORTED)
+        set_target_properties(CFITSIO::CFITSIO PROPERTIES
+                              INTERFACE_LINK_INCLUDE_DIRECTORIES ${CFITSIO_INCLUDE_DIR}
+                              IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                              IMPORTED_LOCATION ${CFITSIO_LIBRARY})
+    endif()
+endif()

@@ -292,6 +292,8 @@ else()
     set(HAVE_PDFLIB OFF)
 endif()
 
+
+gdal_check_package(Oracle "Enable Oracle OCI driver")
 gdal_check_package(TEIGHA "")
 
 # proprietary libraries

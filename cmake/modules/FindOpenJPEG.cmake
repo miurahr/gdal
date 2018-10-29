@@ -2,7 +2,7 @@
 # File:  FindOpenJPEG.cmake
 #
 
-function(TRANSFORM_VERSION _numerical_result _version_major _version_minor _version_patch)
+function(transform_version _numerical_result _version_major _version_minor _version_patch)
   set(factor 100)
   if(_version_minor GREATER 99)
       set(factor 1000)
@@ -14,7 +14,7 @@ function(TRANSFORM_VERSION _numerical_result _version_major _version_minor _vers
           "${_version_major}*${factor}*${factor} + ${_version_minor}*${factor} + ${_version_patch}"
           )
   set(${_numerical_result} ${_internal_numerical_result} PARENT_SCOPE)
-endfunction(TRANSFORM_VERSION)
+endfunction()
 
 
 # - Find OpenJPEG
@@ -30,16 +30,14 @@ endfunction(TRANSFORM_VERSION)
 # also defined, but not for general use are
 #  OPENJPEG_LIBRARY, where to find the OpenJPEG library.
 
-FIND_PACKAGE(PkgConfig QUIET)
-IF(PKG_CONFIG_FOUND)
-    # try using pkg-config to get the directories and then use these values
-    # in the FIND_PATH() and FIND_LIBRARY() calls
-    PKG_CHECK_MODULES(PC_OPENJPEG QUIET libopenjp2)
-    SET(OPENJPEG_VERSION_STRING ${PC_OPENJPEG_VERSION})
-ENDIF()
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_OPENJPEG QUIET libopenjp2)
+    set(OPENJPEG_VERSION_STRING ${PC_OPENJPEG_VERSION})
+endif()
 
 
-FIND_PATH(OPENJPEG_INCLUDE_DIR opj_config.h
+find_path(OPENJPEG_INCLUDE_DIR opj_config.h
           PATH_SUFFIXES
               openjpeg-2.3
               openjpeg-2.2
@@ -49,17 +47,17 @@ FIND_PATH(OPENJPEG_INCLUDE_DIR opj_config.h
           DOC "Location of OpenJPEG Headers"
 )
 
-FIND_LIBRARY(OPENJPEG_LIBRARY
+find_library(OPENJPEG_LIBRARY
              NAMES openjp2
              HINTS ${PC_OPENJPEG_LIBRARY_DIRS}
              )
-MARK_AS_ADVANCED(OPENJPEG_LIBRARY OPENJPEG_INCLUDE_DIR)
+mark_as_advanced(OPENJPEG_LIBRARY OPENJPEG_INCLUDE_DIR)
 
 if(OPENJPEG_INCLUDE_DIR)
     if(OPENJPEG_VERSION_STRING)
         string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" OPJ_VERSION ${OPENJPEG_VERSION_STRING})
         if(OPJ_VERSION)
-            TRANSFORM_VERSION(OPENJPEG_VERSION_NUM ${CMAKE_MATCH_1} ${CMAKE_MATCH_2} ${CMAKE_MATCH_3})
+            transform_version(OPENJPEG_VERSION_NUM ${CMAKE_MATCH_1} ${CMAKE_MATCH_2} ${CMAKE_MATCH_3})
         else()
             message(FATAL "OpenJPEG version not found")
         endif()
@@ -72,7 +70,7 @@ if(OPENJPEG_INCLUDE_DIR)
                 string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)"
                        OPJ_VERSION ${OPJ_VERSION})
                 if(OPJ_VERSION)
-                    TRANSFORM_VERSION(OPENJPEG_VERSION_NUM ${CMAKE_MATCH_1} ${CMAKE_MATCH_2} ${CMAKE_MATCH_3})
+                    transform_version(OPENJPEG_VERSION_NUM ${CMAKE_MATCH_1} ${CMAKE_MATCH_2} ${CMAKE_MATCH_3})
                 else()
                     message(FATAL "OpenJPEG 2.0 header version not found")
                 endif()
