@@ -58,8 +58,6 @@ find_library(ECWC_LIBRARY NCSEcwC)
 find_library(NCSUtil_LIBRARY NCSUtil)
 mark_as_advanced(ECW_INCLUDE_DIR ECW_LIBRARY)
 
-# Handle the QUIETLY and REQUIRED arguments and set ECW_FOUND to TRUE
-# if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(ECW
                                   REQUIRED_VARS ECW_LIBRARY ECWnet_LIBRARY ECWC_LIBRARY NCSUtil_LIBRARY ECW_INCLUDE_DIR

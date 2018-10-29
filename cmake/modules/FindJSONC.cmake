@@ -14,22 +14,6 @@
 #    JSONC_INCLUDE_DIR
 #    JSONC_LIBRARY
 
-# try to use framework on mac
-# want clean framework path, not unix compatibility path
-if(APPLE)
-  if(CMAKE_FIND_FRAMEWORK MATCHES "FIRST"
-      OR CMAKE_FRAMEWORK_PATH MATCHES "ONLY"
-      OR NOT CMAKE_FIND_FRAMEWORK)
-    set(CMAKE_FIND_FRAMEWORK_save ${CMAKE_FIND_FRAMEWORK} CACHE STRING "" FORCE)
-    set(CMAKE_FIND_FRAMEWORK "ONLY" CACHE STRING "" FORCE)
-    find_library(JSONC_LIBRARY JSONC)
-    if(JSONC_LIBRARY)
-      set(JSONC_INCLUDE_DIR ${JSONC_LIBRARY}/Headers CACHE PATH "Path to a file.")
-    endif(JSONC_LIBRARY)
-    set(CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
-  endif()
-endif()
-
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_JSONC QUIET json-c)

@@ -137,7 +137,7 @@ else()
   find_package_handle_standard_args(Iconv REQUIRED_VARS Iconv_LIBRARY)
 endif()
 
-IF(Iconv_FOUND)
+if(Iconv_FOUND)
   set(Iconv_INCLUDE_DIRS "${Iconv_INCLUDE_DIR}")
   set(Iconv_LIBRARIES "${Iconv_LIBRARY}")
   if(NOT TARGET Iconv::Iconv)
