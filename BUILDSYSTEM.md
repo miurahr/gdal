@@ -23,7 +23,9 @@ Development status
 ------------------
 
 - Under active development
-- Support building PLUGIN drivers
+- Support PLUGIN drivers
+  * Build some drivers as plugin in defualt for proprietary one and with stronger license
+  * Many drivers can be build as plugin, that help dependency management for OS package maintainer.
 - Successfully build for
   * GCC4.8 on trusty
   * Clang5 on trusty
@@ -53,8 +55,8 @@ Known issues and ToDo things(help wanted)
   * Mingw: known error on unit-test so specify SKIP_MEM_INTENSIVE_TEST
   * Some autotest cases are not passed yet
     * gcore: tiff_srs_proj4_epsg_*
-    * gdrivers: dods, georaster, kea, loslas, rl2, wms
-    * ogr: avc, gmlas, oci
+    * gdrivers: dods, kea, rl2, wms
+    * ogr: avc, gmlas
     * numerical and other errors on Mac OSX in Travis-CI test
         * gcore: hfa_rfc40, tiff_write_13, rasterio
         * gdrivers: aigrid, ozi, pcidsk, usgsdem 
@@ -65,7 +67,6 @@ Known issues and ToDo things(help wanted)
 
 - ToDo
   * Test and fix for proprietary drivers
-    * ERDAS ECW
     * Oracle Spatial
     * Kakadu
     * LULA
@@ -199,7 +200,6 @@ cmake \
   -DSWIG_PERL=ON \
   -DSWIG_JAVA=ON \
   -DSWIG_CSHARP=ON \
-  -DGDAL_ENABLE_PLUGIN=ON \
   -DGDAL_ENABLE_FRMT_EPSILON=ON \
   -DGDAL_ENABLE_FRMT_GTA=ON \
   -DGDAL_ENABLE_FRMT_RASTERLITE=ON \
@@ -339,9 +339,7 @@ and run multiple build and test on same environment.
 
 - GCC on Ubuntu Trusty
 
-- Clang 4.0 with PLUGIN on Ubuntu Trusty
-
-- Clang 4.0 with PLUGIN and most drivers on Ubuntu Trusty
+- Clang 5.0 on Ubuntu Trusty
 
 - Cross compile with mingw-w64 on Ubuntu Trusty
 
@@ -391,24 +389,3 @@ These libraries are automatically detected and when not exist in system, enables
 - GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC
 
 - SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
-
-Drivers which has special scripts
----------------------------------
-
-### gdal_ADRG and gdal_SRP (gdal/frmts/adrg)
-
-There are two individual drivers and modules in gdal/frmts/adrg
-It is sinlgle build script CMakeLists.txt that have two configurations.
-
-### libz (gdal/frmts/zlib)
-
-This is not normal driver but internal library.
-
-### gdal_geotiff (gdal/frmts/gtiff)
-
-These are referred from other drivers so it should be built into libgdal
-to resolve plugins dependencies.
-
-### ogr_ILI (ogr_ILI1 and ogr_ILI2) (ogr/ogrsf_frmts/ili)
-
-These are two drivers in single module.
