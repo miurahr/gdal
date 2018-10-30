@@ -7,7 +7,7 @@ foreach(test_target IN ITEMS
         transformer virtualmem vrt_read vrtmisc vsiaz vsicrypt vsicurl vsicurl_streaming
         vsifile vsigs vsihdfs vsioss vsis3 vsistdin vsiswift vsiwebhdfs
         vsizip)
-    add_test(gcore_${test_target} ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
+    add_test(NAME gcore_${test_target} COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
     set_property(TEST gcore_${test_target} PROPERTY LABELS gcore-test)
     set_autotest_properties(TESTS gcore_${test_target})
 endforeach()

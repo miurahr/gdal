@@ -96,7 +96,8 @@ if(DEFINED Python_EXECUTABLE)
     add_subdirectory(utilities)
     add_subdirectory(pyscripts)
     add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} -L "\"(gcore|gdrivers|alg|osr|ogr|utilities|pyscripts)-test\""
-                      --force-new-ctest-process --output-on-failure)
+                      --force-new-ctest-process --output-on-failure
+                      DEPENDS test_ogrsf)
 
     # compat definitions
     add_test(gcore-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)

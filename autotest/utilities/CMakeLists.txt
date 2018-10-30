@@ -7,7 +7,7 @@ foreach(test_target IN ITEMS
         test_gnmutils test_nearblack test_nearblack_lib test_ogr2ogr
         test_ogr2ogr_lib test_ogrinfo test_ogrlineref test_ogrtindex
         )
-    add_test(${test_target} ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
+    add_test(NAME ${test_target} COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
     set_property(TEST ${test_target} PROPERTY LABELS utilities-test)
     set_autotest_properties(TESTS ${test_target})
 endforeach()

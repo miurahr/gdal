@@ -15,12 +15,12 @@ foreach(test_target IN ITEMS
         ogr_wasp ogr_wfs ogr_wfs3 ogr_wkbwkt_geom ogr_wktempty ogr_xls ogr_xlsx ogr_xplane
         ograpispy ogr_gft ogr_gml_read ogr_gmlas ogr_oci ogr_plscenes ogr_shape ogr_sqlite
        )
-    add_test(${test_target} ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
+    add_test(NAME ${test_target} COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
     set_property(TEST ${test_target} PROPERTY LABELS ogr-test)
     set_autotest_properties(TESTS ${test_target})
 endforeach()
 foreach(test_target IN ITEMS ogr_carto ogr_dgn ogr_gft ogr_sql_sqlite ogr_gpkg ogr_libkml ogr_nas ogr_ntf
-        ogr_ogdi ogr_oci ogr_pdf ogr_mitab ogr_plscenes ogr_shape ogr_shape_sbn ogr_sqlite ogr_s57 ogr_tiger)
+        ogr_ogdi ogr_pdf ogr_mitab ogr_plscenes ogr_shape ogr_shape_sbn ogr_sqlite ogr_s57 ogr_tiger)
     set_property(TEST ${test_target} PROPERTY TIMEOUT 20)
 endforeach()
 set_property(TEST ogr_gft PROPERTY TIMEOUT 30)

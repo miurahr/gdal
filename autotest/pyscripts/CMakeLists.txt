@@ -4,7 +4,7 @@ foreach(test_target IN ITEMS
         test_gdal_proximity test_gdal_retile test_gdal_sieve test_gdalinfo_py
         test_gdalmove test_ogr2ogr_py test_ogrinfo_py test_ogrmerge
         test_rgb2pct)
-    add_test(${test_target} ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
+    add_test(NAME ${test_target} COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test_target}.py)
     set_property(TEST ${test_target} PROPERTY LABELS pyscripts-test)
     set_autotest_properties(TESTS ${test_target})
 endforeach()
