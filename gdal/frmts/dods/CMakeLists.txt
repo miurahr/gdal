@@ -1,9 +1,9 @@
-ADD_GDAL_DRIVER(TARGET gdal_DODS
+add_gdal_driver(TARGET gdal_DODS
                 SOURCES libdap_headers.h dodsdataset2.cpp)
-GDAL_STANDARD_INCLUDES(gdal_DODS)
+gdal_standard_includes(gdal_DODS)
 
 target_include_directories(gdal_DODS PRIVATE ${DAP_INCLUDE_DIR})
-GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_DODS LIBRARIES DAP::DAP DAP::CLIENT )
+gdal_target_link_libraries(TARGET gdal_DODS LIBRARIES DAP::DAP DAP::CLIENT )
 
 if(DAP_VERSION VERSION_GREATER 3.10 OR DAP_VERSION VERSION_EQUAL 3.10)
     target_compile_definitions(gdal_DODS PRIVATE DEFINITIONS -DLIBDAP_310)
