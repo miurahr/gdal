@@ -166,7 +166,7 @@ gdal_dependent_format(sde "ESRI ArcSDE Raster" "HAVE_SDE")
 # LizardTech's decoding software development kit (DSDK)
 gdal_dependent_format(mrsid "Multi-resolution Seamless Image Database" "HAVE_MRSID")
 gdal_dependent_format(mrsid_lidar "Multi-resolution Seamless Image Database - LiDAR support" "HAVE_MRSID")
-gdal_dependent_format(georaster "Oracle Spatial GeoRaster" "HAVE_OCI")
+gdal_dependent_format(georaster "Oracle Spatial GeoRaster" "HAVE_ORACLE")
 
 # ECW proprietary driver is not compatible with Gcc 5.1+.
 cmake_dependent_option(GDAL_ENABLE_FRMT_ECW "Set ON to build ECW driver" ON "HAVE_ECW" OFF)

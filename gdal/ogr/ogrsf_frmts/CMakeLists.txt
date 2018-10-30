@@ -145,7 +145,7 @@ ogr_optional_driver(cad "OpenCAD")
 #############################################
 # proprietary libraries
 ogr_dependent_driver(fme "FME" "HAVE_FME")
-ogr_dependent_driver(oci "Oracle OCI" "HAVE_OCI")
+ogr_dependent_driver(oci "Oracle OCI" "HAVE_ORACLE")
 ogr_dependent_driver(db2 "IBM DB2" "HAVE_ODBC")
 ogr_dependent_driver(sde "ArcSDE" "HAVE_SDE")
 ogr_dependent_driver(idb "IDB" "HAVE_IDB")
