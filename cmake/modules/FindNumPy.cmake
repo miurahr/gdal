@@ -37,21 +37,20 @@ find_path(NumPy_INCLUDE_DIR numpy/arrayobject.h
 
 if(NumPy_INCLUDE_DIR)
   set(NumPy_FOUND 1 CACHE INTERNAL "Python numpy found")
-endif()
 
-string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" _VER_CHECK "${NumPy_VERSION}")
-if("${_VER_CHECK}" STREQUAL "")
-  message(FATAL_ERROR
-          "Requested version and include path from NumPy, got instead:\n${NUMPY_VERSION}\n")
-  return()
-endif()
+  string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" _VER_CHECK "${NumPy_VERSION}")
+  if("${_VER_CHECK}" STREQUAL "")
+    message(WARNING
+            "Requested version from NumPy, got instead:\n${NumPy_VERSION}\n")
+  endif()
 
-# Get the major and minor version numbers
-string(REGEX REPLACE "\\." ";" _NUMPY_VERSION_LIST ${NumPy_VERSION})
-list(GET _NUMPY_VERSION_LIST 0 NUMPY_VERSION_MAJOR)
-list(GET _NUMPY_VERSION_LIST 1 NUMPY_VERSION_MINOR)
-list(GET _NUMPY_VERSION_LIST 2 NUMPY_VERSION_PATCH)
-string(REGEX MATCH "[0-9]*" NUMPY_VERSION_PATCH ${NUMPY_VERSION_PATCH})
+  # Get the major and minor version numbers
+  string(REGEX REPLACE "\\." ";" _NUMPY_VERSION_LIST ${NumPy_VERSION})
+  list(GET _NUMPY_VERSION_LIST 0 NUMPY_VERSION_MAJOR)
+  list(GET _NUMPY_VERSION_LIST 1 NUMPY_VERSION_MINOR)
+  list(GET _NUMPY_VERSION_LIST 2 NUMPY_VERSION_PATCH)
+  string(REGEX MATCH "[0-9]*" NUMPY_VERSION_PATCH ${NUMPY_VERSION_PATCH})
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NumPy REQUIRED_VARS NumPy_INCLUDE_DIR
