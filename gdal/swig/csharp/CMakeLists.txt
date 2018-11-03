@@ -58,7 +58,7 @@ function(gdal_csharp_dll)
 			OUTPUT  ${_CSHARP_TARGET}
             COMMAND ${CSHARP_COMPILER} ${CSC_OPTIONS} ${_CSHARP_CS_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cs
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS ${_CSHARP_WRAPPER} ${_CSHARP_DEPEND_TARGET} ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk AssemblyInfo.cs
+            DEPENDS ${_CSHARP_WRAPPER} ${_CSHARP_DEPENDS} ${CMAKE_CURRENT_BINARY_DIR}/gdal.snk AssemblyInfo.cs
                     ${_CSHARP_CS_SOURCES})
 endfunction()
 
