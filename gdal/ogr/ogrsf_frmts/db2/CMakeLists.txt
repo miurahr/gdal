@@ -8,6 +8,7 @@ add_gdal_driver(TARGET ogr_DB2  SOURCES  ogr_db2.h
         ogrdb2layer.cpp
         ogrdb2selectlayer.cpp
         ogrdb2tablelayer.cpp)
+gdal_standard_includes(ogr_DB2)
 target_include_directories(ogr_DB2 PRIVATE
                            $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>
