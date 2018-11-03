@@ -21,7 +21,7 @@
 if(MSVC)
     set(PROJ4_NAMES proj proj_i)
 elseif(MINGW OR CYGWIN)
-    set(PROJ4_NAMES proj libproj-9)
+    set(PROJ4_NAMES proj libproj-0 libproj-9 libproj-10 libproj-11 libproj-12)
 else()
     set(PROJ4_NAMES proj)
 endif()
@@ -53,15 +53,15 @@ if(PROJ4_INCLUDE_DIR)
         string(SUBSTRING ${PJ_VERSION} 2 1 PROJ4_VERSION_PATCH)
         unset(PROJ_API_H_CONTENTS)
     endif()
-      
-    set(PROJ4_VERSION_STRING "${PROJ4_VERSION_MAJOR}.${PROJ4_VERSION_MINOR}.${PROJ4_VERSION_PATCH}")   
-endif ()    
-         
+
+    set(PROJ4_VERSION_STRING "${PROJ4_VERSION_MAJOR}.${PROJ4_VERSION_MINOR}.${PROJ4_VERSION_PATCH}")
+endif ()
+
 # Handle the QUIETLY and REQUIRED arguments and set SPATIALINDEX_FOUND to TRUE
 # if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PROJ4 
-                                  REQUIRED_VARS PROJ4_LIBRARY PROJ4_INCLUDE_DIR 
+find_package_handle_standard_args(PROJ4
+                                  REQUIRED_VARS PROJ4_LIBRARY PROJ4_INCLUDE_DIR
                                   VERSION_VAR PROJ4_VERSION_STRING)
 
 if(PROJ4_FOUND)
