@@ -91,7 +91,7 @@ set(_odbc_required_libs_names)
 if(WIN32)
   # List names of ODBC libraries on Windows
   set(ODBC_LIBRARY odbc32.lib)
-  set(_odbc_lib_names odbc32;)
+  set(_odbc_lib_names odbc32)
 
   # List additional libraries required to use ODBC library
   if(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
@@ -212,7 +212,7 @@ if(ODBC_FOUND)
     else()
       add_library(ODBC::ODBC INTERFACE IMPORTED)
       set_target_properties(ODBC::ODBC PROPERTIES
-        IMPORTED_LIBNAME "${ODBC_LIBRARY}")
+        INTERFACE_LINK_LIBRARIES "${ODBC_LIBRARY}")
     endif()
     set_target_properties(ODBC::ODBC PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${ODBC_INCLUDE_DIR}")
