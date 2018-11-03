@@ -197,11 +197,17 @@ configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
 
 ################################################################################
-#
 # gdal-config utility command generation
 if(UNIX AND NOT MACOSX_FRAMEWORK)
     include(GenerateGdalConfig)
-    generate_gdal_config()
+    generate_gdal_config(gdal GDAL_LINK_LIBRARY
+                         ${GDAL_CMAKE_TEMPLATE_PATH}/gdal-config.in
+                         ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
+    add_custom_target(gdal_config ALL DEPENDS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
+            DESTINATION bin
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+            COMPONENT applications)
 endif()
 
 set_property(TARGET gdal APPEND PROPERTY PUBLIC_HEADER ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h)
