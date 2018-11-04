@@ -110,6 +110,86 @@ Build configuration files
 There are `CMakeLists.txt` configuration scripts in each directories.
 It has all configuration for compilation and link for the directory, with small exception(described later).
 
+System Summary
+--------------
+
+Build script generate a summary of host and target environment such as;
+
+```
+--   Target system:             Linux
+--   Installation directory:    /usr
+--   C++ Compiler type:         GNU
+--   C compile command line:    ccache /usr/bin/cc
+--   C++ compile command line:  ccache /usr/bin/c++
+-- 
+--   CMAKE_C_FLAGS:              
+--   CMAKE_CXX_FLAGS:              
+--   CMAKE_CXX11_STANDARD_COMPILE_OPTION:              -std=c++11
+--   CMAKE_CXX11_EXTENSION_COMPILE_OPTION:              -std=gnu++11
+--   CMAKE_EXE_LINKER_FLAGS:              
+--   CMAKE_MODULE_LINKER_FLAGS:              
+--   CMAKE_SHARED_LINKER_FLAGS:              
+--   CMAKE_STATIC_LINKER_FLAGS:              
+--   CMAKE_C_FLAGS_DEBUG:              -g
+--   CMAKE_CXX_FLAGS_DEBUG:              -g
+--   CMAKE_EXE_LINKER_FLAGS_DEBUG:              
+--   CMAKE_MODULE_LINKER_FLAGS_DEBUG:              
+--   CMAKE_SHARED_LINKER_FLAGS_DEBUG:              
+--   CMAKE_STATIC_LINKER_FLAGS_DEBUG:              
+--   CMAKE_C_FLAGS_RELEASE:              -O3 -DNDEBUG
+--   CMAKE_CXX_FLAGS_RELEASE:              -O3 -DNDEBUG
+--   CMAKE_EXE_LINKER_FLAGS_RELEASE:              
+--   CMAKE_MODULE_LINKER_FLAGS_RELEASE:              
+--   CMAKE_SHARED_LINKER_FLAGS_RELEASE:              
+--   CMAKE_STATIC_LINKER_FLAGS_RELEASE:              
+-- 
+```
+
+This may help you to debug your compilation.
+
+Configuration Summary
+---------------------
+
+Build script generate a summary of enabled and disabled
+packages and feature for a build tree using CMake genuine `FeatureSummary`.
+Output is as such as::
+
+```
+-- Enabled drivers and features and found dependency packages
+-- The following features have been enabled:
+
+ * gdal_RAW , Raw formats:EOSAT FAST Format, FARSITE LCP and Vexcel MFF2 Image
+ * gdal_ISO8211 , iso8211 library
+ * gdal_PNG , PNG image format
+ * gdal_JPEG , JPEG image format
+```
+
+```
+-- The following OPTIONAL packages have been found:
+
+ * ODBC
+   Enable DB support thru ODBC
+ * Boost
+ * CURL
+   Enable drivers to use web API
+```
+
+```
+-- The following RECOMMENDED packages have been found:
+
+ * TIFF (required version >= 4.0) , support for the Tag Image File Format (TIFF). , <http://libtiff.org/>
+   gdal_GTIFF: GeoTIFF image format
+   gdal_INGR: Intergraph Raster Format
+   gdal_CALS: CALS type 1 driver
+```
+
+```
+-- The following features have been disabled:
+
+ * gdal_SIGDEM , Scaled Integer Gridded DEM .sigdem Driver
+ * gdal_MSG , Meteosat Second Generation
+```
+
 
 Logical hierarchy for cmake
 ----------------------------
@@ -380,7 +460,12 @@ These libraries are automatically detected and when not exist in system, enables
 
 - GDAL_USE_QHULL_INTERNAL
 
+- GDAL_USE_SHAPELIB_INTERNAL
+
+- GDAL_USE_LIBLERC_INTERNAL
+
 ### Manual options for Internal libraries
+
 
 - GDAL_USE_LIBPCIDSK_INTERNAL: set ON to enable internal libpcidsk sdk
 
@@ -389,3 +474,5 @@ These libraries are automatically detected and when not exist in system, enables
 - GDAL_USE_LIBLERC_INTERNAL: set ON to use internal LibLERC
 
 - SPATIALITE_AMALGAMATION: set ON to use amalgamation for spatialite(for windows)
+
+- RENAME_INTERNAL_SHAPELIB_SYMBOLS 
