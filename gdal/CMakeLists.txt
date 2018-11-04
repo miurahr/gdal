@@ -150,6 +150,9 @@ if(GDAL_USE_LIBLERC_INTERNAL)
     add_subdirectory(frmts/mrf/libLERC)
     add_subdirectory(third_party/LercLib)
 endif()
+if(GDAL_USE_SHAPELIB_INTERNAL)
+    option(RENAME_INTERNAL_SHAPELIB_SYMBOLS "Rename internal Shapelib symbols" ON)
+endif()
 
 # Core components
 add_subdirectory(alg)
