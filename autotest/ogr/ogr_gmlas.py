@@ -3639,9 +3639,14 @@ gdaltest_extra_list = [
 ]
 
 if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 1 and (sys.argv[1] == "-x" or sys.argv[1] == "--extra"):
+        test_list = gdaltest_list + gdaltest_extra_list
+    else:
+        test_list = gdaltest_list
 
     gdaltest.setup_run('ogr_gmlas')
 
-    gdaltest.run_tests(gdaltest_list + gdaltest_extra_list)
+    gdaltest.run_tests(test_list)
 
     sys.exit(gdaltest.summarize())
