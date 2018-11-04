@@ -1,4 +1,4 @@
-add_library(libtiff OBJECT
+add_library(libtiff STATIC
 			tif_dir.c        tif_fax3.c      tif_lzma.c      tif_predict.h  tif_vsi.c      tiffiop.h
 			t4.h                          tif_dir.h        tif_fax3.h      tif_lzw.c       tif_print.c    tif_warning.c  tiffvers.h
 			tif_aux.c                     tif_dirinfo.c    tif_fax3sm.c    tif_next.c      tif_read.c     tif_write.c    uvcode.h
@@ -65,7 +65,7 @@ if(MSVC)
 endif()
 
 set_target_properties(libtiff PROPERTIES CXX_STANDARD 11)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:libtiff>)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE libtiff)
 set_property(TARGET libtiff PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 #ifeq ($(RENAME_INTERNAL_LIBTIFF_SYMBOLS),yes)

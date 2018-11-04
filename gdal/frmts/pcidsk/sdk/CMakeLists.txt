@@ -1,4 +1,4 @@
-add_library(pcidsk_sdk OBJECT
+add_library(pcidsk_sdk STATIC
     pcidsk.h pcidsk_ads40.h pcidsk_airphoto.h pcidsk_array.h
     pcidsk_binary.h pcidsk_buffer.h pcidsk_channel.h pcidsk_config.h
     pcidsk_edb.h pcidsk_ephemeris.h pcidsk_exception.h pcidsk_file.h
@@ -16,7 +16,6 @@ target_include_directories(pcidsk_sdk PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 						   $<TARGET_PROPERTY:cpl,SOURCE_DIR>
 						   $<TARGET_PROPERTY:cpl,BINARY_DIR>
 						   )
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:pcidsk_sdk>)
 set_property(TARGET pcidsk_sdk PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(channel)
@@ -28,3 +27,5 @@ if(NOT TARGET PCIDSK::PCIDSK)
     set_target_properties(PCIDSK::PCIDSK PROPERTIES
                           INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
+
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE pcidsk_sdk)

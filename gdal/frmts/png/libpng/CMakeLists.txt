@@ -1,4 +1,4 @@
-add_library(libpng OBJECT
+add_library(libpng STATIC
 			png.c  pngconf.h   pnggccrd.c  pngmem.c    pngread.c  pngrtran.c  pngset.c    pngvcrd.c  pngwrite.c  pngwutil.c
 			png.h  pngerror.c  pngget.c    pngpread.c  pngrio.c   pngrutil.c  pngtrans.c  pngwio.c   pngwtran.c
 			)
@@ -8,5 +8,5 @@ else()
 	target_include_directories(libpng PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ZLIB_LIBRARIES})
 endif()
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:libpng>)
 set_property(TARGET libpng PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE libpng)
