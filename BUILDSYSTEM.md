@@ -56,7 +56,7 @@ Known issues and ToDo things(help wanted)
   * Some autotest cases are not passed yet
     * gcore: tiff_srs_proj4_epsg_*
     * gdrivers: dods, kea, rl2, wms
-    * ogr: avc, gmlas
+    * ogr: avc
     * numerical and other errors on Mac OSX in Travis-CI test
         * gcore: hfa_rfc40, tiff_write_13, rasterio
         * gdrivers: aigrid, ozi, pcidsk, usgsdem 
