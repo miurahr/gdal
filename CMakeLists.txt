@@ -37,7 +37,7 @@ cmake_policy(SET CMP0041 NEW)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0044 NEW)
 cmake_policy(SET CMP0046 NEW)
-cmake_policy(SET CMP0048 OLD) # *NOT* set VERSION and GDAL_VERSION_(MAJOR|MINOR) etc. variables by project() command
+cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0050 NEW)
 cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0058 NEW)
