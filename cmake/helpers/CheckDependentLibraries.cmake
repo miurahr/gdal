@@ -35,6 +35,7 @@ macro(gdal_find_package pkgname include_file library_file)
   find_library(${pkgname}_LIBRARY ${library_file})
   find_package_handle_standard_args(${pkgname}
       REQUIRED_VARS ${pkgname}_LIBRARY ${pkgname}_INCLUDE_DIR)
+  mark_as_advanced(${pkgname}_INCLUDE_DIR ${pkgname}_LIBRARY)
   if(${pkgname}_FOUND)
       # set result variables
       set(HAVE_${key} ON CACHE INTERNAL "HAVE_${key}")
@@ -177,13 +178,27 @@ else()
 endif()
 
 option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build PCIDSK sdk" ON)
+
 gdal_find_package(LIBCSF csf.h csf)
 if(NOT HAVE_LIBCSF)
     set(GDAL_USE_LIBCSF_INTERNAL ON CACHE BOOL "Set ON to build pcraster driver with internal libcdf")
 else()
     set(GDAL_USE_LIBCSF_INTERNAL OFF CACHE BOOL "Set ON to build pcraster driver with internal libcdf")
 endif()
+
 option(GDAL_USE_LIBLERC_INTERNAL "Set ON to build mrf driver with internal libLERC" ON)
+
+gdal_check_package(Shapelib "Enable Shapelib support.")
+if(NOT HAVE_SHAPELIB)
+    set(GDAL_USE_SHAPELIB_INTERNAL ON CACHE BOOL "Set ON to build shape driver with internal shapelib")
+else()
+    if(Shapelib_VERSION VERSION_LESS 1.3.0)
+        message(STATUS "Detected Shapelib version ${Shapelib_VERSION} is too lower to support. Enables internal shapelib.")
+        set(GDAL_USE_SHAPELIB_INTERNAL ON CACHE BOOL "Set ON to build shape driver with internal shapelib")
+    else()
+        set(GDAL_USE_SHAPELIB_INTERNAL OFF CACHE BOOL "Set ON to build shape driver with internal shapelib")
+    endif()
+endif()
 
 gdal_check_package(PCRE "Enable PCRE support for sqlite3")
 find_package(SQLite3)
