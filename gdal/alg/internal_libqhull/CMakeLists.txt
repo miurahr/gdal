@@ -1,4 +1,4 @@
-add_library(qhull OBJECT
+add_library(qhull STATIC
             geom.c    io.c        mem.c    poly.c     qset.c    rboxlib.c  user.h
             geom.h    io.h        mem.h    poly.h     qset.h    stat.c     usermem.c
             geom2.c   libqhull.c  merge.c  poly2.c    random.c  stat.h     userprintf.c
@@ -6,7 +6,6 @@ add_library(qhull OBJECT
 )
 include(GdalStandardIncludes)
 gdal_standard_includes(qhull)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:qhull>)
 set_property(TARGET qhull PROPERTY POSITION_INDEPENDENT_CODE ON)
 iF(MSVC)
     target_compile_definitions(qhull PRIVATE -D_USE_MATH_DEFINES)
@@ -16,3 +15,5 @@ iF(MSVC)
         target_compile_definitions(qhull PRIVATE -DWIN32)
     endif()
 endif()
+
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE qhull)

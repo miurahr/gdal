@@ -1,4 +1,4 @@
-add_library(geotiff OBJECT
+add_library(geotiff STATIC
             cpl_serv.h                       geo_free.c   geo_new.c        geo_set.c         geo_tiffp.h  geonames.h       geovalues.h
             gdal_libgeotiff_symbol_rename.h  geo_get.c    geo_normalize.c  geo_simpletags.c  geo_trans.c  geotiff.h        xtiff.c
             geo_config.h                     geo_keyp.h   geo_normalize.h  geo_simpletags.h  geo_write.c  geotiff_proj4.c  xtiffio.h
@@ -19,5 +19,5 @@ if(RENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
     target_compile_definitions(geotiff PRIVATE -DRENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
     target_sources(geotiff PRIVATE gdal_libgeotiff_symbol_rename.h)
 endif()
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:geotiff>)
 set_property(TARGET geotiff PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE geotiff)

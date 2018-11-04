@@ -1,4 +1,4 @@
-add_library(libjpeg OBJECT
+add_library(libjpeg STATIC
 			jcapimin.c  jchuff.h    jconfig.h   jdapimin.c  jdct.h      jdmarker.c  jdtrans.c   jidctflt.c  jmemmgr.c   jquant2.c
 			jcapistd.c  jcinit.c    jcparam.c   jdapistd.c  jddctmgr.c  jdmaster.c  jerror.c    jidctfst.c  jmemsys.h   jutils.c
 			jccoefct.c  jcmainct.c  jcphuff.c   jdatadst.c  jdhuff.c    jdmerge.c   jerror.h    jidctint.c  jmorecfg.h  jversion.h
@@ -26,5 +26,5 @@ else()
 endif()
 
 target_compile_definitions(libjpeg PRIVATE -DDEFAULT_MAX_MEM=500000000L)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:libjpeg>)
 set_property(TARGET libjpeg PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE libjpeg)

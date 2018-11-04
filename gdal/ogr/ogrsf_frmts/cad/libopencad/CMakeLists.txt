@@ -1,5 +1,5 @@
 
-add_library(libopencad OBJECT
+add_library(libopencad STATIC
         opencad.h
         opencad_api.h
         cadclasses.h
@@ -33,5 +33,5 @@ target_include_directories(libopencad PRIVATE
                            $<TARGET_PROPERTY:ogr_CAD,SOURCE_DIR>
                            ${CMAKE_CURRENT_SOURCE_DIR}
                            ${CMAKE_CURRENT_SOURCE_DIR}/dwg)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:libopencad>)
 set_property(TARGET libopencad PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE libopencad)

@@ -25,7 +25,7 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
-add_library(libjson OBJECT
+add_library(libjson STATIC
         arraylist.h
         bits.h
         config.h
@@ -56,5 +56,5 @@ add_library(libjson OBJECT
 target_compile_definitions(libjson PRIVATE -D_XOPEN_SOURCE=500)
 target_include_directories(libjson PRIVATE $<TARGET_PROPERTY:cpl,SOURCE_DIR> $<TARGET_PROPERTY:cpl,BINARY_DIR>)
 set_target_properties(libjson PROPERTIES CXX_STANDARD 11)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:libjson>)
 set_property(TARGET libjson PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE libjson)
