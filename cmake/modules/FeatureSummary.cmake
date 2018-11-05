@@ -98,6 +98,7 @@ Functions
 #]=======================================================================]
 
 include(CMakeParseArguments)
+include(GetColourEscapeSequence)
 
 function(_FS_GET_FEATURE_SUMMARY _property _var _includeQuiet)
 
@@ -167,8 +168,28 @@ function(_FS_GET_FEATURE_SUMMARY _property _var _includeQuiet)
       endif()
 
       if(includeThisOne)
+        if(CMAKE_COLOR_MAKEFILE)
+          get_colour_escape_sequence(Colour_EF Bold FF_Cyan)
+          get_colour_escape_sequence(Colour_PF Bold FF_Cyan)
+          get_colour_escape_sequence(Colour_DF FF_Cyan)
+          get_colour_escape_sequence(Colour_NF FF_Cyan)
+          get_colour_escape_sequence(ColourReset ColourReset)
+        else()
+          set(Colour_EF        "")
+          set(Colour_PF        "")
+          set(Colour_DF        "")
+          set(Colour_NF        "")
+          set(ColourReset      "")
+        endif()
 
-        string(APPEND _currentFeatureText "\n * ${_currentFeature}")
+        if(_property MATCHES "NOT_FOUND")
+          set(ColourSet "${Colour_NF}")
+        elseif(_property MATCHES "DISABLED")
+          set(ColourSet "${Colour_DF}")
+        else()
+          set(ColourSet "${Colour_EF}")
+        endif()
+        string(APPEND _currentFeatureText "\n${ColourSet} *${_currentFeature}")
         get_property(_info  GLOBAL PROPERTY _CMAKE_${_currentFeature}_REQUIRED_VERSION)
         if(_info)
           string(APPEND _currentFeatureText " (required version ${_info})")
@@ -186,6 +207,7 @@ function(_FS_GET_FEATURE_SUMMARY _property _var _includeQuiet)
         foreach(_purpose ${_info})
           string(APPEND _currentFeatureText "\n   ${_purpose}")
         endforeach()
+        string(APPEND _currentFeatureText "${ColourReset}")
 
       endif()
 
@@ -356,18 +378,34 @@ function(FEATURE_SUMMARY)
                                "${_fsPkgType}_PACKAGES_NOT_FOUND")
   endforeach()
 
-  set(title_ENABLED_FEATURES               "The following features have been enabled:")
-  set(title_DISABLED_FEATURES              "The following features have been disabled:")
-  set(title_PACKAGES_FOUND                 "The following packages have been found:")
-  set(title_PACKAGES_NOT_FOUND             "The following packages have not been found:")
+  if(CMAKE_COLOR_MAKEFILE)
+    get_colour_escape_sequence(Colour_EF_title Bold FF_Yellow) # Enabled feature title
+    get_colour_escape_sequence(Colour_PF_title Bold FF_Yellow) # Enabled feature title
+    get_colour_escape_sequence(Colour_DF_title FF_Magenta) # Disabled feature title
+    get_colour_escape_sequence(Colour_NF_title FF_Magenta) # Package not found title
+    get_colour_escape_sequence(Colour_title FF_White) # Top title
+    get_colour_escape_sequence(ColourReset ColourReset)
+  else()
+    set(Colour_EF_title  "")
+    set(Colour_PF_title  "")
+    set(Colour_DF_title  "")
+    set(Colour_NF_title  "")
+    set(Colour_title     "")
+    set(ColourReset      "")
+  endif()
+
+  set(title_ENABLED_FEATURES               "${Colour_EF_title}The following features have been enabled:${ColourReset}")
+  set(title_DISABLED_FEATURES              "${Colour_DF_title}The following features have been disabled:${ColourReset}")
+  set(title_PACKAGES_FOUND                 "${Colour_PF_title}The following packages have been found:${ColourReset}")
+  set(title_PACKAGES_NOT_FOUND             "${Colour_NF_title}The following packages have not been found:${ColourReset}")
   foreach(_fsPkgType ${_fsPkgTypes})
     set(_fsPkgTypeDescription "${_fsPkgType} packages")
     get_property(_fsPkgTypeDescriptionIsSet GLOBAL PROPERTY FeatureSummary_${_fsPkgType}_DESCRIPTION SET)
     if(_fsPkgTypeDescriptionIsSet)
       get_property(_fsPkgTypeDescription GLOBAL PROPERTY FeatureSummary_${_fsPkgType}_DESCRIPTION )
     endif()
-    set(title_${_fsPkgType}_PACKAGES_FOUND     "The following ${_fsPkgTypeDescription} have been found:")
-    set(title_${_fsPkgType}_PACKAGES_NOT_FOUND "The following ${_fsPkgTypeDescription} have not been found:")
+    set(title_${_fsPkgType}_PACKAGES_FOUND     "${Colour_PF_title}The following ${_fsPkgTypeDescription} have been found:${ColourReset}")
+    set(title_${_fsPkgType}_PACKAGES_NOT_FOUND "${Colour_NF_title}The following ${_fsPkgTypeDescription} have not been found:${ColourReset}")
   endforeach()
 
   list(FIND validWhatParts "${_FS_WHAT}" indexInList)
@@ -446,7 +484,7 @@ function(FEATURE_SUMMARY)
 
     else()
       if(NOT _FS_VAR)
-        message(STATUS "${_fullText}")
+        message(STATUS "${Colour_title}${_fullText}${ColourReset}")
       endif()
     endif()
 
