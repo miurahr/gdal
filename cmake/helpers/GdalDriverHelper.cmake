@@ -33,8 +33,8 @@
 #                            [SOURCES <source file> [<source file>[...]]]
 #                            [BUILTIN]
 #                          )
-#           GDAL_STANDARD_INCLUDES(<target_name>)
-#           GDAL_TARGET_LINK_LIBRARIES(TARGET <target_name> LIBRARIES <library> [<library2> [..]])
+#           gdal_standard_includes(<target_name>)
+#           gdal_target_link_libraries(TARGET <target_name> LIBRARIES <library> [<library2> [..]])
 #
 #
 #
@@ -167,6 +167,17 @@ function(is_plugin _result _target)
     endif()
 endfunction()
 
+function(gdal_target_interface_include _LIBRARIES)
+    foreach(_LIB IN LISTS _LIBRARIES)
+        if(TARGET ${_LIB})
+            get_property(_res TARGET ${_LIB} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+            if(_res)
+                target_include_directories(${_DRIVER_TARGET} PRIVATE ${_res})
+            endif()
+        endif()
+    endforeach()
+endfunction()
+
 function(gdal_target_link_libraries)
     set(_oneValueArgs TARGET)
     set(_multiValueArgs LIBRARIES)
@@ -179,6 +190,7 @@ function(gdal_target_link_libraries)
     endif()
     is_plugin(RES ${_DRIVER_TARGET})
     if(RES)
+        gdal_target_interface_include(${_DRIVER_LIBRARIES})
         target_link_libraries(${_DRIVER_TARGET} PRIVATE ${_DRIVER_LIBRARIES})
     else()
         target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${_DRIVER_LIBRARIES})
