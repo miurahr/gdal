@@ -1,4 +1,4 @@
-gdal_add_driver(TARGET gdal_MRSID SOURCES
+add_gdal_driver(TARGET gdal_MRSID SOURCES
     mrsidstream.h
     mrsidstream.cpp
     mrsiddataset.cpp)
@@ -10,6 +10,6 @@ if(GDAL_USE_LIBGEOTIFF_INTERNAL)
     endif()
     target_include_directories(gdal_MRSID PRIVATE $<TARGET_PROPERTY:libgeotiff,SOURCE_DIR>)
 else()
-    target_include_directories(gdal_MRSID PRIVATE ${LIBGEOTIFF_INCLUDE_DIR})
-    gdal_target_link_libraries(TARGET gdal_MRSID LIBRARIES ${LIBGEOTIFF_LIBRARY})
+    target_include_directories(gdal_MRSID PRIVATE ${GEOTIFF_INCLUDE_DIR})
+    gdal_target_link_libraries(TARGET gdal_MRSID LIBRARIES GEOTIFF::GEOTIFF)
 endif()
