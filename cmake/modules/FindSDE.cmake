@@ -10,8 +10,8 @@ if(SDE_INCLUDE_DIR)
                  PATHS ${SDE_DIRECTORY}/lib)
 endif()
 mark_as_advanced(SDE_INCLUDE_DIR SDE_LIBRARY)
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(SDE
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SDE
                                   REQUIRED_VARS SDE_LIBRARY SDE_INCLUDE_DIR)
 if(SDE_FOUND)
     set(SDE_INCLUDE_DIRS ${SDE_INCLUDE_DIR})

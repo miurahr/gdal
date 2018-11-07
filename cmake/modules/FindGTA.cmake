@@ -34,7 +34,7 @@ if(GTA_FOUND)
     if(NOT TARGET GTA::GTA)
         add_library(GTA::GTA UNKNOWN IMPORTED)
         set_target_properties(GTA::GTA PROPERTIES
-                              INTERFACE_LINK_INCLUDE_DIRECTORIES ${GTA_INCLUDE_DIR}
+                              INTERFACE_INCLUDE_DIRECTORIES ${GTA_INCLUDE_DIR}
                               IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                               IMPORTED_LOCATION ${GTA_LIBRARY})
     endif()

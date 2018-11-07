@@ -185,7 +185,7 @@ IF(Oracle_FOUND)
     if(NOT TARGET Oracle::OCI)
         add_library(Oracle::OCI UNKNOWN IMPORETED)
         set_target_properties(Oracle::OCI PROPERTIES
-                              INTERFACE_LINK_INCLUDE_DIRS ${Oracle_INCLUDE_DIR}
+                              INTERFACE_INCLUDE_DIRECTORIES ${Oracle_INCLUDE_DIR}
                               IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                               IMPORTED_LOCATION ${Oracle_LIBRARY}
                               )
@@ -200,7 +200,7 @@ IF(Oracle_FOUND)
         if(Oracle_XML_INCLUDE_DIR)
             if(TARGET Oracle::XML)
                 set_property(Oracle::XML APPEND PROPERTY
-                             INTERFACE_LINK_INCLUDE_DIRECTORIES ${Oracle_XML_INCLUDE_DIR})
+                             INTERFACE_INCLUDE_DIRECTORIES ${Oracle_XML_INCLUDE_DIR})
             endif()
         endif()
     endif()

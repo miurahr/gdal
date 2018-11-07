@@ -36,7 +36,7 @@ if(CFITSIO_FOUND)
     if(NOT TARGET CFITSIO::CFITSIO)
         add_library(CFITSIO::CFITSIO UNKNOWN IMPORTED)
         set_target_properties(CFITSIO::CFITSIO PROPERTIES
-                              INTERFACE_LINK_INCLUDE_DIRECTORIES ${CFITSIO_INCLUDE_DIR}
+                              INTERFACE_INCLUDE_DIRECTORIES ${CFITSIO_INCLUDE_DIR}
                               IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                               IMPORTED_LOCATION ${CFITSIO_LIBRARY})
     endif()

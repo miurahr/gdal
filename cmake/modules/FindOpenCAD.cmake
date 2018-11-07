@@ -80,8 +80,10 @@ IF(OPENCAD_FOUND)
   set(OPENCAD_INCLUDE_DIRS ${OPENCAD_INCLUDE_DIR})
   if(NOT TARGET OpenCAD::opencad)
       add_library(OpenCAD::opencad UNKNOWN IMPORTED)
-      set_target_properties(OpenCAD::opencad PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${OPENCAD_INCLUDE_DIR}")
-      set_property(TARGET OpenCAD::opencad APPEND PROPERTY IMPORTED_LOCATION "${OPENCAD_LIBRARY}")
+      set_target_properties(OpenCAD::opencad PROPERTIES
+                            INTERFACE_INCLUDE_DIRECTORIES "${OPENCAD_INCLUDE_DIR}"
+                            IMPORTED_LINK_INTERFACE_LANGUAGES C
+                            IMPORTED_LOCATION "${OPENCAD_LIBRARY}")
   endif()
 ENDIF()
 
