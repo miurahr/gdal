@@ -94,8 +94,6 @@ endif()
 
 set(DB2_LIBRARIES ${DB2_LIBRARY})
 
-# Handle the QUIETLY and REQUIRED arguments and set DB2_FOUND to TRUE
-# if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(DB2
                                   DEFAULT_MSG

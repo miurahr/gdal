@@ -47,7 +47,7 @@ if(CHARLS_FOUND)
     if(NOT TARGET CHARLS::CHARLS)
         add_library(CHARLS::CHARLS UNKNOWN IMPORTED)
         set_target_properties(CHARLS::CHARLS PROPERTIES
-                              INTERFACE_LINK_INLUDE_DIRECTORIES ${CHARLS_INCLUDE_DIR}
+                              INTERFACE_INLUDE_DIRECTORIES ${CHARLS_INCLUDE_DIR}
                               IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                               IMPORTED_LOCATION ${CHARLS_LIBRARY})
    endif()

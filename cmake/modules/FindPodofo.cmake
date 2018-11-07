@@ -18,36 +18,12 @@
 # locations. When an earlier FIND_* succeeds, subsequent FIND_*s
 # searching for the same item do nothing.
 
-# try to use framework on mac
-# want clean framework path, not unix compatibility path
-IF (PODOFO_INCLUDE_DIR AND PODOFO_LIBRARIES)
-  # Already in cache, be silent
-  SET(PODOFO_FIND_QUIETLY TRUE)
-ENDIF()
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_PODOFO QUIET podofo)
+endif()
 
-if(APPLE)
-    if(CMAKE_FIND_FRAMEWORK MATCHES "FIRST"
-            OR CMAKE_FRAMEWORK_PATH MATCHES "ONLY"
-            OR NOT CMAKE_FIND_FRAMEWORK)
-        set(CMAKE_FIND_FRAMEWORK_save ${CMAKE_FIND_FRAMEWORK} CACHE STRING "" FORCE)
-        set(CMAKE_FIND_FRAMEWORK "ONLY" CACHE STRING "" FORCE)
-        find_library(PODOFO_LIBRARY PODOFO)
-        if(PODOFO_LIBRARY)
-            # FIND_PATH doesn't add "Headers" for a framework
-            SET (PODOFO_INCLUDE_DIR ${PODOFO_LIBRARY}/Headers CACHE PATH "Path to a file.")
-        endif(PODOFO_LIBRARY)
-        set(CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK_save} CACHE STRING "" FORCE)
-    endif()
-endif(APPLE)
-
-FIND_PACKAGE(PkgConfig QUIET)
-IF(PKG_CONFIG_FOUND)
-    # try using pkg-config to get the directories and then use these values
-    # in the FIND_PATH() and FIND_LIBRARY() calls
-    PKG_CHECK_MODULES(PC_PODOFO QUIET podofo)
-ENDIF()
-
-SET(PODOFO_INCLUDE_PATHS
+set(PODOFO_INCLUDE_PATHS
         "$ENV{LIB_DIR}/"
         "$ENV{LIB_DIR}/include/"
         /usr/include/podofo
@@ -56,7 +32,7 @@ SET(PODOFO_INCLUDE_PATHS
         c:/msys/local/include/podofo
 )
 
-SET(PODOFO_LIBRARIES_PATHS
+set(PODOFO_LIBRARIES_PATHS
       "$ENV{LIB_DIR}/lib"
       /usr/lib
       /usr/local/lib
@@ -76,9 +52,8 @@ find_library(PODOFO_LIBRARY
         HINTS ${PC_PODOFO_LIBRARY_DIRS}
 )
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(PODOFO DEFAULT_MSG PODOFO_LIBRARY PODOFO_INCLUDE_DIR)
-
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PODOFO DEFAULT_MSG PODOFO_LIBRARY PODOFO_INCLUDE_DIR)
 
 include(FeatureSummary)
 set_package_properties(PODOFO PROPERTIES

@@ -26,7 +26,7 @@ if(MYSQL_FOUND)
   if(NOT TARGET MYSQL::CLIENT)
       add_library(MYSQL::CLIENT UNKNOWN IMPORETED)
       set_target_properties(MYSQL::CLIENT PROPERTIES
-                            INTERFACE_LINK_INCLUDE_DIRECTORIES ${MYSQL_INCLUDE_DIR}
+                            INTERFACE_INCLUDE_DIRECTORIES ${MYSQL_INCLUDE_DIR}
                             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                             IMPORTED_LOCATION ${MYSQL_LIBRARY})
   endif()

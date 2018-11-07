@@ -12,7 +12,7 @@
 find_path(MRSID_INCLUDE_DIR NAMES lt_base.h)
 
 if( MRSID_INCLUDE_DIR )
-  find_library( MRSID_LIBRARY_LTI NAMES lti_dsdk)
+  find_library( MRSID_LIBRARY_LTI NAMES lti_dsdk ltidsdk)
   find_library( MRSID_LIBRARY_LTI_LIDAR NAMES lti_lidar_dsdk)
   if(MRSID_LIBRARY_LTI AND MRSID_LIBRARY_LTI_LIDAR)
       set(MRSID_LIBRARIES ${MRSID_LIBRARY_LTI} ${MRSID_LIBRARY_LTI_LIDAR} CACHE PATH "")

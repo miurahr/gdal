@@ -58,5 +58,12 @@ find_package_handle_standard_args(GEOTIFF REQUIRED_VARS GEOTIFF_LIBRARY GEOTIFF_
 if(GEOTIFF_FOUND)
     set(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
     set(GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR})
+    if(NOT TARGET GEOTIFF::GEOTIFF)
+        add_library(GEOTIFF::GEOTIFF UNKNOWN IMPORTED)
+        set_target_properties(GEOTIFF::GEOTIFF PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES ${GEOTIFF_INCLUDE_DIR}
+                              IMPORTED_LINK_INTERFACE_LANGUAGES C
+                              IMPORTED_LOCATION ${GEOTIFF_LIBRARY})
+    endif()
 endif()
 
