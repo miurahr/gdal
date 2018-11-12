@@ -1,3 +1,13 @@
+# Distributed under the GDAL/OGR MIT/X style License.  See accompanying
+# file gdal/LICENSE.TXT.
+
+#[=======================================================================[.rst:
+GenerateGdalConfig macro
+------------------------
+
+
+#]=======================================================================]
+
 include(GenerateConfig)
 
 macro(generate_gdal_config _target _link _template _output)
