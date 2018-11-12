@@ -1,3 +1,12 @@
+# Distributed under the GDAL/OGR MIT/X style License.  See accompanying
+# file gdal/LICENSE.TXT.
+
+#[=======================================================================[.rst:
+GdalStandardIncludes
+--------------------
+
+#]=======================================================================]
+
 function(GDAL_STANDARD_INCLUDES _TARGET)
      target_include_directories(${_TARGET} PRIVATE
                                 $<TARGET_PROPERTY:appslib,SOURCE_DIR>

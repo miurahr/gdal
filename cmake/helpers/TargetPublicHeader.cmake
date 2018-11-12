@@ -1,3 +1,12 @@
+# Distributed under the GDAL/OGR MIT/X style License.  See accompanying
+# file gdal/LICENSE.TXT.
+
+#[=======================================================================[.rst:
+TargetPublicHeader
+------------------
+
+
+#]=======================================================================]
 
 function(_convert_to_full_path _result_var _files_var)
     set(${_result_var})

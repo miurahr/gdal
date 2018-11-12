@@ -1,92 +1,75 @@
-# ******************************************************************************
-# * Project:  CMake4GDAL
-# * Purpose:  CMake build scripts
-# * Author: Hiroshi Miura, Dmitriy Baryshnikov (aka Bishop), polimax@mail.ru
-# ******************************************************************************
-# * Copyright (C) 2017,2018 Hiroshi Miura
-# *
-# * Permission is hereby granted, free of charge, to any person obtaining a
-# * copy of this software and associated documentation files (the "Software"),
-# * to deal in the Software without restriction, including without limitation
-# * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# * and/or sell copies of the Software, and to permit persons to whom the
-# * Software is furnished to do so, subject to the following conditions:
-# *
-# * The above copyright notice and this permission notice shall be included
-# * in all copies or substantial portions of the Software.
-# *
-# * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-# * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-# * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# * DEALINGS IN THE SOFTWARE.
-# ******************************************************************************
-#
-#  target_name should be as same as plugin name.
-#      name gdal_* as recognized as raster driver and
-#      name ogr_* as vector one.
-#  and lookup register function from filename.
-#
-#  Symptoms add_gdal_driver( TARGET <target_name>
-#                            [SOURCES <source file> [<source file>[...]]]
-#                            [BUILTIN]
-#                          )
-#           gdal_standard_includes(<target_name>)
-#           gdal_target_link_libraries(TARGET <target_name> LIBRARIES <library> [<library2> [..]])
-#
-#
-#
-#  All in one macro; not recommended.
-#
-#  Symptoms gdal_driver( TARGET <target_name>
-#                        [SOURCES <source file> [<source file>[...]]]
-#                        [INCLUDES <include_dir> [<include dir2> [...]]]
-#                        [LIBRARIES <library1> [<library2> [...]][
-#                        [DEFINITIONS -DFOO=1 [-DBOO [...]]]
-#                        [BUILTIN]
-#          )
-#
-#  All driver which is not specify 'BUILTIN' beocmes PLUGIN when
-#  configuration ENABLE_PLUGIN = true.
-#
-#  There aree several examples to show how to write build cmake script.
-#
-# ex.1 Driver which is referrenced by other drivers
-#      Such driver should built-in into library to resolve reference.
-#      Please use 'FORCE_BUILTIN' option keyword which indicate to link it into libgdal.so.
-#
-#   add_gdal_driver(TARGET gdal_iso8211 SOURCES iso8211.cpp BUILTIN)
-#
-# ex.2 Driver that refer other driver as dependency
-#      Please do not specify LIBRARIES for linking target for other driver,
-#      That should be bulit into libgdal.
-#
-#   add_gdal_driver(TARGET gdal_ADRG SOURCES foo.cpp)
-#   target_include_directories(gdal_ADRG PRIVATE $<TARGET_PROPERTY:iso8211,SOURCE_DIR>)
-#
-# ex.3  Driver which is depend on some external libraries
-#       These definitions are detected in cmake/macro/CheckDependentLibraries.cmake
-#       If you cannot find your favorite library in the macro, please add it to
-#       CheckDependentLibraries.cmake.
-#
-#   add_gdal_driver(TARGET    gdal_WEBP
-#               SOURCES   gdal_webp.c gdal_webp.h)
-#   gdal_standard_includes(gdal_WEBP)
-#   target_include_directories(gdal_WEBP PRIVATE ${WEBP_INCLUDE_DIRS} ${TIFF_INCLUDE_DIRS})
-#   gdal_target_link_libraries(TARGET gdal_WEBP LIBRARIES ${WEBP_LIBRARIES} ${TIFF_LIBRARIES})
-#
-#
-# ex.4  Driver which is depend on internal bundled thirdparty libraries
-#       To refer thirdparty library dev files, pls use '$<TARGET_PROPERTY:(target_library),SOURCE_DIR>'
-#       cmake directive.
-#       You may use 'IF(GDAL_USE_SOME_LIBRARY_INTERNAL)...ELSE()...ENDIF()' cmake directive too.
-#
-#   add_gdal_driver(TARGET gdal_CALS
-#               SOURCES calsdataset.cpp)
-#   gdal_standard_includes(gdal_CALS)
-#   gdal_include_directories(gdal_CALS PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
+# Distributed under the GDAL/OGR MIT/X style License.  See accompanying
+# file gdal/LICENSE.TXT.
+
+#[=======================================================================[.rst:
+GdalDriverHelper
+-----------------
+
+  target_name should be as same as plugin name.
+      name gdal_* as recognized as raster driver and
+      name ogr_* as vector one.
+  and lookup register function from filename.
+
+  Symptoms add_gdal_driver( TARGET <target_name>
+                            [SOURCES <source file> [<source file>[...]]]
+                            [BUILTIN]
+                          )
+           gdal_standard_includes(<target_name>)
+           gdal_target_link_libraries(TARGET <target_name> LIBRARIES <library> [<library2> [..]])
+
+
+
+  All in one macro; not recommended.
+
+  Symptoms gdal_driver( TARGET <target_name>
+                        [SOURCES <source file> [<source file>[...]]]
+                        [INCLUDES <include_dir> [<include dir2> [...]]]
+                        [LIBRARIES <library1> [<library2> [...]][
+                        [DEFINITIONS -DFOO=1 [-DBOO [...]]]
+                        [BUILTIN]
+          )
+
+  All driver which is not specify 'BUILTIN' beocmes PLUGIN when
+  configuration ENABLE_PLUGIN = true.
+
+  There aree several examples to show how to write build cmake script.
+
+ ex.1 Driver which is referrenced by other drivers
+      Such driver should built-in into library to resolve reference.
+      Please use 'FORCE_BUILTIN' option keyword which indicate to link it into libgdal.so.
+
+   add_gdal_driver(TARGET gdal_iso8211 SOURCES iso8211.cpp BUILTIN)
+
+ ex.2 Driver that refer other driver as dependency
+      Please do not specify LIBRARIES for linking target for other driver,
+      That should be bulit into libgdal.
+
+   add_gdal_driver(TARGET gdal_ADRG SOURCES foo.cpp)
+   target_include_directories(gdal_ADRG PRIVATE $<TARGET_PROPERTY:iso8211,SOURCE_DIR>)
+
+ ex.3  Driver which is depend on some external libraries
+       These definitions are detected in cmake/macro/CheckDependentLibraries.cmake
+       If you cannot find your favorite library in the macro, please add it to
+       CheckDependentLibraries.cmake.
+
+   add_gdal_driver(TARGET    gdal_WEBP
+               SOURCES   gdal_webp.c gdal_webp.h)
+   gdal_standard_includes(gdal_WEBP)
+   target_include_directories(gdal_WEBP PRIVATE ${WEBP_INCLUDE_DIRS} ${TIFF_INCLUDE_DIRS})
+   gdal_target_link_libraries(TARGET gdal_WEBP LIBRARIES ${WEBP_LIBRARIES} ${TIFF_LIBRARIES})
+
+
+ ex.4  Driver which is depend on internal bundled thirdparty libraries
+       To refer thirdparty library dev files, pls use '$<TARGET_PROPERTY:(target_library),SOURCE_DIR>'
+       cmake directive.
+       You may use 'IF(GDAL_USE_SOME_LIBRARY_INTERNAL)...ELSE()...ENDIF()' cmake directive too.
+
+   add_gdal_driver(TARGET gdal_CALS
+               SOURCES calsdataset.cpp)
+   gdal_standard_includes(gdal_CALS)
+   gdal_include_directories(gdal_CALS PRIVATE $<TARGET_PROPERTY:libtiff,SOURCE_DIR>)
+
+#]=======================================================================]
 
 function(add_gdal_driver)
     set(_options BUILTIN PLUGIN)

@@ -1,3 +1,11 @@
+# Distributed under the GDAL/OGR MIT/X style License.  See accompanying
+# file gdal/LICENSE.TXT.
+
+#[=======================================================================[.rst:
+configure
+---------
+
+#]=======================================================================]
 # Find the MRSID library - Multi-resolution Seamless Image Database.
 #
 # Copyright (C) 2017,2018 Hiroshi Miura
