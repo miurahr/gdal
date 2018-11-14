@@ -128,8 +128,8 @@ if(MSVC)
 endif()
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-    include(OptimizeForArchitecture)
-    OptimizeForArchitecture()
+    include(OptimizeArchitectureFlags)
+    optimize_architecture_flags(GDAL_ARCH_FLAG)
 endif()
 
 ################################################################

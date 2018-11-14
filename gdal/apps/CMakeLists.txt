@@ -56,9 +56,7 @@ else()
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARIES})
 endif()
 
-if(USE_SSE2)
-    target_compile_options(appslib PRIVATE -msse)
-endif()
+target_compile_options(appslib PRIVATE ${GDAL_ARCH_FLAG})
 
 if(BUILD_APPS)
     add_executable(gdalinfo gdal_utils_priv.h gdalinfo_bin.cpp)

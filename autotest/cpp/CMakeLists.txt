@@ -113,9 +113,9 @@ foreach(tgt IN ITEMS test-block-cache-1 test-block-cache-2 test-block-cache-3 te
     set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 
-if(NOT MSVC)
+if(USE_SSE2)
     gdal_test_target(testsse1 testsse.cpp)
-    target_compile_options(testsse1 PRIVATE -mavx2)
+    target_compile_options(testsse1 PRIVATE ${GDAL_ARCH_FLAG})
     gdal_test_target(testsse2 testsse.cpp)
     target_compile_definitions(testsse2 PRIVATE -DUSE_SSE2_EMULATION)
     gdal_test_target(testsse3 testsse.cpp)
