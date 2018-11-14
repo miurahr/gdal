@@ -295,7 +295,6 @@ add_custom_target(uninstall
 include(SystemSummary)
 system_summary(DESCRIPTION "GDAL is now configured on;")
 
-
 include(FeatureSummary)
 feature_summary(DESCRIPTION "Enabled drivers and features and found dependency packages"
                 WHAT ALL)
