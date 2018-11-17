@@ -211,6 +211,11 @@ if(HAVE_USERFAULTFD_H)
 	target_compile_definitions(cpl PRIVATE -DENABLE_UFFD)
 endif()
 
+option(HDFS_ENABLED "Include HDFS support" OFF)
+if(HDFS_ENABLED)
+    target_compile_definitions(cpl PRIVATE -DHDFS_ENABLED)
+endif()
+
 target_compile_options(cpl PRIVATE ${GDAL_ARCH_FLAG})
 if(USE_SSE2)
     target_compile_definitions(cpl PRIVATE -DHAVE_SSE_AT_COMPILE_TIME)
@@ -228,3 +233,24 @@ endif()
 #endif()
 
 add_executable(xmlreformat EXCLUDE_FROM_ALL xmlreformat.cpp)
+
+if(HAVE_CRYPTPP)
+    target_compile_definitions(cpl PRIVATE -DHAVE_CRYPTOPP)
+endif()
+
+if(TARGET OpenSSL::Crypto)
+    target_compile_definitions(cpl PRIVATE -DUSE_OPENSSL_CRYPTO)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE OpenSSL::Crypto)
+endif()
+
+if(CRYPTOPP_USE_ONLY_CRYPTODLL_ALG AND NOT BULID_SHARED_LIBS)
+    # Define USE_ONLY_CRYPTODLL_ALG is running against cryptopp.dll, but not if statically linking
+    # USE_ONLY_CRYPTODLL_ALG=YES
+    #
+    # When linking against the DLL:
+    # CRYPTOPP_LIB = c:/install-cryptopp-x64/lib/cryptopp.lib
+    #
+    # When linking against the static lib:
+    # CRYPTOPP_LIB = c:/install-cryptopp-x64/lib/cryptlib.lib
+    target_compile_definitions(cpl PRIVATE -DUSE_ONLY_CRYPTODLL_ALG)
+endif()
