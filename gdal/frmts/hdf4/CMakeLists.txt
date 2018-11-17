@@ -23,12 +23,13 @@ if(GDAL_ENABLE_PLUGIN OR GDAL_ENABLE_FRMT_HDF4_PLUGIN)
 endif()
 
 gdal_standard_includes(gdal_HDF4)
-target_include_directories(gdal_HDF4 PRIVATE ${HDF4_INCLUDE_DIRS}
+target_include_directories(gdal_HDF4 PRIVATE
                            $<TARGET_PROPERTY:gdal_PDS,SOURCE_DIR>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hdf-eos>)
 if(HDF4_HAS_MAXOPENFILES)
     target_compile_definitions(gdal_HDF4 PRIVATE -DHDF4_HAS_MAXOPENFILES)
 endif()
-GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_HDF4 LIBRARIES ${HDF4_LIBRARIES})
+
+gdal_target_link_libraries(TARGET gdal_HDF4 LIBRARIES HDF4::HDF4 HDF4::MFHDF )
 
