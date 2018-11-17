@@ -1,7 +1,7 @@
 foreach(test_target IN ITEMS
         aaigrid_read aaigrid_write asyncreader basic_test bmp_read bmp_write colortable envi_read
         gcps2geotransform gdal_api_proxy gdal_stats geoloc gtiff_write hdf4_read hdf4_write hfa_read
-        hfa_rfc40 hfa_srs hfa_write histogram identify mask minixml misc
+        hfa_rfc40 hfa_srs hfa_write histogram identify mask minixml misc nodatamaskband
         numpy_rw overviewds pam pamproxydb pixfun pnm_read pnm_write rasterio
         rat rfc30 testnonboundtoswig thread_test tiff_ovr tiff_read tiff_srs tiff_write
         transformer virtualmem vrt_read vrtmisc vsiaz vsicrypt vsicurl vsicurl_streaming
