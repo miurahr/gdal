@@ -8,31 +8,17 @@ configure
 #]=======================================================================]
 
 include(CheckFunctionExists)
-include(FindPackageHandleStandardArgs)
 include(CMakeDependentOption)
 include(FeatureSummary)
-
-macro(gdal_find_package pkgname include_file library_file)
-  string(TOUPPER ${pkgname} key)
-  find_path(${pkgname}_INCLUDE_DIR ${include_file})
-  find_library(${pkgname}_LIBRARY ${library_file})
-  find_package_handle_standard_args(${pkgname}
-      REQUIRED_VARS ${pkgname}_LIBRARY ${pkgname}_INCLUDE_DIR)
-  mark_as_advanced(${pkgname}_INCLUDE_DIR ${pkgname}_LIBRARY)
-  if(${pkgname}_FOUND)
-      # set result variables
-      set(HAVE_${key} ON CACHE INTERNAL "HAVE_${key}")
-      set(${key}_INCLUDE_DIRS ${${pkgnam}_INCLUDE_DIR})
-      set(${key}_LIBRARIES ${${pkgname}_LIBRARY})
-  else()
-      set(HAVE_${key} OFF CACHE INTERNAL "HAVE_${key}")
-  endif()
-endmacro()
+include(DefineFindPackage2)
 
 # macro
 macro(gdal_check_package name purpose)
     string(TOUPPER ${name} key)
-    find_package(${name})
+    find_package2(${name} QUIET)
+    if(NOT DEFINED ${key}_FOUND)
+        find_package(${name})
+    endif()
     if(${key}_FOUND OR ${name}_FOUND)
         set(HAVE_${key} ON CACHE INTERNAL "HAVE_${key}")
     else()
@@ -53,6 +39,16 @@ if(_lib)
    SET(${_lib} -L${_path} -l${_name})
 endif()
 endfunction()
+
+# Custom find_package definitions
+define_find_package2(ZSTD zstd.h zstd)
+define_find_package2(LIBCSF csf.h csf)
+define_find_package2(BPG libbpg.h bpg)
+define_find_package2(Crnlib crnlib.h crunch)
+define_find_package2(IDB it.h idb)
+define_find_package2(RASDAMAN rasdaman.hh raslib)
+define_find_package2(Epsilon epsilon.h epsilon)
+define_find_package2(FME fmeobjects/cpp/issesion.h fme)
 
 gdal_check_package(ODBC "Enable DB support thru ODBC")
 option(GDAL_USE_XMLREFORMAT "Set ON to use xmlreformat" OFF)
@@ -109,12 +105,7 @@ set_package_properties(TIFF PROPERTIES
 if(HAVE_BIGTIFF)
     add_definitions(-DBIGTIFF_SUPPORT)
 endif()
-gdal_find_package(ZSTD zstd.h zstd)
-if(HAVE_ZSTD AND GDAL_USE_LIBTIFF_INTERNAL)
-    set(HAVE_ZSTD ON)
-endif()
-
-
+gdal_check_package(ZSTD "ZSTD compression library")
 gdal_check_package(SFCGAL "gdal core supports ISO 19107:2013 and OGC Simple Features Access 1.2 for 3D operations")
 
 gdal_check_package(GeoTIFF "")
@@ -161,8 +152,7 @@ else()
 endif()
 
 option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build PCIDSK sdk" ON)
-
-gdal_find_package(LIBCSF csf.h csf)
+gdal_check_package(LIBCSF "libcsf")
 if(NOT HAVE_LIBCSF)
     set(GDAL_USE_LIBCSF_INTERNAL ON CACHE BOOL "Set ON to build pcraster driver with internal libcdf")
 else()
@@ -187,19 +177,9 @@ gdal_check_package(PCRE "Enable PCRE support for sqlite3")
 find_package(SQLite3)
 if(SQLITE3_FOUND)
     set(HAVE_SQLITE3 ON CACHE INTERNAL "HAVE_SQLITE3")
-    if(EXISTS ${SQLITE3_PCRE_LIBRARY})
-        set(HAVE_SQLITE3_PCRE ON)
-    endif()
 endif()
 
 gdal_check_package(SPATIALITE "Enalbe spatialite support for sqlite3")
-if(WIN32)
-    set(SPATIALITE_AMALGAMATION_DEFAULT ON)
-else()
-    set(SPATIALITE_AMALGAMATION_DEFAULT OFF)
-endif()
-option(SPATIALITE_AMALGAMATION "Use amalgamation for spatialite(for windows)" ${SPATIALITE_AMALGAMATION_DEFAULT})
-mark_as_advanced(SPATIALITE_AMALGAMATION)
 
 # 3rd party libraries
 gdal_check_package(Rasterlite2 "Enable rasterlite2 support for sqlite3")
@@ -214,6 +194,10 @@ if(HAVE_JASPER)
     check_c_source_compiles("#ifdef __cplusplus\nextern \"C\"\n#endif\n char jp2_encode_uuid ();int main () {return jp2_encode_uuid ();;return 0;}" HAVE_JASPER_UUID)
     if(HAVE_JASPER_UUID)
         message(STATUS "Jasper GeoJP2 UUID hack detected.")
+        if(TARGET JASPER::Jasper)
+            set_property(TARGET JASPER::Jasper APPEND PROPERTY
+                         INTERFACE_COMPILE_DEFINITIONS "HAVE_JASPER_UUID")
+        endif()
     endif()
 endif()
 
@@ -241,15 +225,12 @@ gdal_check_package(LibLZMA "enable TIFF LZMA compression")
 gdal_check_package(DB2 "enable ogr_DB2 IBM DB2 driver")
 gdal_check_package(CharLS "enable gdal_JPEGLS jpeg loss-less driver")
 
-gdal_find_package(BPG libbpg.h bpg)
-set_package_properties(BPG PROPERTIES PURPOSE "enable gdal_BPG driver")
-gdal_find_package(Crnlib crnlib.h crunch)
-set_package_properties(Crnlib PROPERTIES PURPOSE "enable gdal_DDS driver")
-gdal_find_package(IDB it.h idb)
-set_package_properties(IDB PROPERTIES PURPOSE "enable ogr_IDB driver")
+gdal_check_package(BPG  "enable gdal_BPG driver")
+gdal_check_package(Crnlib "enable gdal_DDS driver")
+gdal_check_package(IDB "enable ogr_IDB driver")
 # TODO: implement FindRASDAMAN
 # libs: -lrasodmg -lclientcomm -lcompression -lnetwork -lraslib
-gdal_find_package(RASDAMAN rasdaman.hh raslib)
+gdal_check_package(RASDAMAN "enable rasdaman driver")
 
 # OpenJPEG's cmake-CONFIG is broken, so call module explicitly
 find_package(OpenJPEG MODULE)
@@ -290,7 +271,6 @@ else()
     set(HAVE_PDFLIB OFF)
 endif()
 
-
 gdal_check_package(Oracle "Enable Oracle OCI driver")
 gdal_check_package(TEIGHA "")
 
@@ -301,6 +281,7 @@ gdal_check_package(SDE "Enable ArcSDE(Spatial Database Engine)")
 gdal_check_package(KDU "Enable KAKADU")
 # LURATECH JPEG2000 SDK
 set(LURATECH_JP2SDK_DIRECTORY "" CACHE STRING "LURATECH JP2SDK library base directory")
+gdal_check_package(FME "FME")
 
 # bindings
 gdal_check_package(SWIG "Enable language bindings")
