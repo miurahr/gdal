@@ -85,6 +85,13 @@ if(GDAL_USE_LIBZ)
     endif()
 endif()
 
+find_package(OpenSSL COMPONENTS Crypto SSL)
+if(OPENSSL_FOUND)
+    set(HAVE_OPENSSL ON CACHE INTERNAL "")
+endif()
+gdal_check_package(CryptoPP "Use crypto++ library for CPL.")
+option(CRYPTOPPL_USE_ONLY_CRYPTODLL_ALG "Use Only cryptoDLL alg. only work on dynamic DLL" OFF)
+
 find_package(TIFF 4.0)
 if(TIFF_FOUND)
     set(HAVE_TIFF ON CACHE INTERNAL "HAVE_TIFF")
