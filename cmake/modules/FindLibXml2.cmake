@@ -82,18 +82,21 @@ elseif(LIBXML2_INCLUDE_DIR AND EXISTS "${LIBXML2_INCLUDE_DIR}/libxml/xmlversion.
     unset(libxml2_version_str)
 endif()
 
-set(LIBXML2_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIR} ${PC_LIBXML_INCLUDE_DIRS})
-set(LIBXML2_LIBRARIES ${LIBXML2_LIBRARY})
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LibXml2
+                                  FOUND_VAR LIBXML2_FOUND
                                   REQUIRED_VARS LIBXML2_LIBRARY LIBXML2_INCLUDE_DIR
                                   VERSION_VAR LIBXML2_VERSION_STRING)
-
 mark_as_advanced(LIBXML2_INCLUDE_DIR LIBXML2_LIBRARY LIBXML2_XMLLINT_EXECUTABLE)
 
-if(LibXml2_FOUND AND NOT TARGET LibXml2::LibXml2)
-   add_library(LibXml2::LibXml2 UNKNOWN IMPORTED)
-   set_target_properties(LibXml2::LibXml2 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LIBXML2_INCLUDE_DIRS}")
-   set_property(TARGET LibXml2::LibXml2 APPEND PROPERTY IMPORTED_LOCATION "${LIBXML2_LIBRARY}")
+if(LIBXML2_FOUND)
+    set(LIBXML2_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIR})
+    set(LIBXML2_LIBRARIES    ${LIBXML2_LIBRARY})
+    if(NOT TARGET LibXml2::LibXml2)
+        add_library(LibXml2::LibXml2 UNKNOWN IMPORTED)
+        set_target_properties(LibXml2::LibXml2 PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES "${LIBXML2_INCLUDE_DIR}"
+                              IMPORTED_LINK_INTERFACE_LANGUAGES C
+                              IMPORTED_LOCATION "${LIBXML2_LIBRARY}")
+    endif()
 endif()
