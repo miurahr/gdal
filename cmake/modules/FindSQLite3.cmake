@@ -44,8 +44,9 @@ if(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
               PATHS /usr/lib
               HINTS ${SQLITE3_LIBRARY_DIR})
     if(EXISTS ${SQLITE3_PCRE_LIBRARY})
-        set(SQLITE3_PCRE_LIBRARY
-            ${SQLITE3_PCRE_LIBRARY}/pcre.${CMAKE_SHARED_LIBRARY_SUFFIX})
+        set(SQLITE_HAS_PCRE ON CACHE BOOL "")
+    else()
+        set(SQLITE_HAS_PCRE OFF CACHE BOOL "")
     endif()
     # check column metadata
     set(SQLITE_COL_TEST_CODE "#ifdef __cplusplus
@@ -62,7 +63,7 @@ return sqlite3_column_table_name ();
     check_c_source_compiles("${SQLITE_COL_TEST_CODE}"  SQLITE_HAS_COLUMN_METADATA)
     set(SQLITE_HAS_COLUMN_METADATA ${SQLITE_HAS_COLUMN_METADATA} CACHE BOOL "SQLite has column metadata.")
 endif()
-mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR SQLITE3_PCRE_LIBRARY SQLITE_HAS_COLUMN_METADATA)
+mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR SQLITE_HAS_PCRE SQLITE_HAS_COLUMN_METADATA)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SQLITE3
@@ -73,26 +74,19 @@ find_package_handle_standard_args(SQLITE3
 if(SQLITE3_FOUND)
   set(SQLITE3_LIBRARIES ${SQLITE3_LIBRARY})
   set(SQLITE3_INCLUDE_DIRS ${SQLITE3_INCLUDE_DIR})
-
-  # For header-only libraries
   if(NOT TARGET SQLITE3::SQLITE3)
     add_library(SQLITE3::SQLITE3 UNKNOWN IMPORTED)
-    if(SQLITE3_INCLUDE_DIRS)
-      set_target_properties(SQLITE3::SQLITE3 PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${SQLITE3_INCLUDE_DIRS}")
+    set_target_properties(SQLITE3::SQLITE3 PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${SQLITE3_INCLUDE_DIRS}"
+                          IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+                          IMPORTED_LOCATION "${SQLITE3_LIBRARY}")
+    if(SQLITE_HAS_PCRE)
+        set_property(TARGET SQLITE3::SQLITE3 APPEND PROPERTY
+                     INTERFACE_COMPILE_DEFINITIONS "SQLITE_HAS_PCRE")
     endif()
-    if(EXISTS "${SQLITE3_LIBRARY}")
-        set_target_properties(SQLITE3::SQLITE3 PROPERTIES
-                              IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-                              IMPORTED_LOCATION "${SQLITE3_LIBRARY}")
-    endif()
-  endif()
-  if(EXISTS ${SQLITE3_PCRE_LIBRARY})
-    if(NOT TARGET SQLITE3::PCRE)
-        add_library(SQLITE3::PCRE UNKNOWN IMPORTED)
-        set_target_properties(SQLITE3::PCRE PROPERTIES
-                              IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-                              IMPORTED_LOCATION "${SQLITE3_PCRE_LIBRARY}")
+    if(SQLITE_HAS_COLUMN_METADATA)
+        set_property(TARGET SQLITE3::SQLITE3 APPEND PROPERTY
+                     INTERFACE_COMPILE_DEFINITIONS "SQLITE_HAS_COLUMN_METADATA")
     endif()
   endif()
 endif()

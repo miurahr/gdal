@@ -8,14 +8,14 @@ else()
 endif()
 unset(_SOURCES)
 gdal_standard_includes(gdal_ECW_JP2ECW)
-target_include_directories(gdal_ECW_JP2ECW PRIVATE ${ECW_INCLUDE_DIRS})
-target_compile_definitions(gdal_ECW_JP2ECW PRIVATE
-                           -DFRMT_ecw
+target_compile_definitions(gdal_ECW_JP2ECW PRIVATE -DFRMT_ecw
                            -DDO_NOT_USE_DEBUG_BOOL)
 gdal_target_link_libraries(TARGET gdal_ECW_JP2ECW LIBRARIES
                            ECW::ECW ECW::ECWC ECW::ECWnet ECW::NCSUtil)
-
-if(ECW_BUILDNUMBER_H)
-    target_compile_definitions(gdal_ECW_JP2ECW PRIVATE -DHAVE_ECW_BUILDNUMBER_H)
-endif()
+foreach(d IN LISTS ECW_INCLUDE_DIRS)
+    if (EXISTS "${d}/ECWJP2BuildNumber.h")
+        target_compile_definitions(gdal_ECW_JP2ECW PRIVATE -DHAVE_ECW_BUILDNUMBER_H)
+        break()
+    endif()
+endforeach()
 

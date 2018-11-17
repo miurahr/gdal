@@ -35,8 +35,6 @@ if (ECW_INCLUDE_DIR)
         string(REGEX MATCH "_VER_SERVICE[ \t]+([0-9]+)" BLD_VERSION ${VERSION_H_CONTENTS})
         string(REGEX MATCH "([0-9]+)" BLD_VERSION ${BLD_VERSION})
         unset(VERSION_H_CONTENTS)
-        set(ECW_BUILDNUMBER_H TRUE)
-        mark_as_advanced(ECW_BUILDNUMBER_H)
     endif()
 
     if(EXISTS "${ECW_INCLUDE_DIR}/NCSBuildNumber.h")
