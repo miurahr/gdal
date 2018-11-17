@@ -80,7 +80,17 @@ if(GIF_INCLUDE_DIR)
 endif()
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GIF  REQUIRED_VARS  GIF_LIBRARY  GIF_INCLUDE_DIR
+find_package_handle_standard_args(GIF  REQUIRED_VARS  GIF_LIBRARY  GIF_INCLUDE_DIR
                                        VERSION_VAR GIF_VERSION )
 
 mark_as_advanced(GIF_INCLUDE_DIR GIF_LIBRARY)
+
+if(GIF_FOUND)
+  if(NOT TARGET GIF::GIF)
+    add_library(GIF::GIF UNKNOWN IMPORTED)
+    set_target_properties(GIF::GIF PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES ${GIF_INCLUDE_DIR}
+                          IMPORTED_LINK_INTERFACE_LANGUAGES C
+                          IMPORTED_LOCATION ${GIF_LIBRARY})
+  endif()
+endif()
