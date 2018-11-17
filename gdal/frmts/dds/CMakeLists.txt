@@ -1,6 +1,3 @@
 add_gdal_driver(TARGET gdal_DDS SOURCES  ddsdataset.cpp)
 gdal_standard_includes(gdal_DDS)
-if(HAVE_CRNLIB)
-    target_include_directories(gdal_DDS PRIVATE   ${Crnlib_INCLUDE_DIR})
-    gdal_target_link_libraries(TARGET gdal_DDS LIBRARIES ${Crnlib_LIBRARY})
-endif()
+gdal_target_link_libraries(TARGET gdal_DDS LIBRARIES CRNLIB::Crnlib)

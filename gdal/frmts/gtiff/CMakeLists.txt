@@ -1,4 +1,4 @@
-ADD_GDAL_DRIVER(TARGET gdal_GTIFF SOURCES
+add_gdal_driver(TARGET gdal_GTIFF SOURCES
 	gtiff.h
 	gt_jpeg_copy.h
 	gt_citation.h
@@ -33,18 +33,16 @@ if(GDAL_USE_LIBTIFF_INTERNAL)
 		target_include_directories(gdal_GTIFF PRIVATE $<TARGET_PROPERTY:lerc,SOURCE_DIR>)
 	endif()
 else()
-    target_include_directories(gdal_GTIFF PRIVATE ${TIFF_INCLUDE_DIRS})
 	target_compile_definitions(gdal_GTIFF PRIVATE -DHAVE_TIFF -DBIGTIFF_SUPPORT -DPIXARLOG_SUPPORT)
-	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_GTIFF LIBRARIES ${TIFF_LIBRARIES})
+	gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES TIFF::TIFF)
 endif()
 
 if(GDAL_USE_LIBJPEG_INTERNAL)
 	target_include_directories(gdal_GTIFF PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
 	target_compile_definitions(gdal_GTIFF PRIVATE -DHAVE_LIBJPEG)
 else()
-	target_include_directories(gdal_GTIFF PRIVATE ${JPEG_INCLUDE_DIRS})
 	target_compile_definitions(gdal_GTIFF PRIVATE -DHAVE_LIBJPEG)
-	GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_GTIFF LIBRARIES JPEG::JPEG)
+	gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES JPEG::JPEG)
 endif()
 
 if(GDAL_USE_LIBGEOTIFF_INTERNAL)
@@ -55,19 +53,17 @@ if(GDAL_USE_LIBGEOTIFF_INTERNAL)
     endif()
 else()
 	target_include_directories(gdal_GTIFF PRIVATE ${GEOTIFF_INCLUDE_DIR})
-    GDAL_TARGET_LINK_LIBRARIES(TARGET gdal_GTIFF LIBRARIES ${GEOTIFF_LIBRARY})
+    gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES ${GEOTIFF_LIBRARY})
 endif()
 
 if(GDAL_USE_LIBZ_INTERNAL)
 	target_include_directories(gdal_GTIFF PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
-    target_include_directories(gdal_GTIFF PRIVATE $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS})
 	gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES ZLIB::ZLIB)
 endif()
 
 if(HAVE_WEBP)
     target_compile_definitions(gdal_GTIFF PRIVATE -DWEBP_SUPPORT)
-    target_include_directories(gdal_GTIFF PRIVATE ${WEBP_INCLUDE_DIRS})
     gdal_target_link_libraries(TARGET gdal_GTIFF LIBRARIES WEBP::WebP)
 endif()
 
