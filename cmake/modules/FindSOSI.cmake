@@ -6,16 +6,33 @@
 #  SOSI_INCLUDE_DIR - The libgta include directory
 #  SOSI_LIBRARIES - The libraries needed to use libgta
 
-FIND_PATH(SOSI_INCLUDE_DIR
+find_path(SOSI_INCLUDE_DIR
           NAMES fyba.h
           PATH_SUFFIXES fyba)
-FIND_LIBRARY(SOSI_FYBA_LIBRARY NAMES fyba)
-FIND_LIBRARY(SOSI_FYGM_LIBRARY NAMES fygm)
-FIND_LIBRARY(SOSI_FYUT_LIBRARY NAMES fyut)
-SET(SOSI_LIBRARIES ${SOSI_FYBA_LIBRARY} ${SOSI_FYGM_LIBRARY} ${SOSI_FYUT_LIBRARY} CACHE PATH "")
-MARK_AS_ADVANCED(SOSI_INCLUDE_DIR SOSI_LIBRARIES)
+find_library(SOSI_FYBA_LIBRARY NAMES fyba)
+find_library(SOSI_FYGM_LIBRARY NAMES fygm)
+find_library(SOSI_FYUT_LIBRARY NAMES fyut)
+mark_as_advanced(SOSI_INCLUDE_DIR SOSI_FYBA_LIBRARY SOSI_FYGM_LIBRARY SOSI_FYUT_LIBRARY)
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(SOSI
-    REQUIRED_VARS SOSI_LIBRARIES SOSI_INCLUDE_DIR
-)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SOSI
+                                  REQUIRED_VARS SOSI_FYBA_LIBRARY SOSI_FYGM_LIBRARY SOSI_FYUT_LIBRARY SOSI_INCLUDE_DIR)
+if(SOSI_FOUND)
+    set(SOSI_LIBRARIES ${SOSI_FYBA_LIBRARY} ${SOSI_FYGM_LIBRARY} ${SOSI_FYUT_LIBRARY})
+    set(SOSI_INCLUDE_DIRS ${SOSI_INCLUDE_DIR})
+    if(NOT TARGET SOSI::SOSI)
+        add_library(SOSI::SOSI UNKNOWN IMPORTED)
+        set_target_properties(SOSI::SOSI PROPERTIES
+                              INTERFACE_INCLUDE_DIRECTORIES ${SOSI_INCLUDE_DIR}
+                              IMPORTED_LINK_INTERFACE_LANGUAGES C
+                              IMPORTED_LOCATION ${SOSI_FYBA_LIBRARY})
+        add_library(SOSI::FYGM UNKNOWN IMPORTED)
+        set_target_properties(SOSI::FYGM PROPERTIES
+                              IMPORTED_LINK_INTERFACE_LANGUAGES C
+                              IMPORTED_LOCATION ${SOSI_FYGM_LIBRARY})
+        add_library(SOSI::FYUT UNKNOWN IMPORTED)
+        set_target_properties(SOSI::FYUT PROPERTIES
+                              IMPORTED_LINK_INTERFACE_LANGUAGES C
+                              IMPORTED_LOCATION ${SOSI_FYUT_LIBRARY})
+    endif()
+endif()

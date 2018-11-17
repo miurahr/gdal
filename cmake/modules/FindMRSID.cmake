@@ -64,14 +64,14 @@ if(MRSID_FOUND)
   if(NOT TARGET MRSID::MRSID)
     add_library(MRSID::MRSID UNKNOWN IMPORTED)
     set_target_properties(MRSID::MRSID PROPERTIES
-                          INTERFACE_INCLUDE_DIRECTORIES "${MRSID_INCLUDE_DIRS}"
+                          INTERFACE_INCLUDE_DIRECTORIES "${MRSID_INCLUDE_DIR}"
                           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                           IMPORTED_LOCATION "${MRSID_LIBRARY_LTI}")
   endif()
   if(NOT TARGET MRSID::LIDAR)
     add_library(MRSID::LIDAR UNKNOWN IMPORTED)
     set_target_properties(MRSID::LIDAR PROPERTIES
-                          INTERFACE_INCLUDE_DIRECTORIES "${MRSID_INCLUDE_DIRS}"
+                          INTERFACE_INCLUDE_DIRECTORIES "${MRSID_INCLUDE_DIR}"
                           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                           IMPORTED_LOCATION "${MRSID_LIBRARY_LTI_LIDAR}")
   endif()
