@@ -297,17 +297,14 @@ set_package_properties(SWIG PROPERTIES
                        URL "http://swig.org/"
                        TYPE RECOMMENDED)
 
-option(PYTHON_VERSION "Python version to use")
-if(PYTHON_VERSION)
-    find_package(Python ${PYTHON_VERSION} COMPONENTS Interpreter Development)
-else()
-    find_package(Python COMPONENTS Interpreter Development)
-endif()
-if(Python_FOUND)
+find_package(Python2 COMPONENTS Interpreter Development)
+find_package(Python3 COMPONENTS Interpreter Development)
+if(Python2_FOUND OR Python3_FOUND)
     set(HAVE_PYTHON ON CACHE INTERNAL "HAVE_PYTHON")
 endif()
 find_package(NumPy)
-set_package_properties(Python PROPERTIES PURPOSE "SWIG_PYTHON: Python binding")
+set_package_properties(Python2 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python2)")
+set_package_properties(Python3 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python3)")
 set_package_properties(NumPy PROPERTIES PURPOSE "SWIG_PYTHON: Python binding")
 
 find_package(PHP)
