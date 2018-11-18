@@ -19,12 +19,12 @@ sudo apt-get remove -qq libpq-dev libpq5 libgeos-dev libgeos-c1 \
 sudo dpkg --add-architecture i386
  
 # dependencies
-sudo apt-get install -y -q --allow-unauthenticated python-numpy libpng12-dev libjpeg-dev libgif-dev liblzma-dev libgeos-dev \
+sudo apt-get install -y -q --allow-unauthenticated libpng12-dev libjpeg-dev libgif-dev liblzma-dev libgeos-dev \
  postgresql-9.3 postgresql-client-9.3 postgresql-9.3-postgis-2.2 postgresql-9.3-postgis-scripts  libgdal20 libpq-dev \
  libcurl4-gnutls-dev libproj-dev libxml2-dev libexpat1-dev libxerces-c-dev libnetcdf-dev netcdf-bin libpoppler-dev \
  libpoppler-private-dev gpsbabel libhdf4-alt-dev libhdf5-serial-dev libpodofo-dev poppler-utils \
  libfreexl-dev unixodbc-dev libwebp-dev libepsilon-dev liblcms2-2 libcrypto++-dev libdap-dev libfyba-dev \
  libkml-dev libmysqlclient-dev libogdi3.2-dev libcfitsio3-dev openjdk-8-jdk couchdb libarmadillo-dev \
  libclc-dev ocl-icd-opencl-dev sqlite3-pcre libpcre3-dev libspatialite-dev librasterlite2-dev libgta-dev \
- libsfcgal-dev fossil libgeotiff-dev libcharls-dev libopenjp2-7-dev libcairo2-dev python-numpy python-dev pyflakes libkea-dev \
- libjsoncpp-dev libjson-c-dev libogdi3.2-dev
+ libsfcgal-dev fossil libgeotiff-dev libcharls-dev libopenjp2-7-dev libcairo2-dev \
+ python-numpy python-dev python3-dev pyflakes libkea-dev libjsoncpp-dev libjson-c-dev libogdi3.2-dev
