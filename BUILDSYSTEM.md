@@ -39,6 +39,7 @@ Development status
 - Implement all OSS drivers.
 - Work on current master branch.
 - Bindings: c#, perl, php and python.
+- Build for both python3 and python2.
 - All quick tests are passed on all built platforms.
 - There are some limitations
   * Python: install no backward compatibility modules
