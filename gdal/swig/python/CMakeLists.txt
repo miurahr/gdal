@@ -117,10 +117,12 @@ endif()
 if(Python3_FOUND)
     add_custom_command(TARGET python_binding PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E make_directory
-				       ${CMAKE_CURRENT_BINARY_DIR}/3/osgeo/
-				   COMMAND ${Python3_EXECUTABLE} -m lib2to3
-				       --write --write-unchanged-files --nobackups
-				       --output-dir=${CMAKE_CURRENT_BINARY_DIR}/3/osgeo/
+                           ${CMAKE_CURRENT_BINARY_DIR}/3/osgeo/
+                   COMMAND ${Python3_EXECUTABLE} -m lib2to3
+                       --fix=import --fix=next --fix=renames
+                       --fix=unicode --fix=ws_comma --fix=xrange
+                       --write --write-unchanged-files --nobackups
+                       --output-dir=${CMAKE_CURRENT_BINARY_DIR}/3/osgeo/
                        ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
                        ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal.py
                        ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalconst.py
