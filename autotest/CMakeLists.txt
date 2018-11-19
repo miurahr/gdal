@@ -59,7 +59,7 @@ function(set_autotest_properties)
     endif()
     list(APPEND _TEST_ENV
                 "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
-                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python${_SEP}${CMAKE_CURRENT_LIST_DIR}/pymod"
+                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/${Python_VERSION_MAJOR}/${_SEP}${CMAKE_CURRENT_LIST_DIR}/pymod"
                 "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
                 "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
                 "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
