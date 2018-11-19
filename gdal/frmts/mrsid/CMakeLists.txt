@@ -2,6 +2,7 @@ add_gdal_driver(TARGET gdal_MRSID SOURCES
     mrsidstream.h
     mrsidstream.cpp
     mrsiddataset.cpp)
+gdal_standard_includes(gdal_MRSID)
 gdal_target_link_libraries(TARGET gdal_MRSID LIBRARIES MRSID::MRSID)
 if(GDAL_USE_LIBGEOTIFF_INTERNAL)
     if(RENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
