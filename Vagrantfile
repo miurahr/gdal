@@ -40,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provider :lxc do |lxc,ovrd|
-    ovrd.vm.box = "cultuurnet/ubuntu-14.04-64-puppet"
+    ovrd.vm.box = "fgrehm/trusty64-lxc"
     lxc.backingstore = 'dir'
     lxc.customize 'cgroup.memory.limit_in_bytes', vm_ram_bytes
     lxc.customize 'aa_allow_incomplete', 1
@@ -60,6 +60,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # differencing disk feature, uncomment a following line.
     # hyperv.differencing_disk = true
     hyperv.vmname = "gdal-vagrant"
+  end
+
+  config.vm.provider :docker do |docker,ovrd|
+    ovrd.vm.box = "iknite/trusty64"
+    docker.vmname = "gdal-vagrant"
+    docker.memory = vm_ram
   end
 
   ppaRepos = [
@@ -178,7 +184,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ];
 
   if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :box
+    config.cache.scope = :machine
     config.cache.enable :generic, {
         "wget" => { cache_dir: "/var/cache/wget" },
       }
