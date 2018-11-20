@@ -130,7 +130,9 @@ Build targets
 
 - apps: build utility applications
 
-- python_bindings
+- python2_bindings
+
+- python3_bindings
 
 - php_bindings
 

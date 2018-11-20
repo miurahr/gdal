@@ -24,7 +24,7 @@ Development status
 
 - Under active development
 - Support PLUGIN drivers
-  * Build some drivers as plugin in defualt for proprietary one and with stronger license
+  * Build some drivers as plugin in default for proprietary one and with stronger license
   * Many drivers can be build as plugin, that help dependency management for OS package maintainer.
 - Successfully build for
   * GCC4.8 on trusty
@@ -39,13 +39,11 @@ Development status
 - Implement all OSS drivers.
 - Work on current master branch.
 - Bindings: c#, perl, php and python.
-- Build for both python3 and python2.
+- Build bindings for both python3 and python2 at once.
 - All quick tests are passed on all built platforms.
 - There are some limitations
   * Python: install no backward compatibility modules
     only install files under osgeo folder.
-  * Some drivers are always built-in and cannot build as plugin,
-    because of dependency from other components, ex. geojson
   * GRASS driver cannot build at a same time of libgdal.
     It is because of circular dependency.
 
