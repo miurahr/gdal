@@ -35,6 +35,7 @@ option(GDAL_ENABLE_PLUGIN "Set ON prefer to build most drivers as plugin" OFF)
 option(GDAL_ENABLE_QHULL "use qhull" ON)
 option(GDAL_USE_LIBPCIDSK_INTERNAL "Set ON to build pcidsk driver with internal sdk" OFF)
 option(ENABLE_LTO "Enable Link-Time Optimization if possible" ON)
+option(GDAL_ENABLE_MACOSX_FRAMEWORK "Enable Framework on Mac OS X" OFF)
 
 # Default definitions during build
 add_definitions(-DGDAL_COMPILATION)
@@ -93,11 +94,21 @@ endif()
 
 ################################################################################
 # Install properties
-if(APPLE)
-    include(OSXInstallDirs)
+if(GDAL_ENABLE_MACOSX_FRAMEWORK)
     set(INSTALL_PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/PlugIns"
             CACHE PATH "Installation direcotry for plugins")
     set(CMAKE_MACOSX_RPATH ON)
+    set_target_properties(gdal PROPERTIES
+                          FRAMEWORK TRUE
+                          FRAMEWORK_VERSION A
+                          MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
+                          MACOSX_FRAMEWORK_BUNDLE_VERSION "GDAL ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}"
+                          MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
+                          XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+                          INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}"
+                          BUILD_WITH_INSTALL_RPATH TRUE
+                          #MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/info.plist.in"
+                          )
 else()
     include(GNUInstallDirs)
     set(INSTALL_PLUGIN_DIR
@@ -200,19 +211,6 @@ configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal_def.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/gcore/gdal_def.h @ONLY)
 
 ################################################################################
-# gdal-config utility command generation
-if(UNIX AND NOT MACOSX_FRAMEWORK)
-    include(GenerateGdalConfig)
-    generate_gdal_config(gdal GDAL_LINK_LIBRARY
-                         ${GDAL_CMAKE_TEMPLATE_PATH}/gdal-config.in
-                         ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
-    add_custom_target(gdal_config ALL DEPENDS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
-    install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
-            DESTINATION bin
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-            COMPONENT applications)
-endif()
-
 set_property(TARGET gdal APPEND PROPERTY PUBLIC_HEADER ${CMAKE_CURRENT_BINARY_DIR}/port/cpl_config.h)
 
 set(GDAL_DATA_FILES
@@ -239,25 +237,6 @@ set(GDAL_DATA_FILES
     data/vdv452.xsd data/vertcs.csv data/vertcs.override.csv)
 set_property(TARGET gdal APPEND PROPERTY RESOURCE "${GDAL_DATA_FILES}")
 
-# pkg-config resource
-if(UNIX AND NOT APPLE)
-    configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
-                   ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-            COMPONENT libraries)
-endif()
-
-if(APPLE)
-   set_target_properties(gdal PROPERTIES
-       FRAMEWORK TRUE
-       FRAMEWORK_VERSION A
-       MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
-       MACOSX_FRAMEWORK_BUNDLE_VERSION ${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}
-       MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
-       XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
-   )
-endif()
-
 install(TARGETS gdal EXPORT gdal-export
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -267,22 +246,40 @@ install(TARGETS gdal EXPORT gdal-export
         FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-# Genarate GdalConfig.cmake and GdalConfigVersion.cmake
-export(EXPORT gdal-export
-       FILE gdal-export.cmake)
-install(EXPORT gdal-export
-        FILE GdalConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/
-        EXPORT_LINK_INTERFACE_LIBRARIES)
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(GdalConfigVersion.cmake
-                                 VERSION ${GDAL_VERSION}
-                                 ## SameMinorVersion compatibility are supported CMake > 3.10.1
-                                 ## so use ExactVersion instead.
-                                 # COMPATIBILITY SameMinorVersion)
-                                 COMPATIBILITY ExactVersion)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GdalConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
+if(UNIX AND NOT GDAL_ENABLE_MACOSX_FRAMEWORK)
+    # Genarate GdalConfig.cmake and GdalConfigVersion.cmake
+    export(EXPORT gdal-export
+           FILE gdal-export.cmake)
+    install(EXPORT gdal-export
+            FILE GdalConfig.cmake
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/
+            EXPORT_LINK_INTERFACE_LIBRARIES)
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(GdalConfigVersion.cmake
+                                     VERSION ${GDAL_VERSION}
+                                     ## SameMinorVersion compatibility are supported CMake > 3.10.1
+                                     ## so use ExactVersion instead.
+                                     # COMPATIBILITY SameMinorVersion)
+                                     COMPATIBILITY ExactVersion)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GdalConfigVersion.cmake
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
+
+    # gdal-config utility command generation
+    include(GenerateGdalConfig)
+    generate_gdal_config(gdal GDAL_LINK_LIBRARY
+                         ${GDAL_CMAKE_TEMPLATE_PATH}/gdal-config.in
+                         ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
+    add_custom_target(gdal_config ALL DEPENDS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
+            DESTINATION bin
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+            COMPONENT applications)
+    # pkg-config resource
+    configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/gdal.pc.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gdal.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+            COMPONENT libraries)
+endif()
 
 ################################################################################
 configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/uninstall.cmake.in
