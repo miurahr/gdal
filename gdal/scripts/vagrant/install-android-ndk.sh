@@ -11,6 +11,11 @@ NDK=android-ndk-r18b
 NDKZIP=${NDK}-linux-x86_64.zip
 BASEURL=https://dl.google.com/android/repository
 
+if [ ! -d /var/cache/wget ]; then
+  sudo mkdir -p /var/cache/wget
+  sudo chmod 777 /var/cache/wget
+fi
+
 echo "Download Android NDK ${NDKZIP} (> 900MB) that will take several minutes..."
 wget -N -P /var/cache/wget ${BASEURL}/${NDKZIP}
 echo "..downloaded. Now extract ndk..."
