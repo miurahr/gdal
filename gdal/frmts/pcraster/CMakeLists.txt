@@ -10,7 +10,7 @@ add_gdal_driver(TARGET gdal_PCRaster SOURCES
 gdal_standard_includes(gdal_PCRaster)
 
 if(GDAL_USE_LIBCSF_INTERNAL)
-    target_include_directories(gdal_PCRaster PRIVATE $<TARGET_PROPERTY:libcsf,SOURCE_DIR>)
+    target_include_directories(gdal_PCRaster PRIVATE $<TARGET_PROPERTY:csf,SOURCE_DIR>)
     target_compile_definitions(gdal_PCRaster PRIVATE -DUSE_IN_GDAL)
 else()
     target_include_directories(gdal_PCRaster PRIVATE ${LIBCSF_INCLUDE_DIRS})

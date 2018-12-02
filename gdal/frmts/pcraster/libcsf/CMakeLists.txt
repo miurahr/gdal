@@ -1,4 +1,4 @@
-add_library(libcsf STATIC
+add_library(csf STATIC
             _getcell.c  cellsize.c  delattr.c   gdattype.c  gnrrows.c   legend.c    pminval.c   rcomp.c     setangle.c  vsdef.c
             _getrow.c   create2.c   dumconv.c   getattr.c   gproj.c     mclose.c    putallmv.c  rcoords.c   setmv.c     vsis.c
             _gsomece.c  csf.h       endian.c    getx0.c     gputproj.c  mopen.c     putattr.c   rdup2.c     setvtmv.c   vsvers.c
@@ -8,9 +8,9 @@ add_library(libcsf STATIC
             attravai.c  csfsup.c    gattridx.c  gminval.c   ismv.c      pgisfid.c   pvalscal.c  rrowcol.c   trackmm.c
             attrsize.c  csftypes.h  gcellrep.c  gnrcols.c   kernlcsf.c  pmaxval.c   rattrblk.c  ruseas.c    vs2.c
             )
-target_include_directories(libcsf PRIVATE
+target_include_directories(csf PRIVATE
                            $<TARGET_PROPERTY:cpl,SOURCE_DIR>
                            $<TARGET_PROPERTY:cpl,BINARY_DIR>)
-target_compile_definitions(libcsf PRIVATE -DUSE_IN_GDAL)
-set_property(TARGET libcsf PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(GDAL_LINK_LIBRARY INTERFACE libcsf)
+target_compile_definitions(csf PRIVATE -DUSE_IN_GDAL)
+set_property(TARGET csf PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE csf)
