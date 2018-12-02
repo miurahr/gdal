@@ -27,4 +27,5 @@ sudo apt-get install -y -q --allow-unauthenticated libpng12-dev libjpeg-dev libg
  libkml-dev libmysqlclient-dev libogdi3.2-dev libcfitsio3-dev openjdk-8-jdk couchdb libarmadillo-dev \
  libclc-dev ocl-icd-opencl-dev sqlite3-pcre libpcre3-dev libspatialite-dev librasterlite2-dev libgta-dev \
  libsfcgal-dev fossil libgeotiff-dev libcharls-dev libopenjp2-7-dev libcairo2-dev \
- python-numpy python-dev python3-dev pyflakes libkea-dev libjsoncpp-dev libjson-c-dev libogdi3.2-dev
+ python-numpy python-dev python3-dev python3-numpy python-lxml python3-lxml pyflakes libkea-dev libjsoncpp-dev \
+ libjson-c-dev libogdi3.2-dev
