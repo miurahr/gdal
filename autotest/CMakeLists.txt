@@ -39,8 +39,17 @@ endif()
 set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_LIST_DIR}")
 add_subdirectory(cpp)
 
-if(NOT DEFINED Python_EXECUTABLE)
-    find_package(Python COMPONENTS Interpreter)
+set(AUTOTEST_PYTHON_VERSION 2 CACHE STRING "Python version for autotest target")
+if(AUTOTEST_PYTHON_VERSION STREQUAL 2)
+    if(NOT Python2_EXECUTABLE)
+        find_package(Python2 COMPONENTS Interpreter)
+    endif()
+  set(Python_EXECUTABLE ${Python2_EXECUTABLE})
+elseif(AUTOTEST_PYTHON_VERSION STREQUAL 3)
+    if(NOT Python3_EXECUTABLE)
+        find_package(Python3 COMPONENTS Interpreter)
+    endif()
+    set(Python_EXECUTABLE ${Python3_EXECUTABLE})
 endif()
 
 function(set_autotest_properties)
@@ -49,7 +58,7 @@ function(set_autotest_properties)
     if(_SAP_TIMEOUT)
         set(TTO ${_SAP_TIMEOUT})
     else()
-        set(TTO 3)
+        set(TTO 4)
     endif()
     set(_TEST_ENV)
     if(WIN32)
@@ -59,7 +68,7 @@ function(set_autotest_properties)
     endif()
     list(APPEND _TEST_ENV
                 "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
-                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/${Python_VERSION_MAJOR}/${_SEP}${CMAKE_CURRENT_LIST_DIR}/pymod"
+                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/${AUTOTEST_PYTHON_VERSION}/${_SEP}${CMAKE_CURRENT_LIST_DIR}/pymod"
                 "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
                 "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
                 "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
@@ -82,7 +91,7 @@ function(set_autotest_properties)
                          TIMEOUT ${TTO})
 endfunction()
 
-if(DEFINED Python_EXECUTABLE)
+if(Python_EXECUTABLE)
     add_subdirectory(gcore)
     add_subdirectory(gdrivers)
     add_subdirectory(alg)
