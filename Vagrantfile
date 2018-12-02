@@ -83,6 +83,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "python-dev",
     "python3-dev",
     "python-lxml",
+    "python3-numpy",
+    "python3-lxml",
     "postgis",
     "postgresql-server-dev-9.3",
     "postgresql-9.3-postgis-2.2",
