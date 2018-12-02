@@ -130,25 +130,35 @@ endif()
 include(CMakeHostSystemInformationExtra)
 include(CMakeCompilerMachineOption)
 
-cmake_host_system_information_extra(RESULT TARGET_ARCHITECTURE QUERY MICRO_ARCHITECTURE)
-cmake_compiler_machine_option(GDAL_ARCH_FLAG "${TARGET_ARCHITECTURE}")
-get_cpu_simd_features(simd_features ${TARGET_ARCHITECTURE})
-set(SSE2 "sse2" "Use SSE2. If SSE2 instructions are not enabled the SSE implementation will be disabled.")
-set(SSE3 "sse3" "Use SSE3. If SSE3 instructions are not enabled they will be emulated.")
-set(SSSE3 "ssse3" "Use SSSE3. If SSSE3 instructions are not enabled they will be emulated.")
-set(AVX "avx" "Use AVX. This will all floating-point vector sizes relative to SSE.")
-set(AVX2 "avx2" "Use AVX2. This will double all of the vector sizes relative to SSE.")
-foreach(target IN ITEMS SSE2 SSE3 SSSE3 AVX AVX2)
-    set(_name ${target})
-    list(GET ${target} 0 _flag)
-    list(GET ${target} 1 _documentation)
+if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)")
+  cmake_host_system_information_extra(RESULT HOST_INFORMATION QUERY HAS_SSE HAS_SSSE3 HAS_AVX)
+  list(GET HOST_INFORMATION 0 VAL)
+  set(HAVE_SSE_AT_COMPILE_TIME ${VAL})
+  list(GET HOST_INFORMATION 1 VAL)
+  set(HAVE_SSSE3_AT_COMPILE_TIME ${VAL})
+  list(GET HOST_INFORMATION 2 VAL)
+  set(HAVE_AVX_AT_COMPILE_TIME ${VAL})
+
+  set(TARGET_ARCHITECTURE "generic" CACHE STRING "CPU architecture to optimize for. \
+  Using an incorrect setting here can result in crashes of the resulting binary because of invalid instructions used. \
+  Supported values: \"generic\", \"core\", \"merom\" (65nm Core2), \
+  \"penryn\" (45nm Core2), \"nehalem\", \"westmere\", \"sandy-bridge\", \"ivy-bridge\", \
+  \"haswell\", \"broadwell\", \"skylake\", \"skylake-xeon\", \"kaby-lake\", \"cannonlake\", \"silvermont\", \
+  \"goldmont\", \"knl\" (Knights Landing), \"atom\", \"k8\", \"k8-sse3\", \"barcelona\", \
+  \"istanbul\", \"magny-cours\", \"bulldozer\", \"interlagos\", \"piledriver\", \
+  \"amd-14h\", \"amd-16h\", \"zen\".")
+  cmake_compiler_machine_option(GDAL_ARCH_FLAG "${TARGET_ARCHITECTURE}")
+  get_cpu_simd_features(simd_features ${TARGET_ARCHITECTURE})
+  foreach(target IN ITEMS SSE SSE2 SSE3 SSSE3 AVX AVX2)
+    set(TOLOWER ${target} _flag)
     list(FIND simd_features "${_flag}" _found)
     if(_found LESS 0)
-        set(USE_${_name} FALSE CACHE INTERNAL "${documentation}")
+      set(USE_${_name} FALSE CACHE BOOL "")
     else()
-        set(USE_${_name} TRUE CACHE INTERNAL "${documentation}")
+      set(USE_${_name} TRUE  CACHE BOOL "")
     endif()
-endforeach()
+  endforeach()
+endif()
 
 ################################################################
 add_subdirectory(gdal)

@@ -217,11 +217,11 @@ if(HDFS_ENABLED)
 endif()
 
 target_compile_options(cpl PRIVATE ${GDAL_ARCH_FLAG})
-if(USE_SSE2)
+if(HAVE_SSE_AT_COMPILE_TIME)
     target_compile_definitions(cpl PRIVATE -DHAVE_SSE_AT_COMPILE_TIME)
 endif()
 
-if(USE_SSSE3)
+if(HAVE_SSSE3_AT_COMPILE_TIME)
     target_compile_definitions(cpl PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
 endif()
 

@@ -126,7 +126,7 @@ if(ENABLE_PAM)
 	target_compile_definitions(gcore PRIVATE -DPAM_ENABLED)
 endif()
 
-if(USE_SSSE3)
+if(HAVE_SSSE3_AT_COMPILE_TIME)
     target_compile_options(rasterio PRIVATE ${GDAL_ARCH_FLAG})
     target_compile_definitions(rasterio PRIVATE -DHAVE_SSSE3_AT_COMPILE_TIME)
 endif()
