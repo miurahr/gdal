@@ -27,15 +27,6 @@
 
 add_subdirectory(osgeo)
 add_subdirectory(scripts)
-
-if(NumPy_FOUND)
-    if(NumPy_VERSION VERSION_LESS 1.0.0)
-        message(WARNING "numpy version ${NumPy_VERSION} must be > 1.0.0")
-        message(WARNING "disable numpy support")
-        set(NumPy_FOUND OFF)
-    endif()
-endif()
-
 macro(py_ext name v source)
     if(v EQUAL 2)
         python2_add_library(${name}2 MODULE ${CMAKE_CURRENT_SOURCE_DIR}/extensions/${source})
@@ -63,11 +54,27 @@ foreach(v IN ITEMS 2 3)
     py_ext(_ogr ${v} ogr_wrap.cpp)
     py_ext(_osr ${v} osr_wrap.cpp)
     set(_py_depends)
-    if(NumPy_FOUND)
-        py_ext(_gdal_array ${v} gdal_array_wrap.cpp)
-        target_include_directories(_gdal_array${v} PRIVATE ${NumPy_INCLUDE_DIRS})
-        install(TARGETS _gdal_array${v} DESTINATION ${Python${v}_SITEARCH}/osgeo)
-        list(APPEND _py_depends _gdal_array${v})
+    execute_process(
+      COMMAND "${Python${v}_EXECUTABLE}" -c
+              "from __future__ import print_function\ntry: import numpy; print(numpy.get_include(), end='')\nexcept:pass\n"
+              OUTPUT_VARIABLE NumPy${v}_INCLUDE_DIR)
+    execute_process(
+      COMMAND "${Python${v}_EXECUTABLE}" -c
+              "from __future__ import print_function\ntry: import numpy; print(numpy.__version__, end='')\nexcept:pass\n"
+      OUTPUT_VARIABLE NumPy${v}_VERSION)
+    if(NumPy${v}_INCLUDE_DIR)
+        if(NumPy${v}_VERSION VERSION_LESS 1.0.0)
+          set(NumPy${v}_FOUND OFF)
+        else()
+          set(NumPy${v}_FOUND ON)
+          py_ext(_gdal_array ${v} gdal_array_wrap.cpp)
+          target_include_directories(_gdal_array${v} PRIVATE ${NumPy_INCLUDE_DIRS})
+          install(TARGETS _gdal_array${v} DESTINATION ${Python${v}_SITEARCH}/osgeo)
+          list(APPEND _py_depends _gdal_array${v})
+          install(FILES
+                  ${CMAKE_CURRENT_BINARY_DIR}/${v}/osgeo/gdal_array.py
+                  DESTINATION ${Python${v}_SITELIB}/osgeo)
+        endif()
     endif()
     if(ENABLE_GNM)
         list(APPEND _py_depends _gnm${v})
@@ -116,12 +123,6 @@ foreach(v IN ITEMS 2 3)
             ${CMAKE_CURRENT_BINARY_DIR}/${v}/osgeo/ogr.py
             ${CMAKE_CURRENT_BINARY_DIR}/${v}/osgeo/osr.py
             DESTINATION ${Python${v}_SITELIB}/osgeo)
-    if(NumPy_FOUND)
-        install(FILES
-                ${CMAKE_CURRENT_BINARY_DIR}/${v}/osgeo/gdal_array.py
-                DESTINATION ${Python${v}_SITELIB}/osgeo
-                )
-    endif()
 endforeach()
 
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gdal/swig/include/python/docs/ogr_layer_docs.i

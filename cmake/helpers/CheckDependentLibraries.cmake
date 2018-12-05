@@ -305,7 +305,6 @@ endif()
 find_package(NumPy)
 set_package_properties(Python2 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python2)")
 set_package_properties(Python3 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python3)")
-set_package_properties(NumPy PROPERTIES PURPOSE "SWIG_PYTHON: Python binding")
 
 find_package(PHP)
 if(PHP_FOUND)
