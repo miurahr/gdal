@@ -23,11 +23,15 @@ Check CPU feature
 get_filename_component(_checkcpufeaturedir ${CMAKE_CURRENT_LIST_FILE} PATH)
 
 function(CHECK_CPU_FEATURE outvar feature)
+  set(_RESULT)
   if(NOT _check_cpu_feature_values)
     set(_cpu_flags)
     if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-        file(READ "/proc/cpuinfo" _cpuinfo)
-        string(REGEX REPLACE ".*flags[ \t]*:[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpuinfo}")
+      if(NOT _PROC_CPUINFO) # not override for unit-test
+        set(_PROC_CPUINFO "/proc/cpuinfo")
+      endif()
+      file(READ ${_PROC_CPUINFO} _cpuinfo)
+      string(REGEX REPLACE ".*(flags|Features)[ \t]*:[ \t]+([^\n]+).*" "\\2" _cpu_flags "${_cpuinfo}")
     elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
       execute_process(COMMAND "/usr/sbin/sysctl -n machdep.cpu.features"
                       OUTPUT_VARIABLE _cpu_flags
@@ -35,17 +39,11 @@ function(CHECK_CPU_FEATURE outvar feature)
                       OUTPUT_STRIP_TRAILING_WHITESPACE)
       string(TOLOWER "${_cpu_flags}" _cpu_flags)
       string(REPLACE "." "_" _cpu_flags "${_cpu_flags}")
-    elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-      if("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)")
-        try_run(RUN_RESULT COMP_RESULT ${CMAKE_CURRENT_BINARY_DIR} ${_checkcpufeaturedir}/win32_cpufeatures.c
-                CMAKE_FLAGS -g
-                RUN_OUTPUT_VARIABLE flags)
-        message(STATUS "Detected features: ${flags}")
-      elseif("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "ARM")
-        # TODO implement me.
-        # Win on ARM requires thumb2+NEON at least.
-        set(flags "neon" "thumb2")
-      endif()
+    elseif(MSVC)
+      try_run(RUN_RESULT COMP_RESULT ${CMAKE_CURRENT_BINARY_DIR} ${_checkcpufeaturedir}/win32_cpufeatures.c
+              CMAKE_FLAGS -g
+              RUN_OUTPUT_VARIABLE flags)
+      message(STATUS "Detected features: ${flags}")
     elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "OpenBSD" OR
            CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD" OR
            CMAKE_HOST_SYSTME_NAME STREQUAL "NetBSD")
@@ -56,35 +54,34 @@ function(CHECK_CPU_FEATURE outvar feature)
       string(REGEX REPLACE ".*=0x[0-9a-f]+<[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpu_features}")
       string(REPLACE "\n" ";" _cpu_flags "${_cpu_features}")
       string(TOLOWER "${_cpu_flags}" _cpu_flags)
+    elseif((CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG) AND
+         ("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)"))
+      try_run(RUN_RESULT COMP_RESULT ${CMAKE_CURRENT_BINARY_DIR} ${_checkcpufeaturedir}/gcc_cpufeatures.c
+              CMAKE_FLAGS -g
+              RUN_OUTPUT_VARIABLE flags)
+      message(STATUS "Detected features: ${flags}")
     else()
-      if(CMAKE_COMPILER_IS_GNUCC)
-        try_run(RUN_RESULT COMP_RESULT ${CMAKE_CURRENT_BINARY_DIR} ${_checkcpufeaturedir}/gcc_cpufeatures.c
-                CMAKE_FLAGS -g
-                RUN_OUTPUT_VARIABLE flags)
-        message(STATUS "Detected features: ${flags}")
-      else()
-        set(${outvar} 0 PARENT_SCOPE)
-        return()
-      endif()
+      # TODO ARM and PPC with GCC/CLANG
+      set(${outvar} 0 PARENT_SCOPE)
+      return()
     endif()
-    string(REPLACE " " ";" _cpu_flags "${_cpu_flags}")
-    set(_check_cpu_feature_values ${_cpu_flags} CACHE INTERNAL "cache for internal function")
+    string(REPLACE " " ";" _check_cpu_feature_values "${_cpu_flags}")
   endif()
-  # set alias
+  # aliases
+  # ARMv8-A returns asimd for neon on Linux
   if(feature STREQUAL neon)
     list(APPEND feature asimd)
-  endif()
-  if(feature STREQUAL sse3)
+  elseif(feature STREQUAL sse3)
     list(APPEND feature pni)
   endif()
   foreach(item IN ITEMS ${feature})
     list(FIND _check_cpu_feature_values ${item} _found)
     if(_found GREATER -1)
-      set(_found 1)
+      set(_RESULT 1)
       break()
     else()
-      set(_found 0)
+      set(_RESULT 0)
     endif()
   endforeach()
-  set(${outvar} ${_found} PARENT_SCOPE)
+  set(${outvar} ${_RESULT} PARENT_SCOPE)
 endfunction()

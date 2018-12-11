@@ -9,7 +9,7 @@ DetectCPUMicroArchitecture
 
 .. command:: detect_x64_micro_architecture
 
-   detect_x64_micro_architecture(<output variable name>)
+   detect_x64_micro_architecture(<output vendor> <output arch>)
 
   Determine the host Intel/AMD CPU micro architecture and retrun
   a code name.
@@ -18,14 +18,17 @@ DetectCPUMicroArchitecture
 
 # We must run the following at "include" time, not at function call time,
 # to find the path to this module rather than the path to a calling list file
-get_filename_component(_detectx64microarchitecturedir ${CMAKE_CURRENT_LIST_FILE} PATH)
+get_filename_component(_detextx64microarchitecturedir ${CMAKE_CURRENT_LIST_FILE} PATH)
 
-function(DETECT_X64_MICRO_ARCHITECTURE outvar)
+function(DETECT_X64_MICRO_ARCHITECTURE out_vendor out_arch)
   set(_vendor_id)
   set(_cpu_family)
   set(_cpu_model)
   if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    file(READ "/proc/cpuinfo" _cpuinfo)
+    if(NOT _PROC_CPUINFO) # not override for unit-test
+      set(_PROC_CPUINFO "/proc/cpuinfo")
+    endif()
+    file(READ ${_PROC_CPUINFO} _cpuinfo)
     string(REGEX REPLACE ".*vendor_id[ \t]*:[ \t]+([a-zA-Z0-9_-]+).*" "\\1" _vendor_id "${_cpuinfo}")
     string(REGEX REPLACE ".*cpu family[ \t]*:[ \t]+([a-zA-Z0-9_-]+).*" "\\1" _cpu_family "${_cpuinfo}")
     string(REGEX REPLACE ".*model[ \t]*:[ \t]+([a-zA-Z0-9_-]+).*" "\\1" _cpu_model "${_cpuinfo}")
@@ -47,7 +50,7 @@ function(DETECT_X64_MICRO_ARCHITECTURE outvar)
     string(REGEX REPLACE ".* Model ([0-9]+) .*" "\\1" _cpu_model "${_cpu_id}")
   else()
     if(CMAKE_COMPILER_IS_GNUCC)
-      try_run(RUN_RESULT COMP_RESULT ${CMAKE_CURRENT_BINARY_DIR} ${_detectx64microarchitecture}/gcc_cpuinfo.c
+      try_run(RUN_RESULT COMP_RESULT ${CMAKE_CURRENT_BINARY_DIR} ${_detectx64microarchitecturedir}/gcc_cpuinfo.c
               CMAKE_FLAGS -g
               RUN_OUTPUT_VARIABLE _cpu_model)
       message(STATUS "Detected CPU model: ${_cpu_model}")
@@ -146,7 +149,7 @@ function(DETECT_X64_MICRO_ARCHITECTURE outvar)
         endif()
       endif()
     elseif(_cpu_family EQUAL 7) # Itanium (not supported)
-      message(WARNING "${OFA_FUNCNAME}:Your CPU (Itanium: family ${_cpu_family}, model ${_cpu_model}) is not supported by OptimizeForArchitecture.cmake.")
+      message(WARNING "${OFA_FUNCNAME}:Your CPU (Itanium: family ${_cpu_family}, model ${_cpu_model}) is not supported.")
     elseif(_cpu_family EQUAL 15) # NetBurst
       list(APPEND _available_vector_units_list "sse" "sse2")
       if(_cpu_model GREATER 2) # Not sure whether this must be 3 or even 4 instead
@@ -155,20 +158,30 @@ function(DETECT_X64_MICRO_ARCHITECTURE outvar)
     endif(_cpu_family EQUAL 6)
   elseif(_vendor_id STREQUAL "AuthenticAMD")
     if(_cpu_family EQUAL 23)
-      set(MICRO_ARCHITECTURE "zen")
+      set(MICRO_ARCHITECTURE "amdfam17h" "znver1")
     elseif(_cpu_family EQUAL 22) # 16h
-      set(MICRO_ARCHITECTURE "AMD 16h")
-    elseif(_cpu_family EQUAL 21) # 15h
-      if(_cpu_model LESS 2)
-        set(MICRO_ARCHITECTURE "bulldozer")
+      if(_cpu_model LESS 16)
+        set(MICRO_ARCHITECTURE "jaguar" "btver2")
       else()
-        set(MICRO_ARCHITECTURE "piledriver")
+        set(MICRO_ARCHITECTURE "puma" "btver2")
+      endif()
+    elseif(_cpu_family EQUAL 21) # 15h
+      set(MICRO_ARCHITECTURE "amdfam15h")
+      if(_cpu_model LESS 2)
+        set(MICRO_ARCHITECTURE ${MICRO_ARCHITECTURE} "bulldozer" "bdver1")
+      elseif(_cpu_model LESS 32)
+        set(MICRO_ARCHITECTURE ${MICRO_ARCHITECTURE} "piledriver" "bdver2")
+      elseif(_cpu_model LESS 64)
+        set(MICRO_ARCHITECTURE ${MICRO_ARCHITECTURE} "steamroller" "bdver3")
+      elseif(_cpu_model LESS 112)
+        set(MICRO_ARCHITECTURE ${MICRO_ARCHITECTURE} "excavator" "bdver4")
       endif()
     elseif(_cpu_family EQUAL 20) # 14h
-      set(MICRO_ARCHITECTURE "AMD 14h")
+      set(MICRO_ARCHITECTURE "btver1")
     elseif(_cpu_family EQUAL 18) # 12h
-    elseif(_cpu_family EQUAL 16) # 10h
       set(MICRO_ARCHITECTURE "barcelona")
+    elseif(_cpu_family EQUAL 16) # 10h
+      set(MICRO_ARCHITECTURE "amdfam10h")
     elseif(_cpu_family EQUAL 15)
       set(MICRO_ARCHITECTURE "k8")
       if(_cpu_model GREATER 64) # I don't know the right number to put here. This is just a guess from the hardware I have access to
@@ -176,5 +189,6 @@ function(DETECT_X64_MICRO_ARCHITECTURE outvar)
       endif(_cpu_model GREATER 64)
     endif()
   endif(_vendor_id STREQUAL "GenuineIntel")
-  set(${outvar} ${MICRO_ARCHITECTURE} PARENT_SCOPE)
+  set(${out_vendor} ${_vendor_id} PARENT_SCOPE)
+  set(${out_arch} ${MICRO_ARCHITECTURE} PARENT_SCOPE)
 endfunction()
