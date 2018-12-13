@@ -92,43 +92,10 @@ function(set_autotest_properties)
 endfunction()
 
 if(Python_EXECUTABLE)
-    add_subdirectory(gcore)
-    add_subdirectory(gdrivers)
-    add_subdirectory(alg)
-    add_subdirectory(osr)
-    add_subdirectory(ogr)
-    add_subdirectory(gnm)
-    add_subdirectory(utilities)
-    add_subdirectory(pyscripts)
-    add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} -L "\"(gcore|gdrivers|alg|osr|ogr|utilities|pyscripts)-test\""
-                      --force-new-ctest-process --output-on-failure
-                      DEPENDS test_ogrsf)
-
-    # compat definitions
-    add_test(gcore-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gcore)
-    add_test(gdrivers-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py gdrivers)
-    add_test(alg-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py alg)
-    add_test(osr-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py osr)
-    add_test(ogr-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py ogr)
-    add_test(utilities-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py utilities)
-    add_test(pyscripts-test ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_all.py pyscripts)
-    set_autotest_properties(TESTS gcore-test gdrivers-test alg-test osr-test ogr-test utilities-test pyscripts-test
-                            TIMEOUT 300)
-    add_custom_target(autotest-compat COMMAND ${CMAKE_CTEST_COMMAND}
-                      -R "\"(gcore|gdrivers|alg|osr|ogr|utilities|pyscripts)-test\"" --force-new-ctest-process
-                      --verbose)
+  add_test(autotest COMMAND pytest)
+  set_autotest_properties(TESTS autotest TIMEOUT 300)
+  # pip install -r ./requirements.txt
 endif()
-
-#if(ANDROID)
-#find_program(ADB adb)
-#if(ADB)
-#add_custom_command(TARGET gdal_unit_test POST_BUILD
-#                   COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
-#                   COMMAND ${ADB} push $<TARGET_FILE:gdal> /data/local/tmp/${ANDROID_ABI}/
-#                   COMMAND ${ADB} push $<TARGET_FILE:gdal_unit_test> /data/local/tmp/${ANDROID_ABI}/
-#                   COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/gdal_unit_test\")
-#endif()
-#endif()
 
 get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
 add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R '^test-.*'
