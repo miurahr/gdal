@@ -29,18 +29,6 @@ The following variables are provided to indicate iconv support:
   C library or not. Even if the C library provides `iconv()`, the presence of
   an external `libiconv` implementation might lead to this being false.
 
-.. variable:: ICONV_CONST
-
-  A variable indicating whether iconv second argument is "const" or not.
-  If iconv second arugment type is "const char**" then ICONV_CONST is a string "const",
-  otherwise it is "".
-
-.. variable:: ICONV_SECOND_ARGUMENT_IS_CONST
-
-  A variable indicating same as Iconv_CONST but is boolean.
-  If iconv second argument type is "const char**", it is ON(TRUE),
-  otherwise OFF(FALSE).
-
 Additionally, the following :prop_tgt:`IMPORTED` target is being provided:
 
 .. variable:: Iconv::Iconv
@@ -68,8 +56,7 @@ if(CMAKE_C_COMPILER_LOADED)
   include(CheckCSourceCompiles)
 elseif(CMAKE_CXX_COMPILER_LOADED)
   include(CheckCXXSourceCompiles)
-endif()
-if(NOT CMAKE_C_COMPILER_LOADED AND NOT CMAKE_CXX_COMPILER_LOADED)
+else()
   # If neither C nor CXX are loaded, implicit iconv makes no sense.
   set(Iconv_IS_BUILT_IN FALSE)
 endif()
@@ -87,7 +74,7 @@ if(NOT DEFINED Iconv_IS_BUILT_IN)
     # Note: libiconv will define the iconv functions as macros, so CheckSymbolExists
     # will not yield correct results.
     set(Iconv_IMPLICIT_TEST_CODE
-        "
+      "
       #include <stddef.h>
       #include <iconv.h>
       int main() {
@@ -99,7 +86,7 @@ if(NOT DEFINED Iconv_IS_BUILT_IN)
         iconv_close(ic);
       }
       "
-        )
+    )
     if(CMAKE_C_COMPILER_LOADED)
       check_c_source_compiles("${Iconv_IMPLICIT_TEST_CODE}" Iconv_IS_BUILT_IN)
     else()
@@ -112,20 +99,18 @@ if(NOT DEFINED Iconv_IS_BUILT_IN)
 endif()
 
 if(NOT Iconv_IS_BUILT_IN)
-  FIND_PATH(Iconv_INCLUDE_DIR iconv.h PATHS /opt/local/include NO_DEFAULT_PATH)
   find_path(Iconv_INCLUDE_DIR
-            NAMES "iconv.h"
-            DOC "iconv include directory")
+    NAMES "iconv.h"
+    DOC "iconv include directory")
   set(Iconv_LIBRARY_NAMES "iconv" "libiconv")
-  FIND_LIBRARY(iconv_lib NAMES iconv libiconv NO_DEFAULT_PATH PATHS /opt/local/lib)
 else()
   set(Iconv_INCLUDE_DIR "" CACHE FILEPATH "iconv include directory")
   set(Iconv_LIBRARY_NAMES "c")
 endif()
 
 find_library(Iconv_LIBRARY
-             NAMES ${Iconv_LIBRARY_NAMES}
-             DOC "iconv library (potentially the C library)")
+  NAMES ${Iconv_LIBRARY_NAMES}
+  DOC "iconv library (potentially the C library)")
 
 mark_as_advanced(Iconv_INCLUDE_DIR)
 mark_as_advanced(Iconv_LIBRARY)
@@ -141,10 +126,8 @@ if(Iconv_FOUND)
   set(Iconv_INCLUDE_DIRS "${Iconv_INCLUDE_DIR}")
   set(Iconv_LIBRARIES "${Iconv_LIBRARY}")
   if(NOT TARGET Iconv::Iconv)
-    add_library(Iconv::Iconv UNKNOWN IMPORTED)
-    set_target_properties(Iconv::Iconv PROPERTIES
-                 INTERFACE_INCLUDE_DIRECTORIES "${Iconv_INCLUDE_DIRS}"
-                 IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-                 IMPORTED_LOCATION "${Iconv_LIBRARIES}")
+    add_library(Iconv::Iconv INTERFACE IMPORTED)
   endif()
+  set_property(TARGET Iconv::Iconv PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${Iconv_INCLUDE_DIRS}")
+  set_property(TARGET Iconv::Iconv PROPERTY INTERFACE_LINK_LIBRARIES "${Iconv_LIBRARIES}")
 endif()
