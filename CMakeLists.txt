@@ -67,6 +67,9 @@ endif()
 if (POLICY CMP0075)
     cmake_policy(SET CMP0075 NEW)
 endif()
+if (POLICY CMP0079)
+    cmake_policy(SET CMP0079 OLD)
+endif()
 
 project(gdal LANGUAGES C CXX)
 

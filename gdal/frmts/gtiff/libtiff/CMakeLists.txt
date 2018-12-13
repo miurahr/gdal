@@ -3,7 +3,7 @@ add_library(libtiff STATIC
 			t4.h                          tif_dir.h        tif_fax3.h      tif_lzw.c       tif_print.c    tif_warning.c  tiffvers.h
 			tif_aux.c                     tif_dirinfo.c    tif_fax3sm.c    tif_next.c      tif_read.c     tif_write.c    uvcode.h
 			tif_close.c                   tif_dirread.c    tif_flush.c     tif_ojpeg.c     tif_strip.c    tif_zip.c
-			tif_codec.c                   tif_dirwrite.c   tif_getimage.c  tif_open.c      tif_swab.c     tif_zstd.c
+			tif_codec.c                   tif_dirwrite.c   tif_getimage.c  tif_open.c      tif_swab.c     tif_zstd.c tif_webp.c
 			tif_color.c                   tif_dumpmode.c   tif_jpeg.c      tif_packbits.c  tif_thunder.c  tiff.h
 			tif_compress.c                tif_error.c      tif_jpeg_12.c   tif_pixarlog.c  tif_tile.c     tiffconf.h
 			tif_config.h                  tif_extension.c  tif_luv.c       tif_predict.c   tif_version.c  tiffio.h
@@ -14,16 +14,13 @@ target_include_directories(libtiff PRIVATE
 target_compile_definitions(libtiff PRIVATE -DDONT_DEPRECATE_SPRINTF)
 
 if(GDAL_USE_LIBZ_INTERNAL)
-	target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
+    target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
+    target_compile_definitions(libtiff PRIVATE -DPIXARLOG_SUPPORT -DZIP_SUPPORT)
 else()
-	target_include_directories(libtiff PRIVATE ZLIB::ZLIB)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
+    target_include_directories(libtiff PRIVATE ZLIB::ZLIB)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
+    target_compile_definitions(libtiff PRIVATE -DPIXARLOG_SUPPORT -DZIP_SUPPORT)
 endif()
-
-# Always use ZLIB
-#if(USE_ZLIB)
-target_compile_definitions(libtiff PRIVATE -DPIXARLOG_SUPPORT -DZIP_SUPPORT)
-#endif()
 
 if(GDAL_USE_LIBJPEG_INTERNAL)
 	target_include_directories(libtiff PRIVATE $<TARGET_PROPERTY:libjpeg,SOURCE_DIR>)
@@ -39,20 +36,19 @@ target_compile_definitions(libtiff PRIVATE -DJPEG_SUPPORT -DOJPEG_SUPPORT)
 
 if(HAVE_LIBLZMA)
     target_compile_definitions(libtiff PRIVATE -DLZMA_SUPPORT)
-    target_include_directories(libtiff PRIVATE ${LIBLZMA_INCLUDE_DIRS})
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${LIBLZMA_LIBRARIES})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE LibLZMA::LibLZMA)
 endif()
 
 if(HAVE_ZSTD)
     target_compile_definitions(libtiff PRIVATE -DZSTD_SUPPORT)
-	target_include_directories(libtiff PRIVATE ${ZSTD_INCLUDE_DIRS})
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ZSTD_LIBRARIES})
+    target_include_directories(libtiff PRIVATE ${ZSTD_INCLUDE_DIRS})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ZSTD_LIBRARIES})
 endif()
 
 if(HAVE_WEBP)
     target_compile_definitions(libtiff PRIVATE -DWEBP_SUPPORT)
-	target_include_directories(libtiff PRIVATE ${WEBP_INCLUDE_DIRS})
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${WEBP_LIBRARIES})
+    target_include_directories(libtiff PRIVATE ${WEBP_INCLUDE_DIRS})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${WEBP_LIBRARIES})
 endif()
 
 if(RENAME_INTERNAL_LIBTIFF_SYMBOLS)
@@ -61,7 +57,7 @@ if(RENAME_INTERNAL_LIBTIFF_SYMBOLS)
 endif()
 if(MSVC)
     if(CMAKE_CL_64)
-		target_compile_definitions(libtiff PRIVATE -D_WIN64)
+        target_compile_definitions(libtiff PRIVATE -D_WIN64)
     endif()
 endif()
 

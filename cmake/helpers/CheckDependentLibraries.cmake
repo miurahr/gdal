@@ -302,7 +302,6 @@ find_package(Python3 COMPONENTS Interpreter Development)
 if(Python2_FOUND OR Python3_FOUND)
     set(HAVE_PYTHON ON CACHE INTERNAL "HAVE_PYTHON")
 endif()
-find_package(NumPy)
 set_package_properties(Python2 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python2)")
 set_package_properties(Python3 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python3)")
 
