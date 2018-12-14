@@ -92,7 +92,7 @@ function(set_autotest_properties)
 endfunction()
 
 if(Python_EXECUTABLE)
-  add_test(autotest COMMAND pytest)
+  add_test(NAME autotest COMMAND pytest)
   set_autotest_properties(TESTS autotest TIMEOUT 300)
   # pip install -r ./requirements.txt
 endif()
