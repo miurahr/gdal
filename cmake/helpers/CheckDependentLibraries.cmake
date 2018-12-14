@@ -170,13 +170,13 @@ option(GDAL_USE_LIBLERC_INTERNAL "Set ON to build mrf driver with internal libLE
 
 gdal_check_package(Shapelib "Enable Shapelib support.")
 if(NOT HAVE_SHAPELIB)
-    set(GDAL_USE_SHAPELIB_INTERNAL ON CACHE BOOL "Set ON to build shape driver with internal shapelib")
+    set(GDAL_USE_SHAPELIB_INTERNAL ON CACHE BOOL "Set ON to build shape driver with internal shapelib" FORCE)
 else()
-    if(Shapelib_VERSION VERSION_LESS 1.3.0)
+    if(Shapelib_VERSION VERSION_LESS 1.4.0)
         message(STATUS "Detected Shapelib version ${Shapelib_VERSION} is too lower to support. Enables internal shapelib.")
-        set(GDAL_USE_SHAPELIB_INTERNAL ON CACHE BOOL "Set ON to build shape driver with internal shapelib")
+        set(GDAL_USE_SHAPELIB_INTERNAL ON CACHE BOOL "Set ON to build shape driver with internal shapelib" FORCE)
     else()
-        set(GDAL_USE_SHAPELIB_INTERNAL OFF CACHE BOOL "Set ON to build shape driver with internal shapelib")
+        set(GDAL_USE_SHAPELIB_INTERNAL OFF CACHE BOOL "Set ON to build shape driver with internal shapelib" FORCE)
     endif()
 endif()
 
