@@ -1,11 +1,14 @@
 set(CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}
+    # find packages
+    ${CMAKE_CURRENT_LIST_DIR}/packages
+    # thirdparty modules
     ${CMAKE_CURRENT_LIST_DIR}/thirdparty
     # GDAL specific helpers
     ${CMAKE_CURRENT_LIST_DIR}/../helpers
     ${CMAKE_MODULE_PATH})
 
-# Backported modules from versions
+# Backported modules from cmake versions
 if(CMAKE_VERSION VERSION_LESS 3.14)
     set(CMAKE_MODULE_PATH
         ${CMAKE_CURRENT_LIST_DIR}/3.14
