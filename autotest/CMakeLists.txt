@@ -44,23 +44,19 @@ if(AUTOTEST_PYTHON_VERSION STREQUAL 2)
     if(NOT Python2_EXECUTABLE)
         find_package(Python2 COMPONENTS Interpreter)
     endif()
-  set(Python_EXECUTABLE ${Python2_EXECUTABLE})
+    set(Python_EXECUTABLE ${Python2_EXECUTABLE})
+    find_program(PIP_EXECUTABLE pip)
 elseif(AUTOTEST_PYTHON_VERSION STREQUAL 3)
     if(NOT Python3_EXECUTABLE)
         find_package(Python3 COMPONENTS Interpreter)
     endif()
     set(Python_EXECUTABLE ${Python3_EXECUTABLE})
+    find_program(PIP_EXECUTABLE pip3)
 endif()
 
 function(set_autotest_properties)
-    cmake_parse_arguments(_SAP "SLOW_TESTS;DOWNLOAD_TEST_DATA" "TIMEOUT" "TESTS" ${ARGN})
+    cmake_parse_arguments(_SAP "SLOW_TESTS;DOWNLOAD_TEST_DATA" "" "TESTS" ${ARGN})
     get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
-    if(_SAP_TIMEOUT)
-        set(TTO ${_SAP_TIMEOUT})
-    else()
-        set(TTO 4)
-    endif()
-    set(_TEST_ENV)
     if(WIN32)
         set(_SEP ";")
     else()
@@ -68,12 +64,11 @@ function(set_autotest_properties)
     endif()
     list(APPEND _TEST_ENV
                 "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
-                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/${AUTOTEST_PYTHON_VERSION}/${_SEP}${CMAKE_CURRENT_LIST_DIR}/pymod"
+                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/${AUTOTEST_PYTHON_VERSION}/"
                 "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
                 "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
                 "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
         )
-
     if(_SAP_DOWNLOAD_TEST_DATA)
         list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=YES)
     else()
@@ -87,14 +82,24 @@ function(set_autotest_properties)
     set_tests_properties(${_SAP_TESTS}
                          PROPERTIES
                          ENVIRONMENT "${_TEST_ENV}"
-                         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-                         TIMEOUT ${TTO})
+                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/autotest
+                         TIMEOUT 1200)
 endfunction()
 
 if(Python_EXECUTABLE)
   add_test(NAME autotest COMMAND pytest)
-  set_autotest_properties(TESTS autotest TIMEOUT 300)
-  # pip install -r ./requirements.txt
+  set_autotest_properties(TESTS autotest)
+  add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -R autotest)
+  #execute_process(COMMAND ${PIP_EXECUTABLE} install -r ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt)
+  find_program(RSYNC_EXECUTABLE rsync)
+  if(RSYNC_EXECUTABLE)
+    execute_process(COMMAND ${RSYNC_EXECUTABLE} -a --include='*.ini' --include='*.py' --include='*/' --exclude='*'
+                    ${CMAKE_SOURCE_DIR}/autotest/ ${CMAKE_BINARY_DIR}/autotest/)
+  else()
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar cfj ${CMAKE_CURRENT_BINARY_DIR}/tmp.tar . WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfj ${CMAKE_CURRENT_BINARY_DIR}/tmp.tar)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_CURRENT_BINARY_DIR}/tmp.tar)
+  endif()
 endif()
 
 get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
