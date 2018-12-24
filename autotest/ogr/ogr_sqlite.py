@@ -2863,6 +2863,12 @@ def test_ogr_sqlite_45():
     if gdaltest.sl_ds is None:
         pytest.skip()
 
+    try:
+        gdal.Unlink('tmp/ogr_sqlite_45.db')
+        gdal.Unlink('tmp/ogr_sqlite_45_bis.db')
+    except OSError:
+        pass
+
     # Only available since sqlite 3.7.0
     version = ogrtest.sqlite_version.split('.')
     if not (len(version) >= 3 and int(version[0]) * 10000 + int(version[1]) * 100 + int(version[2]) >= 30700):

@@ -61,9 +61,8 @@ def test_ogr_avc_1():
 
     # Example given at Annex A of http://avce00.maptools.org/docs/v7_e00_cover.html
     avc_ds = ogr.Open('data/test.e00')
-    assert avc_ds.GetLayer(0).GetSpatialRef() is not None, 'expected SRS'
-
     if avc_ds is not None:
+        assert avc_ds.GetLayer(0).GetSpatialRef() is not None, 'expected SRS'
         return check_content(avc_ds)
     pytest.fail()
 
@@ -74,9 +73,8 @@ def test_ogr_avc_1():
 def test_ogr_avc_2():
 
     avc_ds = ogr.Open('data/testavc/testavc')
-    assert avc_ds.GetLayer(0).GetSpatialRef() is not None, 'expected SRS'
-
     if avc_ds is not None:
+        assert avc_ds.GetLayer(0).GetSpatialRef() is not None, 'expected SRS'
         return check_content(avc_ds)
     pytest.fail()
 
@@ -154,7 +152,3 @@ def test_ogr_avc_5():
         if last_feature.GetGeometryRef().ExportToWkt() != expected_wkt:
             f.DumpReadable()
             pytest.fail(filename)
-
-    
-
-
