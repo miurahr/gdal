@@ -92,6 +92,8 @@ endif()
 gdal_check_package(CryptoPP "Use crypto++ library for CPL.")
 option(CRYPTOPPL_USE_ONLY_CRYPTODLL_ALG "Use Only cryptoDLL alg. only work on dynamic DLL" OFF)
 
+find_package(PROJ 4.0 REQUIRED)
+
 find_package(TIFF 4.0)
 if(TIFF_FOUND)
     set(HAVE_TIFF ON CACHE INTERNAL "HAVE_TIFF")
@@ -208,7 +210,7 @@ if(HAVE_JASPER)
     endif()
 endif()
 
-gdal_check_package(PROJ4 "")
+
 gdal_check_package(WebP "")
 gdal_check_package(FreeXL "Enable XLS driver")
 gdal_check_package(GTA "")
