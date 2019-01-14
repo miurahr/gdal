@@ -1,0 +1,39 @@
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '2.7'
+    addToPath: true
+    architecture: ${{ parameters.architecture }}
+  name: install_python27
+  displayName: Install python 2.7
+- script: |
+    cinst -y --no-progress 7zip vcpython27 swig wget
+    python -m pip install --upgrade pip setuptools wheel
+    python -m pip install numpy
+    cd $(Build.BinariesDirectory)
+    wget -q http://download.gisinternals.com/sdk/downloads/${{parameters.sdk}}-dev.zip
+    7z x ${{parameters.sdk}}-dev.zip
+    rm ${{parameters.sdk}}/include/gdal*.h
+    rm ${{parameters.sdk}}/lib/gdal_i.lib
+    rm ${{parameters.sdk}}/include/ogr*.h
+  displayName: Install numpy, swig and sdk
+- task: CMake@1
+  displayName: configure gdal
+  inputs:
+    workingDirectory: '$(Build.BinariesDirectory)/build'
+    cmakeArgs: -G "${{ parameters.generator }}" ${{ parameters.CMAKE_OPTIONS }} -C ${{ parameters.CONFIGURATIONS }} $(Build.SourcesDirectory)
+- task: CMake@1
+  displayName: build gdal
+  inputs:
+    workingDirectory: '$(Build.BinariesDirectory)/build'
+    cmakeArgs: --build . --config Release
+- task: CMake@1
+  displayName: run quicktest
+  inputs:
+    workingDirectory: '$(Build.BinariesDirectory)/build'
+    cmakeArgs: --build . --config Release --target quicktest
+- task: CMake@1
+  displayName: run autotest
+  inputs:
+    workingDirectory: '$(Build.BinariesDirectory)/build'
+    cmakeArgs: --build . --target autotest
