@@ -155,6 +155,6 @@ if(WIN32)
     ogr_optional_driver(arcobjects ARCOBJECTS)
 endif()
 ogr_optional_driver(ods ODS)
-ogr_dependent_driver(ogdi "OGDI" "HAVE_OGDI;HAVE_PROJ4")
+ogr_dependent_driver(ogdi "OGDI" "HAVE_OGDI")
 
 add_subdirectory(generic)

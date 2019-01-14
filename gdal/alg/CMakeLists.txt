@@ -55,7 +55,7 @@ if(HAVE_SFCGAL)
 endif()
 
 if(HAVE_ARMADILLO)
-	target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS})
+	target_include_directories(alg PRIVATE ${ALMADILLO_INCLUDE_DIRS})
 	target_compile_definitions(alg PRIVATE -DHAVE_ARMADILLO)
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
 endif()
@@ -78,10 +78,8 @@ if(HAVE_OPENCL)
 	)
 endif()
 
-if(HAVE_PROJ4)
-    target_include_directories(alg PRIVATE ${PROJ4_INCLUDE_DIRS})
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${PROJ4_LIBRARIES})
-endif()
+target_include_directories(alg PRIVATE ${PROJ_INCLUDE_DIRS})
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE PROJ::PROJ)
 
 if(GDAL_ENABLE_QHULL)
     if(GDAL_USE_QHULL_INTERNAL)
@@ -120,4 +118,3 @@ target_public_header(TARGET gdal HEADERS
 					 gdalwarper.h
 					 gdal_simplesurf.h
 					 gdalpansharpen.h)
-

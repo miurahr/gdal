@@ -113,6 +113,10 @@ set_property(TARGET ogr PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_compile_definitions(ogr PRIVATE -DHAVE_MITAB)
 
+target_include_directories(ogr PRIVATE ${PROJ_INCLUDE_DIR})
+#TODO: detect whether -DPROJ_STATIC or not.
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE PROJ::PROJ)
+
 if(HAVE_GEOS)
     target_include_directories(ogr PRIVATE  ${GEOS_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_GEOS=1)
@@ -125,13 +129,6 @@ if(HAVE_SFCGAL)
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE SFCGAL::SFCGAL)
 endif()
 
-if(HAVE_PROJ4)
-    target_include_directories(ogr PRIVATE ${PROJ4_INCLUDE_DIR})
-    target_compile_definitions(ogr PRIVATE -DHAVE_PROJ)
-    #TODO: detect whether -DPROJ_STATIC or not.
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${PROJ4_LIBRARY})
-endif()
-
 target_compile_definitions(ogr PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
 if(GDAL_USE_LIBZ_INTERNAL)
     target_include_directories(ogr PRIVATE
@@ -142,7 +139,7 @@ else()
     if(MSVC)
         target_compile_definitions(ogr PRIVATE -DZLIB_DLL)
     endif()
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${GDAL_TARGET_LINK_LIB} ${ZLIB_LIBRARIES})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
 endif()
 
 if(HAVE_EXPAT)
@@ -161,7 +158,7 @@ endif()
 
 if(HAVE_JSONC)
     target_include_directories(ogr PRIVATE ${JSONC_INCLUDE_DIR})
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARY})
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE JSONC::JSONC)
 else()
     if(GDAL_USE_LIBJSONC_INTERNAL)
         target_include_directories(ogr PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
