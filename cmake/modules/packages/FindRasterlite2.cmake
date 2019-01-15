@@ -19,8 +19,8 @@
 
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_RASTERLITE2 QUIET rasterlite2)
-    set(RASTERLITE2_VERSION_STRING ${PC_RASTERLITE2_VERSION} CACHE INTERNAL "")
+  pkg_check_modules(PC_RASTERLITE2 QUIET rasterlite2)
+  set(RASTERLITE2_VERSION_STRING ${PC_RASTERLITE2_VERSION})
 endif()
 
 find_path(RASTERLITE2_INCLUDE_DIR
@@ -31,6 +31,23 @@ find_library(RASTERLITE2_LIBRARY
              NAMES rasterlite2
              HINTS ${PC_RASTERLITE2_LIBRARY})
 mark_as_advanced(RASTERLITE2_LIBRARY RASTERLITE2_INCLUDE_DIR)
+
+if(NOT RASTERLITE2_VERSION_STRING AND RASTERLITE2_INCLUDE_DIR AND RASTERLITE2_LIBRARY)
+  file(WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.c"
+          "#include <stdio.h>\n#include \"rasterlite2.h\"\n
+          int main(int argc, void *argv) { const char *version = rl2_version(); printf(\"%s\", version); }\n")
+  set(CMAKE_REQUIRED_INCLUDES "${RASTERLITE2_INCLUDE_DIR}")
+  try_run(RL2_EXITCODE RL2_COMPILED ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.c
+      LINK_LIBRARIES  ${RASTERLITE2_LIBRARY}
+      CMAKE_FLAGS "-DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}" "-DINCLUDE_DIRECTORIES:STRING=${RASTERLITE2_INCLUDE_DIR}"
+      COMPILE_OUTPUT_VARIABLE RL2_OUTPUT)
+  if(RL2_COMPILED AND RL2_EXITCODE)
+    set(RASTERLITE2_VERSION_STRING "${RL2_OUTPUT}")
+  endif()
+  unset(RL2_EXITCODE)
+  unset(RL2_COMPILED)
+  unset(RL2_OUTPUT)
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(RASTERLITE2
