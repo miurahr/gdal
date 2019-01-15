@@ -26,43 +26,40 @@ Copyright (c) 2018 Hiroshi Miura
 
 #]=======================================================================]
 
+find_path(PROJ_INCLUDE_DIR proj_api.h
+          PATHS ${PROJ_ROOT}/include
+          DOC "Path to PROJ library include directory")
 
 if(MSVC)
     set(PROJ_NAMES proj proj_i)
+    find_library(PROJ_IMP_LIBRARY
+                 NAMES proj_i
+                 PATHS ${PROJ_ROOT}/lib
+                 DOC "Path to PROJ library file")
+    find_library(PROJ_LIBRARY
+                 NAMES proj
+                 PATHS ${PROJ_ROOT}/lib
+                 DOC "Path to PROJ library file")
 elseif(MINGW OR CYGWIN)
-    set(PROJ_NAMES proj libproj-0 libproj-9 libproj-10 libproj-11 libproj-12 libproj-13)
+    find_library(PROJ_LIBRARY
+                 NAMES proj libproj-0 libproj-9 libproj-10 libproj-11 libproj-12 libproj-13
+                 PATHS ${PROJ_ROOT}/lib
+                 DOC "Path to PROJ library file")
 else()
-    set(PROJ_NAMES proj)
+    find_library(PROJ_LIBRARY
+                 NAMES proj
+                 PATHS ${PROJ_ROOT}/lib
+                 DOC "Path to PROJ library file")
 endif()
 
-find_path(PROJ_INCLUDE_DIR proj_api.h
-    PATHS ${PROJ_ROOT}/include
-    DOC "Path to PROJ library include directory")
-
-find_library(PROJ_LIBRARY
-    NAMES ${PROJ_NAMES}
-    PATHS ${PROJ_ROOT}/lib
-    DOC "Path to PROJ library file")
-
 if(PROJ_INCLUDE_DIR)
-    set(PROJ_VERSION_MAJOR 0)
-    set(PROJ_VERSION_MINOR 0)
-    set(PROJ_VERSION_PATCH 0)
-    set(PROJ_VERSION_NAME "EARLY RELEASE")
-
-    if(EXISTS "${PROJ_INCLUDE_DIR}/proj_api.h")
-        file(READ "${PROJ_INCLUDE_DIR}/proj_api.h" PROJ_API_H_CONTENTS)
-        string(REGEX MATCH "PJ_VERSION[ \t]+([0-9]+)"
-          PJ_VERSION ${PROJ_API_H_CONTENTS})
-        string (REGEX MATCH "([0-9]+)"
-          PJ_VERSION ${PJ_VERSION})
-
-        string(SUBSTRING ${PJ_VERSION} 0 1 PROJ_VERSION_MAJOR)
-        string(SUBSTRING ${PJ_VERSION} 1 1 PROJ_VERSION_MINOR)
-        string(SUBSTRING ${PJ_VERSION} 2 1 PROJ_VERSION_PATCH)
-        unset(PROJ_API_H_CONTENTS)
-    endif()
-
+    file(READ "${PROJ_INCLUDE_DIR}/proj_api.h" PROJ_API_H_CONTENTS)
+    string(REGEX MATCH "PJ_VERSION[ \t]+([0-9]+)" PJ_VERSION ${PROJ_API_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)" PJ_VERSION ${PJ_VERSION})
+    string(SUBSTRING ${PJ_VERSION} 0 1 PROJ_VERSION_MAJOR)
+    string(SUBSTRING ${PJ_VERSION} 1 1 PROJ_VERSION_MINOR)
+    string(SUBSTRING ${PJ_VERSION} 2 1 PROJ_VERSION_PATCH)
+    unset(PROJ_API_H_CONTENTS)
     set(PROJ_VERSION_STRING "${PROJ_VERSION_MAJOR}.${PROJ_VERSION_MINOR}.${PROJ_VERSION_PATCH}")
 endif ()
 
@@ -81,6 +78,9 @@ if(PROJ_FOUND)
                           INTERFACE_INCLUDE_DIRECTORIES ${PROJ_INCLUDE_DIR}
                           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
                           IMPORTED_LOCATION ${PROJ_LIBRARY})
+    if(PROJ_IMP_LIBRARY)
+      set_property(TARGET PROJ::PROJ APPEND PROPERTY IMPORTED_IMPLIB ${PROJ_IMP_LIBRARY})
+    endif()
   endif()
 endif()
 
