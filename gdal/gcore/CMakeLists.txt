@@ -81,7 +81,7 @@ target_compile_definitions(gdaldrivermanager PRIVATE
                            -DINST_DATA="${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_DATADIR}")
 set_property(TARGET gdaldrivermanager PROPERTY POSITION_INDEPENDENT_CODE ON)
 if(HAVE_XERCESC)
-    target_include_directories(gdaldrivermanager PRIVATE ${XercesC_INCLUDE_DIRS}/xercesc)
+    target_include_directories(gdaldrivermanager PRIVATE ${XercesC_INCLUDE_DIRS} ${XercesC_INCLUDE_DIRS}/xercesc)
     target_compile_definitions(gdaldrivermanager PRIVATE -DHAVE_XERCES)
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE XercesC::XercesC)
 endif()
