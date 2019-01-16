@@ -50,7 +50,11 @@ define_find_package2(RASDAMAN rasdaman.hh raslib)
 define_find_package2(Epsilon epsilon.h epsilon)
 define_find_package2(FME fmeobjects/cpp/issesion.h fme)
 
-gdal_check_package(ODBC "Enable DB support thru ODBC")
+find_package(ODBC COMPONENTS ODBCINST)
+set_package_properties(ODBC PROPERTIES PURPOSE "Enable DB support thru ODBC")
+if(ODBC_FOUND)
+    set(HAVE_ODBC ON)
+endif()
 option(GDAL_USE_XMLREFORMAT "Set ON to use xmlreformat" OFF)
 
 # basic libaries

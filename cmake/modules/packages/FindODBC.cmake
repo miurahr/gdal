@@ -192,8 +192,24 @@ if(NOT WIN32)
   list(APPEND _odbc_required_vars ODBC_INCLUDE_DIR)
 endif()
 
+
+foreach(component IN LISTS ODBC_FIND_COMPONENTS)
+  set(ODBC_${component}_FOUND FALSE)
+endforeach()
+
+if(ODBCINST IN_LIST ODBC_FIND_COMPONENTS)
+  find_library(ODBC_ODBCINST_LIBRARY
+               NAMES odbcinst
+               PATHS ${_odbc_lib_paths})
+  if(ODBC_ODBCINST_LIBRARY)
+    set(ODBC_ODBCINST_FOUND TRUE)
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ODBC DEFAULT_MSG ${_odbc_required_vars})
+find_package_handle_standard_args(ODBC
+                                  REQUIRED_VARS ${_odbc_required_vars}
+                                  HANDLE_COMPONENTS)
 
 unset(_odbc_required_vars)
 
@@ -202,6 +218,7 @@ mark_as_advanced(ODBC_LIBRARY ODBC_INCLUDE_DIR)
 set(ODBC_INCLUDE_DIRS ${ODBC_INCLUDE_DIR})
 list(APPEND ODBC_LIBRARIES ${ODBC_LIBRARY})
 list(APPEND ODBC_LIBRARIES ${_odbc_required_libs_paths})
+set(ODBC_ODBCINST_LIBRARIES ${ODBC_ODBCINST_LIBRARY})
 
 ### Import targets ############################################################
 if(ODBC_FOUND)
@@ -222,6 +239,12 @@ if(ODBC_FOUND)
     if(_odbc_required_libs_paths)
       set_property(TARGET ODBC::ODBC APPEND PROPERTY
         INTERFACE_LINK_LIBRARIES "${_odbc_required_libs_paths}")
+    endif()
+    if(ODBCINST IN_LIST ODBC_FIND_COMPONENTS)
+      add_library(ODBC::ODBCINST UNKNOWN IMPORTED)
+      set_target_properties(ODBC::ODBCINST PROPERTIES
+                            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                            IMPORTED_LOCATION ${ODBC_ODBCINST_LIBRARY})
     endif()
   endif()
 endif()
