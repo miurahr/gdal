@@ -54,21 +54,10 @@ foreach(v IN ITEMS 2 3)
     py_ext(_ogr ${v} ogr_wrap.cpp)
     py_ext(_osr ${v} osr_wrap.cpp)
     set(_py_depends)
-    execute_process(
-      COMMAND "${Python${v}_EXECUTABLE}" -c
-              "from __future__ import print_function\ntry: import numpy; print(numpy.get_include(), end='')\nexcept:pass\n"
-              OUTPUT_VARIABLE NumPy${v}_INCLUDE_DIR)
-    execute_process(
-      COMMAND "${Python${v}_EXECUTABLE}" -c
-              "from __future__ import print_function\ntry: import numpy; print(numpy.__version__, end='')\nexcept:pass\n"
-      OUTPUT_VARIABLE NumPy${v}_VERSION)
-    if(NumPy${v}_INCLUDE_DIR)
-        if(NumPy${v}_VERSION VERSION_LESS 1.0.0)
-          set(NumPy${v}_FOUND OFF)
-        else()
-          set(NumPy${v}_FOUND ON)
+    if(Python${v}_NumPy_FOUND)
+        if(NOT Pyhton${v}_NumPy_VERSION VERSION_LESS 1.0.0)
           py_ext(_gdal_array ${v} gdal_array_wrap.cpp)
-          target_include_directories(_gdal_array${v} PRIVATE ${NumPy_INCLUDE_DIRS})
+          target_include_directories(_gdal_array${v} PRIVATE ${Python${v}_NumPy_INCLUDE_DIRS})
           install(TARGETS _gdal_array${v} DESTINATION ${Python${v}_SITEARCH}/osgeo)
           list(APPEND _py_depends _gdal_array${v})
           install(FILES

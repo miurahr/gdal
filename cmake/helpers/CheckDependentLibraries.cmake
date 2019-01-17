@@ -314,8 +314,8 @@ set_package_properties(SWIG PROPERTIES
                        URL "http://swig.org/"
                        TYPE RECOMMENDED)
 
-find_package(Python2 COMPONENTS Interpreter Development)
-find_package(Python3 COMPONENTS Interpreter Development)
+find_package(Python2 COMPONENTS Interpreter Development NumPy)
+find_package(Python3 COMPONENTS Interpreter Development NumPy)
 if(Python2_FOUND OR Python3_FOUND)
     set(HAVE_PYTHON ON CACHE INTERNAL "HAVE_PYTHON")
 endif()
