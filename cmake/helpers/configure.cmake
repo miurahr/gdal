@@ -66,46 +66,6 @@ check_type_size ("void*" SIZEOF_VOIDP)
     set(HAVE_IEEEFP TRUE)
 #endif()
 
-set(AVX_TEST_CODE "
-    #ifdef __AVX__
-    #include <immintrin.h>
-    int foo() { unsigned int nXCRLow, nXCRHigh;
-    __asm__ (\"xgetbv\" : \"=a\" (nXCRLow), \"=d\" (nXCRHigh) : \"c\" (0));
-    float fEpsilon = 0.0000000000001f;
-    __m256 ymm_small = _mm256_set_ps(fEpsilon,fEpsilon,fEpsilon,fEpsilon,fEpsilon,fEpsilon,fEpsilon,fEpsilon);
-    return (int)nXCRLow + _mm256_movemask_ps(ymm_small); }
-    int main(int argc, char**) { if( argc == 0 ) return foo(); return 0; }
-    #else
-    some_error
-    #endif
-    ")
-
-check_cxx_source_compiles("${AVX_TEST_CODE}" HAVE_AVX_AT_COMPILE_TIME)
-
-if(NOT HAVE_AVX_AT_COMPILE_TIME)
-    set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS} -mavx)
-    check_cxx_source_compiles("${AVX_TEST_CODE}" HAVE_AVX_AT_COMPILE_TIME)
-
-    if(HAVE_AVX_AT_COMPILE_TIME)
-        set(AVXFLAGS -mavx)
-    endif()
-    unset(CMAKE_REQUIRED_FLAGS)
-endif()
-
-if(HAVE_AVX_AT_COMPILE_TIME)
-    add_definitions(-DHAVE_AVX_AT_COMPILE_TIME)
-endif()
-
-set(SSE_TEST_CODE "
-    #ifdef __SSE__
-    #include <xmmintrin.h>
-    void foo() { float fEpsilon = 0.0000000000001f; __m128 xmm_small = _mm_load1_ps(&fEpsilon); }  int main() { return 0; }
-    #else
-    some_error
-    #endif
-")
-check_cxx_source_compiles("${SSE_TEST_CODE}" HAVE_SSE_AT_COMPILE_TIME)
-
 if(SQLITE3_FOUND AND NOT WITH_SQLITE3_EXTERNAL)
 set(SQLITE_COL_TEST_CODE "#ifdef __cplusplus
 extern \"C\"
@@ -121,20 +81,6 @@ return sqlite3_column_table_name ();
 check_c_source_compiles("${SQLITE_COL_TEST_CODE}"  SQLITE_HAS_COLUMN_METADATA)
 else()
     set(SQLITE_HAS_COLUMN_METADATA ON)
-endif()
-
-if(NOT HAVE_SSE_AT_COMPILE_TIME)
-    set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS} -msse)
-    check_cxx_source_compiles("${SSE_TEST_CODE}" HAVE_SSE_AT_COMPILE_TIME)
-
-    if(HAVE_SSE_AT_COMPILE_TIME)
-        set(SSEFLAGS -msse)
-    endif()
-    unset(CMAKE_REQUIRED_FLAGS)
-endif()
-
-if(HAVE_SSE_AT_COMPILE_TIME)
-    add_definitions(-DHAVE_SSE_AT_COMPILE_TIME)
 endif()
 
 check_function_exists("atoll"   HAVE_ATOLL)
