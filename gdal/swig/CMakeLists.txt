@@ -30,6 +30,7 @@ set(GDAL_SWIG_COMMON_INTERFACE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ColorTable.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpl.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpl_exceptions.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cplvirtualmem.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Dataset.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Driver.i
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gdal.i
@@ -63,12 +64,6 @@ cmake_dependent_option(SWIG_PERL "Build the Perl binding" OFF "HAVE_PERL" OFF)
 if(SWIG_PERL)
     add_feature_info(SWIG_PERL SWIG_PERL "Perl binding")
     add_subdirectory(perl)
-endif()
-
-cmake_dependent_option(SWIG_PHP "Build the PHP binding" OFF "HAVE_PHP" OFF)
-add_feature_info(SWIG_PHP SWIG_PHP "PHP binding")
-if(SWIG_PHP)
-    add_subdirectory(php)
 endif()
 
 cmake_dependent_option(SWIG_CSHARP "Build the C# binding" OFF "HAVE_CSHARP" OFF)
