@@ -41,8 +41,13 @@ endif()
 # Poppler additional options
 if(HAVE_POPPLER)
     # XXX: assume libpoppler is 0.20 or later.
-    target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_HAS_OPTCONTENT -DPOPPLER_BASE_STREAM_HAS_TWO_ARGS)
-    if(Poppler_VERSION VERSION_GREATER 0.69.0 OR Poppler_VERSION VERSION_EQUAL 0.69.0)
+    target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_HAS_OPTCONTENT -DPOPPLER_BASE_STREAM_HAS_TWO_ARGS
+                               -DDO_NOT_USE_DEBUG_BOOL)
+    if(Poppler_VERSION VERSION_GREATER 0.71.0 OR Poppler_VERSION VERSION_EQUAL 0.71.0)
+        target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_71_OR_LATER
+                                   -DPOPPLER_0_69_OR_LATER -DPOPPLER_0_58_OR_LATER
+                                   -DPOPPLER_0_23_OR_LATER -DPOPPLER_0_20_OR_LATER)
+    elseif(Poppler_VERSION VERSION_GREATER 0.69.0 OR Poppler_VERSION VERSION_EQUAL 0.69.0)
         target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_69_OR_LATER
                                    -DPOPPLER_0_58_OR_LATER -DPOPPLER_0_23_OR_LATER
                                    -DPOPPLER_0_20_OR_LATER)
