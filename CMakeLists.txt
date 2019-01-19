@@ -130,37 +130,24 @@ if(MSVC)
     add_definitions(-DNOMINMAX)
 endif()
 
-include(CMakeHostSystemInformationExtra)
-include(CMakeCompilerMachineOption)
+include(CheckCompilerMachineOption)
+include(CheckCompilerSIMDFeature)
 
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)")
-  cmake_host_system_information_extra(RESULT HOST_INFORMATION QUERY HAS_SSE HAS_SSSE3 HAS_AVX)
-  list(GET HOST_INFORMATION 0 VAL)
-  set(HAVE_SSE_AT_COMPILE_TIME ${VAL})
-  list(GET HOST_INFORMATION 1 VAL)
-  set(HAVE_SSSE3_AT_COMPILE_TIME ${VAL})
-  list(GET HOST_INFORMATION 2 VAL)
-  set(HAVE_AVX_AT_COMPILE_TIME ${VAL})
+  set(ARCH_FLAG)
+  check_compiler_machine_option(flag SSE)
+  list(APPEND ARCH_FLAG ${flag})
+  check_compiler_machine_option(flag SSSE3)
+  list(APPEND ARCH_FLAG ${flag})
+  check_compiler_machine_option(flag AVX)
+  list(APPEND ARCH_FLAG ${flag})
 
-  set(TARGET_ARCHITECTURE "generic" CACHE STRING "CPU architecture to optimize for. \
-  Using an incorrect setting here can result in crashes of the resulting binary because of invalid instructions used. \
-  Supported values: \"generic\", \"core\", \"merom\" (65nm Core2), \
-  \"penryn\" (45nm Core2), \"nehalem\", \"westmere\", \"sandy-bridge\", \"ivy-bridge\", \
-  \"haswell\", \"broadwell\", \"skylake\", \"skylake-xeon\", \"kaby-lake\", \"cannonlake\", \"silvermont\", \
-  \"goldmont\", \"knl\" (Knights Landing), \"atom\", \"k8\", \"k8-sse3\", \"barcelona\", \
-  \"istanbul\", \"magny-cours\", \"bulldozer\", \"interlagos\", \"piledriver\", \
-  \"amd-14h\", \"amd-16h\", \"zen\".")
-  cmake_compiler_machine_option(GDAL_ARCH_FLAG "${TARGET_ARCHITECTURE}")
-  get_cpu_simd_features(simd_features ${TARGET_ARCHITECTURE})
-  foreach(target IN ITEMS SSE SSE2 SSE3 SSSE3 AVX AVX2)
-    set(TOLOWER ${target} _flag)
-    list(FIND simd_features "${_flag}" _found)
-    if(_found LESS 0)
-      set(USE_${_name} FALSE CACHE BOOL "")
-    else()
-      set(USE_${_name} TRUE  CACHE BOOL "")
-    endif()
-  endforeach()
+  check_compiler_simd_feature(RESULT res FLAG ${ARCH_FLAG} QUERY HAVE_SSE)
+  set(HAVE_SSE_AT_COMPILE_TIME ${res})
+  check_compiler_simd_feature(RESULT res FLAG ${ARCH_FLAG} QUERY HAVE_SSSE3)
+  set(HAVE_SSSE3_AT_COMPILE_TIME ${res})
+  check_compiler_simd_feature(RESULT res FLAG ${ARCH_FLAG} QUERY HAVE_AVX)
+  set(HAVE_AVX_AT_COMPILE_TIME ${res})
 endif()
 
 ################################################################
