@@ -27,17 +27,13 @@
 
 # alllow individual autotest tree
 cmake_minimum_required (VERSION 3.5)
-project(gdal_autotest C CXX)
-set(CMAKE_COLOR_MAKEFILE ON)
-enable_testing()
+project(gdal_autotest)
 
 option(AUTOTEST_DOWNLOAD_TEST_DATA "Autotest to download test data" OFF)
 option(AUTOTEST_SLOW_TEST "Autotest to run slow test" OFF)
 if(NOT DEFINED ENV{CTEST_PARALLEL_LEVEL})
     set(PARALLEL_OPTION "-j1")
 endif()
-set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_LIST_DIR}")
-add_subdirectory(cpp)
 
 set(AUTOTEST_PYTHON_VERSION 2 CACHE STRING "Python version for autotest target")
 if(AUTOTEST_PYTHON_VERSION STREQUAL 2)
@@ -54,8 +50,7 @@ elseif(AUTOTEST_PYTHON_VERSION STREQUAL 3)
     find_program(PIP_EXECUTABLE pip3)
 endif()
 
-function(set_autotest_properties)
-    cmake_parse_arguments(_SAP "SLOW_TESTS;DOWNLOAD_TEST_DATA" "" "TESTS" ${ARGN})
+if(Python_EXECUTABLE)
     get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
     if(WIN32)
         set(_SEP ";")
@@ -63,67 +58,36 @@ function(set_autotest_properties)
         set(_SEP ":")
     endif()
     list(APPEND _TEST_ENV
-                "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
-                "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/${AUTOTEST_PYTHON_VERSION}/"
-                "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
-                "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
-                "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
-        )
-    if(_SAP_DOWNLOAD_TEST_DATA)
+         "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
+         "PYTHONPATH=${CMAKE_SOURCE_DIR}/autotest${_SEP}${CMAKE_BINARY_DIR}/gdal/swig/python/${AUTOTEST_PYTHON_VERSION}/"
+         "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
+         "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
+         "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
+         )
+    if(GDAL_DOWNLOAD_TEST_DATA)
         list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=YES)
     else()
         list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=NO)
     endif()
-    if(_SAP_SLOW_TESTS)
+    if(GDAL_SLOW_TESTS)
         list(APPEND _TEST_ENV GDAL_RUN_SLOW_TESTS=YES)
     else()
         list(APPEND _TEST_ENV GDAL_RUN_SLOW_TESTS=NO)
     endif()
-    set_tests_properties(${_SAP_TESTS}
-                         PROPERTIES
-                         ENVIRONMENT "${_TEST_ENV}"
-                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/autotest
-                         TIMEOUT 1200)
-endfunction()
-
-if(Python_EXECUTABLE)
-  add_test(NAME autotest COMMAND pytest)
-  set_autotest_properties(TESTS autotest)
-  add_custom_target(autotest COMMAND ${CMAKE_CTEST_COMMAND} -R autotest -V)
-  #execute_process(COMMAND ${PIP_EXECUTABLE} install -r ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt)
-  find_program(RSYNC_EXECUTABLE rsync)
-  if(RSYNC_EXECUTABLE)
-    execute_process(COMMAND ${RSYNC_EXECUTABLE} -a --include='*.ini' --include='*.py' --include='*/' --exclude='*'
-                    ${CMAKE_SOURCE_DIR}/autotest/ ${CMAKE_BINARY_DIR}/autotest/)
-  else()
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar cfj ${CMAKE_CURRENT_BINARY_DIR}/tmp.tar . WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfj ${CMAKE_CURRENT_BINARY_DIR}/tmp.tar)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_CURRENT_BINARY_DIR}/tmp.tar)
-  endif()
+    string(REPLACE ";" " " TEST_ENV "${_TEST_ENV}")
+    set(AUTOTEST_LOG_FILE "${CMAKE_CURRENT_BINARY_DIR}/autotest.log")
+    configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/pytest.ini.in ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini @ONLY)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/conftest.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    if(UNIX OR CMAKE_VERSION VERSION_GREATER 3.13)
+        find_program(PYTEST pytest)
+        foreach(tgt IN ITEMS ogr gcore gdrivers alg osr gnm pyscripts utilities)
+            execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${tgt} ${CMAKE_CURRENT_BINARY_DIR}/${tgt})
+            add_custom_target(autotest_${tgt} COMMAND ${PYTEST} -v -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini ${tgt}
+                              DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
+        endforeach()
+        add_custom_target(autotest COMMAND ${PYTEST} -v -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
+                          DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
+    endif()
 endif()
 
-get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
-add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R '^test-.*'
-              DEPENDS
-                  gdal
-                  ${_plugins}
-                gdal_unit_test
-                testblockcache
-                testcopywords
-                testclosedondestroydm
-                testthreadcond
-                testvirtualmem
-                testblockcachewrite
-                testblockcachelimits
-                testmultithreadedwriting
-                testdestroy)
-add_custom_target(test_misc COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} --force-new-ctest-process --output-on-failure -R '^testa-.*'
-        DEPENDS
-            test_include_from_c_file
-            test_c_include_from_cpp_file
-            testperfcopywords)
-add_custom_target(test_sse COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} --force-new-ctest-process --output-on-failure -R '^testsse.*'
-        DEPENDS
-            testsse1
-            testsse2
-            testsse3)
+

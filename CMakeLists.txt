@@ -153,8 +153,9 @@ endif()
 ################################################################
 add_subdirectory(gdal)
 
+add_subdirectory(autotest/cpp)
+
 # please comment out if you want to exclude autotest from distribution.
-enable_testing()
 add_subdirectory(autotest)
 
 # Google OSS-Fuzz project utilities

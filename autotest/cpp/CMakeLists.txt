@@ -24,6 +24,8 @@
 # * DEALINGS IN THE SOFTWARE.
 # ******************************************************************************
 
+enable_testing()
+set(GDAL_ROOT_TEST_DIR "${CMAKE_SOURCE_DIR}/autotest")
 
 if(NOT CMAKE_CROSSCOMPILING)
     if(LINUX)
@@ -110,22 +112,27 @@ add_test(NAME test-block-cache-6
                 COMMAND testblockcache --config GDAL_BAND_BLOCK_CACHE HASHSET -check -co TILED=YES --debug TEST,LOCK -loops 3 --config GDAL_RB_LOCK_DEBUG_CONTENTION YES --config GDAL_RB_LOCK_TYPE SPIN)
 
 foreach(tgt IN ITEMS test-block-cache-1 test-block-cache-2 test-block-cache-3 test-block-cache-4 test-block-cache-5)
-    set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    set_tests_properties(${tgt} PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${GDAL_ROOT_TEST_DIR})
 endforeach()
 
-if(USE_SSE2)
-    gdal_test_target(testsse1 testsse.cpp)
-    target_compile_options(testsse1 PRIVATE ${GDAL_ARCH_FLAG})
-    gdal_test_target(testsse2 testsse.cpp)
-    target_compile_definitions(testsse2 PRIVATE -DUSE_SSE2_EMULATION)
-    gdal_test_target(testsse3 testsse.cpp)
-    add_test(NAME testsse1 COMMAND testsse1)
-    add_test(NAME testsse2 COMMAND testsse2)
-    add_test(NAME testsse3 COMMAND testsse3)
-    set_tests_properties(testsse1 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    set_tests_properties(testsse2 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    set_tests_properties(testsse3 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
+gdal_test_target(testsse1 testsse.cpp)
+target_compile_options(testsse1 PRIVATE ${GDAL_ARCH_FLAG})
+gdal_test_target(testsse2 testsse.cpp)
+gdal_test_target(testsse3 testsse.cpp)
+gdal_test_target(testsse4 testsse.cpp)
+gdal_test_target(testsse5 testsse.cpp)
+target_compile_options(testsse2 PRIVATE -mssse3)
+target_compile_options(testsse3 PRIVATE -mssse3 -msse4.1)
+target_compile_options(testsse4 PRIVATE -mavx2)
+target_compile_definitions(testsse5 PRIVATE -DUSE_SSE2_EMULATION)
+add_test(NAME testsse1 COMMAND testsse1)
+add_test(NAME testsse2 COMMAND testsse2)
+add_test(NAME testsse3 COMMAND testsse3)
+add_test(NAME testsse4 COMMAND testsse3)
+add_test(NAME testsse5 COMMAND testsse3)
+set_tests_properties(testsse1 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${GDAL_ROOT_TEST_DIR})
+set_tests_properties(testsse2 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${GDAL_ROOT_TEST_DIR})
+set_tests_properties(testsse3 PROPERTIES ENVIRONMENT "${TEST_ENV}" WORKING_DIRECTORY ${GDAL_ROOT_TEST_DIR})
 
 macro(gdal_autotest_target _target testlabel _source options)
     if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
@@ -147,3 +154,23 @@ gdal_autotest_target(testdestroy test-destroy testdestroy.cpp "")
 gdal_autotest_target(test_include_from_c_file testa-include-from-C-file test_include_from_c_file.c "")
 gdal_autotest_target(test_c_include_from_cpp_file testa-C-include-from-CPP-file test_c_include_from_cpp_file.cpp "")
 gdal_autotest_target(testperfcopywords testa-performance-copy-words testperfcopywords.cpp "")
+
+get_property(_plugins GLOBAL PROPERTY PLUGIN_MODULES )
+add_custom_target(quicktest COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R '^test-.*'
+              DEPENDS
+                  gdal
+                  ${_plugins}
+                gdal_unit_test
+                testblockcache
+                testcopywords
+                testclosedondestroydm
+                testthreadcond
+                testvirtualmem
+                testblockcachewrite
+                testblockcachelimits
+                testmultithreadedwriting
+                testdestroy)
+add_custom_target(test_misc COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} --force-new-ctest-process --output-on-failure -R '^testa-.*'
+                  DEPENDS test_include_from_c_file test_c_include_from_cpp_file testperfcopywords)
+add_custom_target(test_sse COMMAND ${CMAKE_CTEST_COMMAND} ${PARALLEL_OPTION} --force-new-ctest-process --output-on-failure -R '^testsse.*'
+                  DEPENDS testsse1 testsse2 testsse3 testsse4 testsse5)
