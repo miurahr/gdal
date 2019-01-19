@@ -40,25 +40,9 @@ endif()
 
 # Poppler additional options
 if(HAVE_POPPLER)
-    # XXX: assume libpoppler is 0.20 or later.
-    target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_HAS_OPTCONTENT -DPOPPLER_BASE_STREAM_HAS_TWO_ARGS
-                               -DDO_NOT_USE_DEBUG_BOOL)
-    if(Poppler_VERSION VERSION_GREATER 0.71.0 OR Poppler_VERSION VERSION_EQUAL 0.71.0)
-        target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_71_OR_LATER
-                                   -DPOPPLER_0_69_OR_LATER -DPOPPLER_0_58_OR_LATER
-                                   -DPOPPLER_0_23_OR_LATER -DPOPPLER_0_20_OR_LATER)
-    elseif(Poppler_VERSION VERSION_GREATER 0.69.0 OR Poppler_VERSION VERSION_EQUAL 0.69.0)
-        target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_69_OR_LATER
-                                   -DPOPPLER_0_58_OR_LATER -DPOPPLER_0_23_OR_LATER
-                                   -DPOPPLER_0_20_OR_LATER)
-    elseif(Poppler_VERSION VERSION_GREATER 0.58.0 OR Poppler_VERSION VERSION_EQUAL 0.58.0)
-        target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_58_OR_LATER
-                                   -DPOPPLER_0_23_OR_LATER -DPOPPLER_0_20_OR_LATER)
-    elseif(Poppler_VERSION VERSION_GREATER 0.23.0 OR Poppler_VERSION VERSION_EQUAL 0.23.0)
-        target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_23_OR_LATER
-                                   -DPOPPLER_0_20_OR_LATER)
-    elseif(Poppler_VERSION VERSION_GREATER 0.20.0 OR Poppler_VERSION VERSION_EQUAL 0.20.0)
-        target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_0_20_OR_LATER)
-    endif()
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\1" POPPLER_VERSION_MAJOR ${POPPLER_VERSION})
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\2" POPPLER_VERSION_MINOR ${POPPLER_VERSION})
+  target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_MAJOR_VERSION=${POPPLER_VERSION_MAJOR}
+                             -DPOPPLER_MINOR_VERSION=${POPPLER_VERSION_MINOR})
 endif()
 
