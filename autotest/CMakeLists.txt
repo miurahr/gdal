@@ -40,11 +40,7 @@ set(GDAL_ROOT_TEST_DIR "${CMAKE_CURRENT_LIST_DIR}")
 add_subdirectory(cpp)
 
 if(NOT DEFINED Python_EXECUTABLE)
-    if(PYTHON_VERSION)
-        find_package(Python ${PYTHON_VERSION} COMPONENTS Interpreter)
-    else()
-        find_package(Python COMPONENTS Interpreter)
-    endif()
+    find_package(Python COMPONENTS Interpreter)
 endif()
 
 function(set_autotest_properties)
