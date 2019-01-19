@@ -152,41 +152,19 @@ if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)")
 endif()
 
 ################################################################
-option(CMake_RUN_CLANG_TIDY "Run clang-tidy with the compiler." OFF)
-if(CMake_RUN_CLANG_TIDY)
-  if(CMake_SOURCE_DIR STREQUAL CMake_BINARY_DIR)
-    message(FATAL_ERROR "CMake_RUN_CLANG_TIDY requires an out-of-source build!")
+option(CLANG_TIDY_ENABLED "Run clang-tidy with the compiler." OFF)
+set(CLANG_TIDY_CHECKS "-*,clang-analyzer-alpha.unix.cstring.*" CACHE STRING "clang-tidy checks")
+set(CLANG_TIDY_WARNINGS_AS_ERRORS "clang-analyzer-alpha.unix.cstring.*" CACHE STRING "clang-tidy warnings as errors.")
+if(RUN_CLANG_TIDY)
+  if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+    message(FATAL_ERROR "RUN_CLANG_TIDY requires an out-of-source build!")
   endif()
   find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
   if(NOT CLANG_TIDY_COMMAND)
-    message(WARNING "CMake_RUN_CLANG_TIDY is ON but clang-tidy is not found!")
+    message(WARNING "RUN_CLANG_TIDY is ON but clang-tidy is not found!")
     set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE)
   else()
-    set(CLANG_TIDY_CHECKS "-*,modernize-*")
-    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/gdal/*'")
-  endif()
-
-  # Create a preprocessor definition that depends on .clang-tidy content so
-  # the compile command will change when .clang-tidy changes.  This ensures
-  # that a subsequent build re-runs clang-tidy on all sources even if they
-  # do not otherwise need to be recompiled.  Nothing actually uses this
-  # definition.  We add it to targets on which we run clang-tidy just to
-  # get the build dependency on the .clang-tidy file.
-  file(SHA1 ${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy clang_tidy_sha1)
-  set(CLANG_TIDY_DEFINITIONS "CLANG_TIDY_SHA1=${clang_tidy_sha1}")
-  unset(clang_tidy_sha1)
-  #configure_file(.clang-tidy .clang-tidy COPYONLY)
-endif()
-
-option(CMake_RUN_IWYU "Run include-what-you-use with the compiler." OFF)
-if(CMake_RUN_IWYU)
-  find_program(IWYU_COMMAND NAMES include-what-you-use iwyu)
-  if(NOT IWYU_COMMAND)
-    message(WARNING "CMake_RUN_IWYU is ON but include-what-you-use is not found!")
-  else()
-    set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE
-      "${IWYU_COMMAND};-Xiwyu;--mapping_file=${CMake_SOURCE_DIR}/Utilities/IWYU/mapping.imp;-w")
-    list(APPEND CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${CMake_IWYU_OPTIONS})
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND};-checks='${CLANG_TIDY_CHECKS}';-header-filter='${CMAKE_SOURCE_DIR}/gdal/*';-warnings-as-errors='${CLANG_TIDY_WARNINGS_AS_ERRORS}'")
   endif()
 endif()
 
