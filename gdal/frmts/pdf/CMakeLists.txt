@@ -22,8 +22,11 @@ target_include_directories(gdal_PDF PRIVATE
 
 if(HAVE_POPPLER OR HAVE_PODOFO OR HAVE_PDFIUM)
     if(HAVE_POPPLER)
-        target_compile_definitions(gdal_PDF PRIVATE -DHAVE_POPPLER)
         gdal_target_link_libraries(TARGET gdal_PDF LIBRARIES POPPLER::Poppler)
+        string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\1" POPPLER_VERSION_MAJOR ${POPPLER_VERSION_STRING})
+        string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\2" POPPLER_VERSION_MINOR ${POPPLER_VERSION_STRING})
+        target_compile_definitions(gdal_PDF PRIVATE -DHAVE_POPPLER -DPOPPLER_MAJOR_VERSION=${POPPLER_VERSION_MAJOR}
+                                   -DPOPPLER_MINOR_VERSION=${POPPLER_VERSION_MINOR})
     endif()
     if(HAVE_PODOFO)
         target_compile_definitions(gdal_PDF PRIVATE -DHAVE_PODOFO)
@@ -36,13 +39,5 @@ if(HAVE_POPPLER OR HAVE_PODOFO OR HAVE_PDFIUM)
 else()
     #fails
     message(FATAL_ERROR "Could not find PDF libraries which is one of Poppler, Podofo and PDFIUM")
-endif()
-
-# Poppler additional options
-if(HAVE_POPPLER)
-  string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\1" POPPLER_VERSION_MAJOR ${POPPLER_VERSION})
-  string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\2" POPPLER_VERSION_MINOR ${POPPLER_VERSION})
-  target_compile_definitions(gdal_PDF PRIVATE -DPOPPLER_MAJOR_VERSION=${POPPLER_VERSION_MAJOR}
-                             -DPOPPLER_MINOR_VERSION=${POPPLER_VERSION_MINOR})
 endif()
 
