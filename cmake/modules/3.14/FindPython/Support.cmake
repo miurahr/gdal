@@ -5,7 +5,7 @@
 # This file is a "template" file used by various FindPython modules.
 #
 
-cmake_policy (VERSION 3.7)
+cmake_policy (VERSION 3.5)
 
 #
 # Initial configuration
@@ -208,9 +208,8 @@ if (NOT ${_PYTHON_PREFIX}_FIND_COMPONENTS)
   set (${_PYTHON_PREFIX}_FIND_REQUIRED_Interpreter TRUE)
 endif()
 if ("NumPy" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS)
-  if (NOT "Development" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS)
-    list (APPEND ${_PYTHON_PREFIX}_FIND_COMPONENTS Development)
-  endif()
+  list (APPEND ${_PYTHON_PREFIX}_FIND_COMPONENTS "Interpreter" "Development")
+  list (REMOVE_DUPLICATES ${_PYTHON_PREFIX}_FIND_COMPONENTS)
 endif()
 foreach (_${_PYTHON_PREFIX}_COMPONENT IN LISTS ${_PYTHON_PREFIX}_FIND_COMPONENTS)
   set (${_PYTHON_PREFIX}_${_${_PYTHON_PREFIX}_COMPONENT}_FOUND FALSE)
@@ -1125,38 +1124,30 @@ if ("Development" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
   endif()
 endif()
 
-if ("NumPy" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS)
-  if (${_PYTHON_PREFIX}_Development_FOUND)
-    set (_${_PYTHON_PREFIX}_NUMPY_HINTS "${${_PYTHON_PREFIX}_INCLUDE_DIR}/numpy")
+if ("NumPy" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS AND ${_PYTHON_PREFIX}_Interpreter_FOUND)
+  if (${_PYTHON_PREFIX}_FIND_REQUIRED_NumPy)
+    list (APPEND _${_PYTHON_PREFIX}_REQUIRED_VARS ${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR)
+    list (APPEND _${_PYTHON_PREFIX}_CACHED_VARS ${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR)
   endif()
-  if (${_PYTHON_PREFIX}_Interpreter_FOUND)
-    execute_process(
+  execute_process(
       COMMAND "${${_PYTHON_PREFIX}_EXECUTABLE}" -c
               "from __future__ import print_function\ntry: import numpy; print(numpy.get_include(), end='')\nexcept:pass\n"
       RESULT_VARIABLE _${_PYTHON_PREFIX}_RESULT
-      OUTPUT_VARIABLE _${_PYTHON_PREFIX}_PATH
+      OUTPUT_VARIABLE _${_PYTHON_PREFIX}_NumPy_PATH
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (NOT _${_PYTHON_PREFIX}_RESULT)
-      file (TO_CMAKE_PATH "${_${_PYTHON_PREFIX}_PATH}" _${_PYTHON_PREFIX}_PATH)
-      list (APPEND _${_PYTHON_PREFIX}_NUMPY_HINTS "${_${_PYTHON_PREFIX}_PATH}")
-    endif()
-  endif()
-  foreach(_${_PYTHON_PREFIX}_VERSION IN LISTS _${_PYTHON_PREFIX}_FIND_VERSIONS)
+  if (NOT _${_PYTHON_PREFIX}_RESULT)
     find_path(${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR
               NAMES arrayobject.h numpyconfig.h
-              HINTS ${_${_PYTHON_PREFIX}_NUMPY_HINTS}
-                    "${_${_PYTHON_PREFIX}_PREFIX}/include/python${_${_PYTHON_PREFIX}_VERSION}m/numpy"
-                    "${_${_PYTHON_PREFIX}_PREFIX}/include/python${_${_PYTHON_PREFIX}_VERSION}/numpy"
+              HINTS "${_${_PYTHON_PREFIX}_NumPy_PATH}"
+              PATH_SUFFIXES numpy
               NO_DEFAULT_PATH)
-  endforeach()
-  if(${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR)
-    set(${_PYTHON_PREFIX}_NumPy_FOUND TRUE)
-  else()
-    set(${_PYTHON_PREFIX}_NumPy_FOUND FALSE)
   endif()
-  unset (_${_PYTHON_PREFIX}_NUMPY_HINTS)
-  if(${_PYTHON_PREFIX}_NumPy_FOUND AND ${_PYTHON_PREFIX}_Interpreter_FOUND)
+  if(${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR)
+    set(${_PYTHON_PREFIX}_NumPy_INCLUDE_DIRS "${${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR}")
+    set(${_PYTHON_PREFIX}_NumPy_FOUND TRUE)
+  endif()
+  if(${_PYTHON_PREFIX}_NumPy_FOUND)
     execute_process(
             COMMAND "${${_PYTHON_PREFIX}_EXECUTABLE}" -c
             "from __future__ import print_function\ntry: import numpy; print(numpy.__version__, end='')\nexcept:pass\n"
@@ -1181,89 +1172,91 @@ find_package_handle_standard_args (${_PYTHON_PREFIX}
                                    HANDLE_COMPONENTS)
 
 # Create imported targets and helper functions
-if ("Interpreter" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
-    AND ${_PYTHON_PREFIX}_Interpreter_FOUND
-    AND NOT TARGET ${_PYTHON_PREFIX}::Interpreter)
-  add_executable (${_PYTHON_PREFIX}::Interpreter IMPORTED)
-  set_property (TARGET ${_PYTHON_PREFIX}::Interpreter
-                PROPERTY IMPORTED_LOCATION "${${_PYTHON_PREFIX}_EXECUTABLE}")
-endif()
-
-if ("Compiler" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
-    AND ${_PYTHON_PREFIX}_Compiler_FOUND
-    AND NOT TARGET ${_PYTHON_PREFIX}::Compiler)
-  add_executable (${_PYTHON_PREFIX}::Compiler IMPORTED)
-  set_property (TARGET ${_PYTHON_PREFIX}::Compiler
-                PROPERTY IMPORTED_LOCATION "${${_PYTHON_PREFIX}_COMPILER}")
-endif()
-
-if ("Development" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
-    AND ${_PYTHON_PREFIX}_Development_FOUND AND NOT TARGET ${_PYTHON_PREFIX}::Python)
-
-  if (${_PYTHON_PREFIX}_LIBRARY_RELEASE MATCHES "${CMAKE_SHARED_LIBRARY_SUFFIX}$"
-      OR ${_PYTHON_PREFIX}_LIBRARY_DEBUG MATCHES "${CMAKE_SHARED_LIBRARY_SUFFIX}$"
-      OR ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_RELEASE OR ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_DEBUG)
-    set (_${_PYTHON_PREFIX}_LIBRARY_TYPE SHARED)
-  else()
-    set (_${_PYTHON_PREFIX}_LIBRARY_TYPE STATIC)
+  if ("Interpreter" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
+      AND ${_PYTHON_PREFIX}_Interpreter_FOUND
+      AND NOT TARGET ${_PYTHON_PREFIX}::Interpreter)
+    add_executable (${_PYTHON_PREFIX}::Interpreter IMPORTED)
+    set_property (TARGET ${_PYTHON_PREFIX}::Interpreter
+                  PROPERTY IMPORTED_LOCATION "${${_PYTHON_PREFIX}_EXECUTABLE}")
   endif()
 
-  add_library (${_PYTHON_PREFIX}::Python ${_${_PYTHON_PREFIX}_LIBRARY_TYPE} IMPORTED)
-
-  set_property (TARGET ${_PYTHON_PREFIX}::Python
-                PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${${_PYTHON_PREFIX}_INCLUDE_DIR}")
-
-  if ((${_PYTHON_PREFIX}_LIBRARY_RELEASE AND ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_RELEASE)
-      OR (${_PYTHON_PREFIX}_LIBRARY_DEBUG AND ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_DEBUG))
-    # System manage shared libraries in two parts: import and runtime
-    if (${_PYTHON_PREFIX}_LIBRARY_RELEASE AND ${_PYTHON_PREFIX}_LIBRARY_DEBUG)
-      set_property (TARGET ${_PYTHON_PREFIX}::Python PROPERTY IMPORTED_CONFIGURATIONS RELEASE DEBUG)
-      set_target_properties (${_PYTHON_PREFIX}::Python
-                             PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
-                                        IMPORTED_IMPLIB_RELEASE "${${_PYTHON_PREFIX}_LIBRARY_RELEASE}"
-                                        IMPORTED_LOCATION_RELEASE "${${_PYTHON_PREFIX}_RUNTIME_LIBRARY_RELEASE}")
-      set_target_properties (${_PYTHON_PREFIX}::Python
-                             PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "C"
-                                        IMPORTED_IMPLIB_DEBUG "${${_PYTHON_PREFIX}_LIBRARY_DEBUG}"
-                                        IMPORTED_LOCATION_DEBUG "${${_PYTHON_PREFIX}_RUNTIME_LIBRARY_DEBUG}")
-    else()
-      set_target_properties (${_PYTHON_PREFIX}::Python
-                             PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-                                        IMPORTED_IMPLIB "${${_PYTHON_PREFIX}_LIBRARY}"
-                                        IMPORTED_LOCATION "${${_PYTHON_PREFIX}_RUNTIME_LIBRARY}")
-    endif()
-  else()
-    if (${_PYTHON_PREFIX}_LIBRARY_RELEASE AND ${_PYTHON_PREFIX}_LIBRARY_DEBUG)
-      set_property (TARGET ${_PYTHON_PREFIX}::Python PROPERTY IMPORTED_CONFIGURATIONS RELEASE DEBUG)
-      set_target_properties (${_PYTHON_PREFIX}::Python
-                             PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
-                                        IMPORTED_LOCATION_RELEASE "${${_PYTHON_PREFIX}_LIBRARY_RELEASE}")
-      set_target_properties (${_PYTHON_PREFIX}::Python
-                             PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "C"
-                                        IMPORTED_LOCATION_DEBUG "${${_PYTHON_PREFIX}_LIBRARY_DEBUG}")
-    else()
-      set_target_properties (${_PYTHON_PREFIX}::Python
-                             PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-                                        IMPORTED_LOCATION "${${_PYTHON_PREFIX}_LIBRARY}")
-    endif()
+  if ("Compiler" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
+      AND ${_PYTHON_PREFIX}_Compiler_FOUND
+      AND NOT TARGET ${_PYTHON_PREFIX}::Compiler)
+    add_executable (${_PYTHON_PREFIX}::Compiler IMPORTED)
+    set_property (TARGET ${_PYTHON_PREFIX}::Compiler
+                  PROPERTY IMPORTED_LOCATION "${${_PYTHON_PREFIX}_COMPILER}")
   endif()
 
-  if (_${_PYTHON_PREFIX}_CONFIG AND _${_PYTHON_PREFIX}_LIBRARY_TYPE STREQUAL "STATIC")
-    # extend link information with dependent libraries
-    execute_process (COMMAND "${_${_PYTHON_PREFIX}_CONFIG}" --ldflags
-                     RESULT_VARIABLE _${_PYTHON_PREFIX}_RESULT
-                     OUTPUT_VARIABLE _${_PYTHON_PREFIX}_FLAGS
-                     ERROR_QUIET
-                     OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (NOT _${_PYTHON_PREFIX}_RESULT)
-      string (REGEX MATCHALL "-[Ll][^ ]+" _${_PYTHON_PREFIX}_LINK_LIBRARIES "${_${_PYTHON_PREFIX}_FLAGS}")
-      # remove elements relative to python library itself
-      list (FILTER _${_PYTHON_PREFIX}_LINK_LIBRARIES EXCLUDE REGEX "-lpython")
-      foreach (_${_PYTHON_PREFIX}_DIR IN LISTS ${_PYTHON_PREFIX}_LIBRARY_DIRS)
-        list (FILTER _${_PYTHON_PREFIX}_LINK_LIBRARIES EXCLUDE REGEX "-L${${_PYTHON_PREFIX}_DIR}")
-      endforeach()
-      set_property (TARGET ${_PYTHON_PREFIX}::Python
-                    PROPERTY INTERFACE_LINK_LIBRARIES ${_${_PYTHON_PREFIX}_LINK_LIBRARIES})
+  if ("Development" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
+      AND ${_PYTHON_PREFIX}_Development_FOUND AND NOT TARGET ${_PYTHON_PREFIX}::Python)
+
+    if (${_PYTHON_PREFIX}_LIBRARY_RELEASE MATCHES "${CMAKE_SHARED_LIBRARY_SUFFIX}$"
+        OR ${_PYTHON_PREFIX}_LIBRARY_DEBUG MATCHES "${CMAKE_SHARED_LIBRARY_SUFFIX}$"
+        OR ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_RELEASE OR ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_DEBUG)
+      set (_${_PYTHON_PREFIX}_LIBRARY_TYPE SHARED)
+    else()
+      set (_${_PYTHON_PREFIX}_LIBRARY_TYPE STATIC)
+    endif()
+
+    add_library (${_PYTHON_PREFIX}::Python ${_${_PYTHON_PREFIX}_LIBRARY_TYPE} IMPORTED)
+
+    set_property (TARGET ${_PYTHON_PREFIX}::Python
+                  PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${${_PYTHON_PREFIX}_INCLUDE_DIR}")
+
+    if ((${_PYTHON_PREFIX}_LIBRARY_RELEASE AND ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_RELEASE)
+        OR (${_PYTHON_PREFIX}_LIBRARY_DEBUG AND ${_PYTHON_PREFIX}_RUNTIME_LIBRARY_DEBUG))
+      # System manage shared libraries in two parts: import and runtime
+      if (${_PYTHON_PREFIX}_LIBRARY_RELEASE AND ${_PYTHON_PREFIX}_LIBRARY_DEBUG)
+        set_property (TARGET ${_PYTHON_PREFIX}::Python PROPERTY IMPORTED_CONFIGURATIONS RELEASE DEBUG)
+        set_target_properties (${_PYTHON_PREFIX}::Python
+                               PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+                                          IMPORTED_IMPLIB_RELEASE "${${_PYTHON_PREFIX}_LIBRARY_RELEASE}"
+                                          IMPORTED_LOCATION_RELEASE "${${_PYTHON_PREFIX}_RUNTIME_LIBRARY_RELEASE}")
+        set_target_properties (${_PYTHON_PREFIX}::Python
+                               PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "C"
+                                          IMPORTED_IMPLIB_DEBUG "${${_PYTHON_PREFIX}_LIBRARY_DEBUG}"
+                                          IMPORTED_LOCATION_DEBUG "${${_PYTHON_PREFIX}_RUNTIME_LIBRARY_DEBUG}")
+      else()
+        set_target_properties (${_PYTHON_PREFIX}::Python
+                               PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                                          IMPORTED_IMPLIB "${${_PYTHON_PREFIX}_LIBRARY}"
+                                          IMPORTED_LOCATION "${${_PYTHON_PREFIX}_RUNTIME_LIBRARY}")
+      endif()
+    else()
+      if (${_PYTHON_PREFIX}_LIBRARY_RELEASE AND ${_PYTHON_PREFIX}_LIBRARY_DEBUG)
+        set_property (TARGET ${_PYTHON_PREFIX}::Python PROPERTY IMPORTED_CONFIGURATIONS RELEASE DEBUG)
+        set_target_properties (${_PYTHON_PREFIX}::Python
+                               PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+                                          IMPORTED_LOCATION_RELEASE "${${_PYTHON_PREFIX}_LIBRARY_RELEASE}")
+        set_target_properties (${_PYTHON_PREFIX}::Python
+                               PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "C"
+                                          IMPORTED_LOCATION_DEBUG "${${_PYTHON_PREFIX}_LIBRARY_DEBUG}")
+      else()
+        set_target_properties (${_PYTHON_PREFIX}::Python
+                               PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+                                          IMPORTED_LOCATION "${${_PYTHON_PREFIX}_LIBRARY}")
+      endif()
+    endif()
+
+    if (_${_PYTHON_PREFIX}_CONFIG AND _${_PYTHON_PREFIX}_LIBRARY_TYPE STREQUAL "STATIC")
+      # extend link information with dependent libraries
+      execute_process (COMMAND "${_${_PYTHON_PREFIX}_CONFIG}" --ldflags
+                       RESULT_VARIABLE _${_PYTHON_PREFIX}_RESULT
+                       OUTPUT_VARIABLE _${_PYTHON_PREFIX}_FLAGS
+                       ERROR_QUIET
+                       OUTPUT_STRIP_TRAILING_WHITESPACE)
+      if (NOT _${_PYTHON_PREFIX}_RESULT)
+        string (REGEX MATCHALL "-[Ll][^ ]+" _${_PYTHON_PREFIX}_LINK_LIBRARIES "${_${_PYTHON_PREFIX}_FLAGS}")
+        # remove elements relative to python library itself
+        include(${CMAKE_CURRENT_LIST_DIR}/ListFilterExclude.cmake)
+        list_filter_exlude (_${_PYTHON_PREFIX}_LINK_LIBRARIES "-lpython")
+        foreach (_${_PYTHON_PREFIX}_DIR IN LISTS ${_PYTHON_PREFIX}_LIBRARY_DIRS)
+          list_filter_exclude (_${_PYTHON_PREFIX}_LINK_LIBRARIES "-L${${_PYTHON_PREFIX}_DIR}")
+        endforeach()
+        set_property (TARGET ${_PYTHON_PREFIX}::Python
+                      PROPERTY INTERFACE_LINK_LIBRARIES ${_${_PYTHON_PREFIX}_LINK_LIBRARIES})
+      endif()
     endif()
   endif()
 
@@ -1293,16 +1286,14 @@ if ("Development" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS
       endif()
     endif()
   endfunction()
-endif()
 
-if ("NumPy" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS AND ${_PYTHON_PREFIX}_NumPy_FOUND)
-  set(${_PYTHON_PREFIX}_NumPy_INCLUDE_DIRS ${${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR})
-  if(NOT TARGET ${_PYTHON_PREFIX}::NumPy)
+  if ("NumPy" IN_LIST ${_PYTHON_PREFIX}_FIND_COMPONENTS AND ${_PYTHON_PREFIX}_NumPy_FOUND
+      AND NOT TARGET ${_PYTHON_PREFIX}::NumPy AND TARGET ${_PYTHON_PREFIX}::Python)
     add_library (${_PYTHON_PREFIX}::NumPy INTERFACE IMPORTED)
     set_property (TARGET ${_PYTHON_PREFIX}::NumPy
                   PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR}")
+    target_link_libraries (${_PYTHON_PREFIX}::NumPy INTERFACE ${_PYTHON_PREFIX}::Python)
   endif()
-endif()
 
 # final clean-up
 
