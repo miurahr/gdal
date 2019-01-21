@@ -207,7 +207,10 @@ else()
     set(HAVE_RASTERLITE2 OFF CACHE INTERNAL "HAVE_RASTERLITE2")
 endif()
 
-gdal_check_package(LIBKML "")
+find_package(LibKML COMPONENTS DOM ENGINE)
+if(LIBKML_FOUND)
+    set(HAVE_LIBKML)
+endif()
 gdal_check_package(Jasper "Enable JPEG2000 support")
 
 if(HAVE_JASPER)
