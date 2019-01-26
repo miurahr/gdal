@@ -1292,7 +1292,7 @@ find_package_handle_standard_args (${_PYTHON_PREFIX}
     add_library (${_PYTHON_PREFIX}::NumPy INTERFACE IMPORTED)
     set_property (TARGET ${_PYTHON_PREFIX}::NumPy
                   PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${${_PYTHON_PREFIX}_NumPy_INCLUDE_DIR}")
-    target_link_libraries (${_PYTHON_PREFIX}::NumPy INTERFACE ${_PYTHON_PREFIX}::Python)
+    #target_link_libraries (${_PYTHON_PREFIX}::NumPy INTERFACE ${_PYTHON_PREFIX}::Python)
   endif()
 
 # final clean-up
