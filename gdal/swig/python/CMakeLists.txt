@@ -71,37 +71,37 @@ foreach(v IN ITEMS 2 3)
     add_custom_target(python${v}_binding ALL
                       DEPENDS _gdal${v} _gdalconst${v} _ogr${v} _osr${v}
                       ${_py_depends})
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${v}/osgeo/" osgeo_binary_dir)
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/osgeo/" osgeo_source_dir)
     if(v EQUAL 2)
         add_custom_command(TARGET python${v}_binding POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E make_directory
-                           ${CMAKE_CURRENT_BINARY_DIR}/2/osgeo/
+                       COMMAND ${CMAKE_COMMAND} -E make_directory ${osgeo_binary_dir}
                        COMMAND ${CMAKE_COMMAND} -E copy
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalconst.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalnumeric.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/ogr.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/osr.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gnm.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal_array.py
-                           ${CMAKE_CURRENT_BINARY_DIR}/2/osgeo/)
+                           ${osgeo_source_dir}__init__.py
+                           ${osgeo_source_dir}gdal.py
+                           ${osgeo_source_dir}gdalconst.py
+                           ${osgeo_source_dir}gdalnumeric.py
+                           ${osgeo_source_dir}ogr.py
+                           ${osgeo_source_dir}osr.py
+                           ${osgeo_source_dir}gnm.py
+                           ${osgeo_source_dir}gdal_array.py
+                           ${osgeo_binary_dir})
     else()
         add_custom_command(TARGET python${v}_binding POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E make_directory
-                               ${CMAKE_CURRENT_BINARY_DIR}/3/osgeo/
+                       COMMAND ${CMAKE_COMMAND} -E make_directory ${osgeo_binary_dir}
                        COMMAND ${Python3_EXECUTABLE} -m lib2to3
                            --fix=import --fix=next --fix=renames
                            --fix=unicode --fix=ws_comma --fix=xrange
                            --write --write-unchanged-files --nobackups
-                           --output-dir=${CMAKE_CURRENT_BINARY_DIR}/3/osgeo/
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/__init__.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalconst.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdalnumeric.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/ogr.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/osr.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gnm.py
-                           ${CMAKE_CURRENT_SOURCE_DIR}/osgeo/gdal_array.py)
+                           --output-dir=${osgeo_binary_dir}
+                           ${osgeo_source_dir}__init__.py
+                           ${osgeo_source_dir}gdal.py
+                           ${osgeo_source_dir}gdalconst.py
+                           ${osgeo_source_dir}gdalnumeric.py
+                           ${osgeo_source_dir}ogr.py
+                           ${osgeo_source_dir}osr.py
+                           ${osgeo_source_dir}gnm.py
+                           ${osgeo_source_dir}gdal_array.py)
     endif()
     install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/${v}/osgeo/__init__.py
