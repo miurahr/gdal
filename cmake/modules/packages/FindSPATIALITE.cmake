@@ -1,34 +1,63 @@
 # Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
-# file COPYING-CMAKE-SCRIPTS or https://cmake.org/licensing for details.
+# file Copyright.txt or https://cmake.org/licensing for details.
 
-#.rst
-# Find SpatiaLite
-# ~~~~~~~~~
-#
-# CMake module to search for SpatiaLite library
-#
-# Copyright (c) 2009, Sandro Furieri <a.furieri at lqt.it>
-# Copyright (C) 2017,2018, Hiroshi Miura
-#
-# If it's found it sets SPATIALITE_FOUND to TRUE
-# and following variables are set:
-#    SPATIALITE_INCLUDE_DIR
-#    SPATIALITE_LIBRARY
-#    SPATIALITE_VERSION_STRING
+#[=======================================================================[.rst:
+FindSPATIALITE
+--------------
+
+CMake module to search for SpatiaLite library
+
+IMPORTED Targets
+^^^^^^^^^^^^^^^^
+
+This module defines :prop_tgt:`IMPORTED` target ``SPATIALITE::SPATIALITE``, if
+Spatialite has been found.
+
+Result Variables
+^^^^^^^^^^^^^^^^
+
+This module defines the following variables:
+
+``SPATIALITE_FOUND``
+  True if Spatialite found.
+
+``SPATIALITE_INCLUDE_DIRS``
+  where to find Spatialite.h, etc.
+
+``SPATIALITE_LIBRARIES``
+  List of libraries when using Spatialite.
+
+``SPATIALITE_VERSION_STRING``
+  The version of Spatialite found.
+#]=======================================================================]
+
+if(CMAKE_VERSION VERSION_LESS 3.13)
+    set(SPATIALITE_ROOT CACHE PATH "")
+endif()
 
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_SPATIALITE QUIET spatialite)
-    set(SPATIALITE_VERSION_STRING ${PC_SPATIALITE_VERSION} CACHE INTERNAL "")
+    set(SPATIALITE_VERSION_STRING ${PC_SPATIALITE_VERSION})
 endif()
 
 find_path(SPATIALITE_INCLUDE_DIR
           NAMES spatialite.h
-          HINSTS ${PC_SPATIALITE_INCLUDE_DIR})
+          HINTS ${SPATIALITE_ROOT} ${PC_SPATIALITE_INCLUDE_DIR}
+          PATH_SUFFIXES include)
 find_library(SPATIALITE_LIBRARY
              NAMES spatialite
-             HINTS ${PC_SPATIALITE_LIBRARY})
+             HINTS ${SPATIALITE_ROOT} ${PC_SPATIALITE_LIBRARY}
+             PATH_SUFFIXES lib)
 mark_as_advanced(SPATIALITE_LIBRARY SPATIALITE_INCLUDE_DIR)
+
+if(SPATIALITE_LIBRARY AND SPATIALITE_INCLUDE_DIR
+   AND NOT SPATIALITE_VERSION_STRING)
+    file(STRINGS "${SPATIALITE_INCLUDE_DIR}/spatialite.h" _spatialite_h_ver
+         REGEX "^[ \t]version[ \t]([0-9]+\\.[0-9]+),.*")
+    string(REGEX REPLACE "[ \t]version[ \t]([0-9]+\\.[0-9]+),.*" "\\1" _spatialite_h_ver ${_spatialite_h_ver})
+    set(SPATIALITE_VERSION_STRING "${_spatialite_h_ver}")
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SPATIALITE

@@ -60,6 +60,7 @@ The following individuals and institutions are among the Contributors:
 * Google Inc
 * Gregor Jasny
 * Helio Chissini de Castro <helio@kde.org>
+* Hiroshi Miura <miurahr@linux.com>
 * Ilya Lavrenov <ilya.lavrenov@itseez.com>
 * Insight Software Consortium <insightsoftwareconsortium.org>
 * Jan Woetzel
@@ -94,6 +95,7 @@ The following individuals and institutions are among the Contributors:
 * Roman Donchenko <roman.donchenko@itseez.com>
 * Roman Kharitonov <roman.kharitonov@itseez.com>
 * Ruslan Baratov
+* Sandro Furieri <a.furieri at lqt.it>
 * Sebastian Holtermann <sebholt@xwmw.org>
 * Stephen Kelly <steveire@gmail.com>
 * Sylvain Joubert <joubert.sy@gmail.com>
