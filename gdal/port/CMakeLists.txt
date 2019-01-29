@@ -4,7 +4,7 @@
 # * Author: Dmitriy Baryshnikov (aka Bishop), polimax@mail.ru, Hiroshi Miura
 # ******************************************************************************
 # * Copyright (C) 2012,2013 Bishop
-# * Copyright (C) 2017,2018 Hiroshi Miura
+# * Copyright (C) 2017-2019 Hiroshi Miura
 # *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
@@ -38,7 +38,7 @@ target_public_header(TARGET gdal HEADERS
                      cpl_progress.h cpl_json_streaming_parser.h
                      cpl_md5.h cpl_mem_cache.h cpl_worker_thread_pool.h)
 
-add_library(cpl OBJECT
+add_library(cpl STATIC
             cpl_alibaba_oss.cpp
             cpl_azure.cpp
             cpl_conv.cpp
@@ -102,7 +102,10 @@ add_library(cpl OBJECT
             cpl_vsil_oss.cpp
             cpl_vsil_swift.cpp
 )
-set_target_properties(cpl PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON POSITION_INDEPENDENT_CODE ON)
+set_target_properties(cpl PROPERTIES CXX_STANDARD 11
+                          CXX_STANDARD_REQUIRED ON
+                          POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(GDAL_LINK_LIBRARY INTERFACE cpl)
 
 #include path to generated cpl_config.h
 target_include_directories(cpl PRIVATE
@@ -118,8 +121,7 @@ endif()
 if(GDAL_USE_LIBJSONC_INTERNAL)
     target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libjson,SOURCE_DIR>)
 else()
-    target_include_directories(cpl PRIVATE ${JSONC_INCLUDE_DIR})
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${JSONC_LIBRARY})
+    target_link_libraries(cpl PRIVATE JSONC::JSONC)
 endif()
 
 target_compile_definitions(cpl PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
@@ -137,12 +139,11 @@ target_sources(cpl PRIVATE
 if(GDAL_USE_LIBZ_INTERNAL)
     target_include_directories(cpl PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
-    target_include_directories(cpl PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_compile_definitions(cpl PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
     if(MSVC)
         target_compile_definitions(cpl PRIVATE -DZLIB_DLL)
     endif(MSVC)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
+    target_link_libraries(cpl PRIVATE ZLIB::ZLIB)
 endif()
 
 if(HAVE_CURL)
@@ -164,36 +165,29 @@ if(HAVE_ICONV)
         if(APPLE)
             target_compile_definitions(cpl PRIVATE -DLIBICONV_PLUG)
         endif()
-        target_include_directories(cpl PRIVATE ${Iconv_INCLUDE_DIR})
         target_sources(cpl PRIVATE cpl_recode_iconv.cpp)
-        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${Iconv_LIBRARY})
+        target_link_libraries(cpl PRIVATE Iconv::Iconv)
 	endif()
 endif()
 
 if(HAVE_ODBC)
 	  target_sources(cpl PRIVATE cpl_odbc.cpp)
 	  target_public_header(TARGET gdal HEADERS cpl_odbc.h)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ODBC::ODBC ODBC::ODBCINST)
+    target_link_libraries(cpl PRIVATE ODBC::ODBC ODBC::ODBCINST)
 endif()
 
 if(GDAL_USE_XMLREFORMAT)
     target_sources(cpl PRIVATE xmlreformat.cpp)
 endif()
 
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:cpl>)
-
-if(NOT WIN32)
-	set(CMAKE_THREAD_PREFER_PTHREAD ON CACHE BOOL "Prefer pthread")
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads)
-    if(Threads_FOUND)
-        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE Threads::Threads)
-    endif()
-endif()
 
 if(MSVC)
     if(CMAKE_CL_64)
-		target_compile_definitions(cpl PRIVATE -D_WIN64)
+        target_compile_definitions(cpl PRIVATE -D_WIN64)
+    endif()
+else()
+    if(Threads_FOUND)
+      target_link_libraries(cpl PRIVATE Threads::Threads)
     endif()
 endif()
 
@@ -226,11 +220,12 @@ add_executable(xmlreformat EXCLUDE_FROM_ALL xmlreformat.cpp)
 
 if(HAVE_CRYPTPP)
     target_compile_definitions(cpl PRIVATE -DHAVE_CRYPTOPP)
+    target_link_libraries(cpl PRIVATE CRYPTPP::CRYPTPP)
 endif()
 
 if(TARGET OpenSSL::Crypto)
     target_compile_definitions(cpl PRIVATE -DUSE_OPENSSL_CRYPTO)
-    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE OpenSSL::Crypto)
+    target_link_libraries(cpl PRIVATE OpenSSL::Crypto)
 endif()
 
 if(CRYPTOPP_USE_ONLY_CRYPTODLL_ALG AND NOT BULID_SHARED_LIBS)
