@@ -35,31 +35,31 @@ if(NOT DEFINED ENV{CTEST_PARALLEL_LEVEL})
     set(PARALLEL_OPTION "-j1")
 endif()
 
-set(AUTOTEST_PYTHON_VERSION 2 CACHE STRING "Python version for autotest target")
-if(AUTOTEST_PYTHON_VERSION STREQUAL 2)
-    if(NOT Python2_EXECUTABLE)
-        find_package(Python2 COMPONENTS Interpreter)
-    endif()
-    set(Python_EXECUTABLE ${Python2_EXECUTABLE})
-    find_program(PIP_EXECUTABLE pip)
-elseif(AUTOTEST_PYTHON_VERSION STREQUAL 3)
-    if(NOT Python3_EXECUTABLE)
-        find_package(Python3 COMPONENTS Interpreter)
-    endif()
-    set(Python_EXECUTABLE ${Python3_EXECUTABLE})
-    find_program(PIP_EXECUTABLE pip3)
-endif()
-
+find_package(Python COMPONENTS Interpreter)
 if(Python_EXECUTABLE)
-    get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
-    if(WIN32)
-        set(_SEP ";")
-    else()
-        set(_SEP ":")
+    set(VIRTUAL_ENV ${CMAKE_BINARY_DIR}/venv)
+    if(NOT EXISTS ${VIRTUAL_ENV})
+      if(Python_VERSION_MAJOR EQUAL 3)
+          execute_process(COMMAND ${Python_EXECUTABLE} -m venv ${VIRTUAL_ENV})
+      else()
+          execute_process(COMMAND ${Python_EXECUTABLE} -m virtualenv ${VIRTUAL_ENV})
+      endif()
+      set(VIRTUAL_ENV ${CMAKE_BINARY_DIR}/venv)
+      execute_process(COMMAND ${CMAKE_COMMAND} -E env VIRTUAL_ENV=${VIRTUAL_ENV}
+                      ${VIRTUAL_ENV}/bin/python -m pip install -r ${CMAKE_SOURCE_DIR}/autotest/requirements.txt)
     endif()
-    set(PYENV "PYTHONPATH=${CMAKE_SOURCE_DIR}/autotest${_SEP}${CMAKE_BINARY_DIR}/gdal/swig/python/${AUTOTEST_PYTHON_VERSION}/")
+    set($ENV{VIRTUAL_ENV} ${VIRTUAL_ENV})
+    set(Python_EXECUTABLE ${VIRTUAL_ENV}/bin/python)
+    get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_BINARY_DIR}/gdal/swig/python/${Python_VERSION_MAJOR}/osgeo
+                    ${VIRTUAL_ENV}/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/osgeo)
+    if(WIN32)
+      set(_SEP ";")
+    else()
+      set(_SEP ":")
+    endif()
     list(APPEND _TEST_ENV
-         "${PYENV}"
          "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
          "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
          "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
@@ -75,7 +75,7 @@ if(Python_EXECUTABLE)
     else()
         list(APPEND _TEST_ENV GDAL_RUN_SLOW_TESTS=NO)
     endif()
-    string(REPLACE ";" " " TEST_ENV "${_TEST_ENV}")
+    string(REPLACE ";" "\n  " TEST_ENV "${_TEST_ENV}")
     set(AUTOTEST_LOG_FILE "${CMAKE_CURRENT_BINARY_DIR}/autotest.log")
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/pytest.ini.in ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini @ONLY)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/conftest.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -83,13 +83,13 @@ if(Python_EXECUTABLE)
         foreach(tgt IN ITEMS ogr gcore gdrivers alg osr gnm pyscripts utilities)
             execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
                             ${CMAKE_CURRENT_SOURCE_DIR}/${tgt} ${CMAKE_CURRENT_BINARY_DIR}/${tgt})
-            add_custom_target(autotest_${tgt} COMMAND ${CMAKE_COMMAND} -E env ${PYENV} ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini ${tgt}
+            add_custom_target(autotest_${tgt} COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini ${tgt}
                               DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
         endforeach()
-        add_custom_target(autotest COMMAND ${CMAKE_COMMAND} -E env ${PYENV} ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
+        add_custom_target(autotest COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
                           DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
     else()
-        add_custom_target(autotest COMMAND ${CMAKE_COMMAND} -E env ${PYENV} ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
+        add_custom_target(autotest COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/autotest
                           DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
     endif()

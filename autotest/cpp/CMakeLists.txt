@@ -67,7 +67,7 @@ add_executable(gdal_unit_test
                test_marching_squares_square.cpp
                test_marching_squares_tile.cpp
         )
-target_link_libraries(gdal_unit_test PRIVATE $<TARGET_NAME:gdal>)
+    target_link_libraries(gdal_unit_test PRIVATE $<TARGET_NAME:gdal> $<TARGET_NAME:cpl>)
 add_dependencies(gdal_unit_test gdal)
 gdal_standard_includes(gdal_unit_test)
 target_compile_definitions(gdal_unit_test PRIVATE -DGDAL_TEST_ROOT_DIR="${GDAL_ROOT_TEST_DIR}" )
