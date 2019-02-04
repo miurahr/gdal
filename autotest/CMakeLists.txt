@@ -51,9 +51,11 @@ if(Python_EXECUTABLE)
     set($ENV{VIRTUAL_ENV} ${VIRTUAL_ENV})
     set(Python_EXECUTABLE ${VIRTUAL_ENV}/bin/python)
     get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    ${CMAKE_BINARY_DIR}/gdal/swig/python/${Python_VERSION_MAJOR}/osgeo
-                    ${VIRTUAL_ENV}/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/osgeo)
+    add_custom_target(pybind_install
+                      COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CMAKE_BINARY_DIR}/gdal/swig/python/${Python_VERSION_MAJOR}/osgeo
+                        ${VIRTUAL_ENV}/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/osgeo
+                      DEPENDS python_binding)
     if(WIN32)
       set(_SEP ";")
     else()
@@ -84,13 +86,13 @@ if(Python_EXECUTABLE)
             execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
                             ${CMAKE_CURRENT_SOURCE_DIR}/${tgt} ${CMAKE_CURRENT_BINARY_DIR}/${tgt})
             add_custom_target(autotest_${tgt} COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini ${tgt}
-                              DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
+                              DEPENDS gdal gdalapps python_binding pybind_install)
         endforeach()
         add_custom_target(autotest COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
-                          DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
+                          DEPENDS gdal gdalapps python_binding pybind_install)
     else()
         add_custom_target(autotest COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/autotest
-                          DEPENDS gdal gdalapps python${AUTOTEST_PYTHON_VERSION}_binding)
+                          DEPENDS gdal gdalapps python_binding pybind_install)
     endif()
 endif()
