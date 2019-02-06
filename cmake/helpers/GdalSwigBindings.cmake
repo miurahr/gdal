@@ -23,6 +23,7 @@ function(gdal_swig_bindings)
             TARGET gdalconst
             BINDING ${_SWIG_BINDING}
             ARGS ${SWIG_ARGS}
+            OUTPUT ${SWIG_OUTPUT}
             DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
                     ${_SWIG_DEPENDS}
                     ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_BINDING}/typemaps_${_SWIG_BINDING}.i
@@ -34,6 +35,7 @@ function(gdal_swig_bindings)
                 TARGET ${tgt} CXX
                 BINDING ${_SWIG_BINDING}
                 ARGS ${SWIG_ARGS}
+                OUTPUT ${SWIG_OUTPUT}
                 DEPENDS ${GDAL_SWIG_COMMON_INTERFACE_FILES}
                     ${_SWIG_DEPENDS}
                     ${CMAKE_SOURCE_DIR}/gdal/swig/include/${_SWIG_BINDING}/typemaps_${_SWIG_BINDING}.i

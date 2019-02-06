@@ -27,6 +27,10 @@
 
 # alllow individual autotest tree
 cmake_minimum_required (VERSION 3.5)
+if (POLICY CMP0074)
+    # Packagename_ROOT
+    cmake_policy(SET CMP0074 NEW)
+endif()
 project(gdal_autotest)
 
 option(AUTOTEST_DOWNLOAD_TEST_DATA "Autotest to download test data" OFF)
@@ -35,37 +39,21 @@ if(NOT DEFINED ENV{CTEST_PARALLEL_LEVEL})
     set(PARALLEL_OPTION "-j1")
 endif()
 
-find_package(Python COMPONENTS Interpreter)
+if(NOT Python_EXECUTABLE)
+    find_package(Python COMPONENTS Interpreter)
+endif()
+
 if(Python_EXECUTABLE)
-    set(VIRTUAL_ENV ${CMAKE_BINARY_DIR}/venv)
-    if(NOT EXISTS ${VIRTUAL_ENV})
-      if(Python_VERSION_MAJOR EQUAL 3)
-          execute_process(COMMAND ${Python_EXECUTABLE} -m venv ${VIRTUAL_ENV})
-      else()
-          execute_process(COMMAND ${Python_EXECUTABLE} -m virtualenv ${VIRTUAL_ENV})
-      endif()
-      set(VIRTUAL_ENV ${CMAKE_BINARY_DIR}/venv)
-      execute_process(COMMAND ${CMAKE_COMMAND} -E env VIRTUAL_ENV=${VIRTUAL_ENV}
-                      ${VIRTUAL_ENV}/bin/python -m pip install -r ${CMAKE_SOURCE_DIR}/autotest/requirements.txt)
-    endif()
-    set($ENV{VIRTUAL_ENV} ${VIRTUAL_ENV})
-    set(Python_EXECUTABLE ${VIRTUAL_ENV}/bin/python)
-    get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
-    add_custom_target(pybind_install
-                      COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${CMAKE_BINARY_DIR}/gdal/swig/python/${Python_VERSION_MAJOR}/osgeo
-                        ${VIRTUAL_ENV}/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/osgeo
-                      DEPENDS python_binding)
     if(WIN32)
       set(_SEP ";")
     else()
       set(_SEP ":")
     endif()
+    get_target_property(PLUGIN_OUTPUT_DIR gdal PLUGIN_OUTPUT_DIR)
     list(APPEND _TEST_ENV
          "PATH=${CMAKE_BINARY_DIR}/gdal/apps${_SEP}$ENV{PATH}"
-         "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}"
          "GDAL_DATA=${CMAKE_SOURCE_DIR}/gdal/data"
-         "GDAL_DRIVER_PATH=${CMAKE_BINARY_DIR}/gdal/gdalplugins"
+         "GDAL_DRIVER_PATH=${PLUGIN_OUTPUT_DIR}"
          )
     if(GDAL_DOWNLOAD_TEST_DATA)
         list(APPEND _TEST_ENV GDAL_DOWNLOAD_TEST_DATA=YES)
@@ -81,18 +69,21 @@ if(Python_EXECUTABLE)
     set(AUTOTEST_LOG_FILE "${CMAKE_CURRENT_BINARY_DIR}/autotest.log")
     configure_file(${GDAL_CMAKE_TEMPLATE_PATH}/pytest.ini.in ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini @ONLY)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/conftest.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+    set(PYTHON_RUN_ENV "PYTHONPATH=${CMAKE_BINARY_DIR}/gdal/swig/python/" "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/gdal${_SEP}$ENV{LD_LIBRARY_PATH}")
     if(UNIX OR CMAKE_VERSION VERSION_GREATER 3.13)
         foreach(tgt IN ITEMS ogr gcore gdrivers alg osr gnm pyscripts utilities)
             execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
                             ${CMAKE_CURRENT_SOURCE_DIR}/${tgt} ${CMAKE_CURRENT_BINARY_DIR}/${tgt})
-            add_custom_target(autotest_${tgt} COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini ${tgt}
-                              DEPENDS gdal gdalapps python_binding pybind_install)
+            add_custom_target(autotest_${tgt} COMMAND ${CMAKE_COMMNAD} -E env ${PYTHON_RUN_ENV}
+                              ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini ${tgt}
+                              DEPENDS gdal gdalapps python_binding)
         endforeach()
-        add_custom_target(autotest COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
-                          DEPENDS gdal gdalapps python_binding pybind_install)
+        add_custom_target(autotest COMMAND ${CMAKE_COMMAND} -E env ${PYTHON_RUN_ENV} ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
+                          DEPENDS gdal gdalapps python_binding)
     else()
-        add_custom_target(autotest COMMAND ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
+        add_custom_target(autotest COMMAND ${CMAKE_COMMAND} -E env ${PYTHON_RUN_ENV} ${Python_EXECUTABLE} -m pytest -c ${CMAKE_CURRENT_BINARY_DIR}/pytest.ini
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/autotest
-                          DEPENDS gdal gdalapps python_binding pybind_install)
+                          DEPENDS gdal gdalapps python_binding)
     endif()
 endif()

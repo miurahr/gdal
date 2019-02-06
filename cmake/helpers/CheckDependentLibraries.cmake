@@ -317,13 +317,11 @@ set_package_properties(SWIG PROPERTIES
                        URL "http://swig.org/"
                        TYPE RECOMMENDED)
 
-find_package(Python2 COMPONENTS Interpreter Development NumPy)
-find_package(Python3 COMPONENTS Interpreter Development NumPy)
-if(Python2_FOUND OR Python3_FOUND)
+find_package(Python COMPONENTS Interpreter Development NumPy)
+if(Python_FOUND)
     set(HAVE_PYTHON ON CACHE INTERNAL "HAVE_PYTHON")
 endif()
-set_package_properties(Python2 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python2)")
-set_package_properties(Python3 PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python3)")
+set_package_properties(Python PROPERTIES PURPOSE "SWIG_PYTHON: Python binding(python3)")
 
 find_package(Perl)
 if(PERL_FOUND)
