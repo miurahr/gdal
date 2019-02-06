@@ -265,10 +265,18 @@ if(UNIX AND NOT GDAL_ENABLE_MACOSX_FRAMEWORK)
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gdal/)
 
     # gdal-config utility command generation
-    include(GenerateGdalConfig)
-    generate_gdal_config(gdal GDAL_LINK_LIBRARY
-                         ${GDAL_CMAKE_TEMPLATE_PATH}/gdal-config.in
-                         ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
+    include(GenerateConfig)
+    set(CONFIG_DATA "${GDAL_PREFIX}/share/gdal/${GDAL_VERSION_MAJOR}.${GDAL_VERSION_MINOR}")
+    if(ENABLE_GNM)
+        set(CONFIG_GNM_ENABLED "yes")
+    else()
+        set(CONFIG_GNM_ENABLED "no")
+    endif()
+    get_property(_GDAL_FORMATS GLOBAL PROPERTY GDAL_FORMATS)
+    get_property(_OGR_FORMATS GLOBAL PROPERTY OGR_FORMATS)
+    string(REPLACE ";" " " CONFIG_FORMATS "${_GDAL_FORMATS} ${_OGR_FORMATS}")
+    generate_config(gdal GDAL_LINK_LIBRARY ${GDAL_CMAKE_TEMPLATE_PATH}/gdal-config.in
+                    ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
     add_custom_target(gdal_config ALL DEPENDS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config)
     install(PROGRAMS ${CMAKE_BINARY_DIR}/gdal/apps/gdal-config
             DESTINATION bin
