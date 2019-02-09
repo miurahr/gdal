@@ -1,6 +1,5 @@
 add_gdal_driver(TARGET gdal_raw SOURCES
         atlsci_spheroid.h
-        rawdataset.h
         ace2dataset.cpp
         atlsci_spheroid.cpp
         btdataset.cpp
@@ -29,7 +28,6 @@ add_gdal_driver(TARGET gdal_raw SOURCES
         ntv2dataset.cpp
         pauxdataset.cpp
         pnmdataset.cpp
-        rawdataset.cpp
         roipacdataset.cpp
         rrasterdataset.cpp
         snodasdataset.cpp

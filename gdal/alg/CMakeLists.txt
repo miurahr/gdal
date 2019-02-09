@@ -27,7 +27,7 @@
 
 include(GdalStandardIncludes)
 add_library(alg OBJECT
-			contour.cpp delaunay.c gdal_crs.c gdal_octave.cpp gdal_rpc.cpp
+			contour.cpp delaunay.c gdal_octave.cpp gdal_rpc.cpp
 			gdal_tps.cpp gdalapplyverticalshiftgrid.cpp gdalchecksum.cpp gdalcutline.cpp gdaldither.cpp
 			gdalgeoloc.cpp gdalgrid.cpp gdallinearsystem.cpp
 			gdalmatching.cpp gdalmediancut.cpp gdalpansharpen.cpp gdalproximity.cpp gdalrasterize.cpp

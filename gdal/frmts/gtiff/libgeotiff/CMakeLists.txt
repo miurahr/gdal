@@ -21,3 +21,5 @@ if(RENAME_INTERNAL_LIBGEOTIFF_SYMBOLS)
 endif()
 set_property(TARGET geotiff PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(GDAL_LINK_LIBRARY INTERFACE geotiff)
+
+target_link_libraries(geotiff PRIVATE PROJ::PROJ)

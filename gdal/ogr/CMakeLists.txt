@@ -56,10 +56,8 @@ add_library(ogr OBJECT
             ogrfielddefn.cpp
             ogrspatialreference.cpp
             ogr_srsnode.cpp
-            ogr_srs_proj4.cpp
             ogr_fromepsg.cpp
             ogrct.cpp
-            ogr_opt.cpp
             ogr_srs_esri.cpp
             ogr_srs_pci.cpp
             ogr_srs_usgs.cpp
@@ -73,7 +71,6 @@ add_library(ogr OBJECT
             swq_select.cpp
             swq_op_registrar.cpp
             swq_op_general.cpp
-            ogr_srs_validate.cpp
             ogr_srs_xml.cpp
             ograssemblepolygon.cpp
             ogr2gmlgeometry.cpp
@@ -82,8 +79,6 @@ add_library(ogr OBJECT
             ogrpgeogeometry.cpp
             ogrgeomediageometry.cpp
             ogr_geocoding.cpp
-            osr_cs_wkt.c
-            osr_cs_wkt_parser.c
             ogrgeomfielddefn.cpp
             ograpispy.cpp
             ogr_xerces.cpp
@@ -95,8 +90,6 @@ add_library(ogr OBJECT
             ogr_geo_utils.h
             ogr_srs_esri_names.h
             swq.h
-            osr_cs_wkt.h
-            osr_cs_wkt_parser.h
             ogr_expat.h
             ogr_sfcgal.h
             ogr_geocoding.h

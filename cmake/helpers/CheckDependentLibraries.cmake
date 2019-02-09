@@ -96,7 +96,7 @@ endif()
 gdal_check_package(CryptoPP "Use crypto++ library for CPL.")
 option(CRYPTOPPL_USE_ONLY_CRYPTODLL_ALG "Use Only cryptoDLL alg. only work on dynamic DLL" OFF)
 
-find_package(PROJ 4.0 REQUIRED)
+find_package(PROJ 5.0 REQUIRED)
 
 find_package(TIFF 4.0)
 if(TIFF_FOUND)
