@@ -63,6 +63,7 @@ add_library(gcore OBJECT
         gdalarraybandblockcache.cpp
         gdalhashsetbandblockcache.cpp
         overview.cpp
+            rawdataset.cpp
 )
 
 gdal_standard_includes(gcore)
