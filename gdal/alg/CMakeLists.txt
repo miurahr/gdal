@@ -3,7 +3,7 @@
 # * Purpose:  CMake build scripts
 # * Author: Dmitriy Baryshnikov (aka Bishop), polimax@mail.ru
 # ******************************************************************************
-# * Copyright (C) 2018 Hiroshi Miura
+# * Copyright (C) 2018,2019 Hiroshi Miura
 # * Copyright (C) 2012,2013 Bishop
 # * 
 # * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +27,7 @@
 
 include(GdalStandardIncludes)
 add_library(alg OBJECT
-			contour.cpp delaunay.c gdal_octave.cpp gdal_rpc.cpp
+			contour.cpp delaunay.c gdal_crs.cpp gdal_octave.cpp gdal_rpc.cpp
 			gdal_tps.cpp gdalapplyverticalshiftgrid.cpp gdalchecksum.cpp gdalcutline.cpp gdaldither.cpp
 			gdalgeoloc.cpp gdalgrid.cpp gdallinearsystem.cpp
 			gdalmatching.cpp gdalmediancut.cpp gdalpansharpen.cpp gdalproximity.cpp gdalrasterize.cpp
@@ -40,28 +40,29 @@ target_include_directories(alg PRIVATE
 						   $<TARGET_PROPERTY:gdal_GTIFF,SOURCE_DIR>
 						   $<TARGET_PROPERTY:gdal_vrt,SOURCE_DIR>)
 set_property(TARGET alg PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
 
 if(HAVE_GEOS)
     target_include_directories(alg PRIVATE ${GEOS_INCLUDE_DIRS}
 							   ${GEOS_INCLUDE_DIRS}/capi)
-	target_compile_definitions(alg PRIVATE -DHAVE_GEOS=1)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE GEOS::GEOS)
+    target_compile_definitions(alg PRIVATE -DHAVE_GEOS=1)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE GEOS::GEOS)
 endif()
 
 if(HAVE_SFCGAL)
-	target_include_directories(alg PRIVATE ${SFCGAL_INCLUDE_DIRS})
 	target_compile_definitions(alg PRIVATE -DHAVE_SFCGAL=1)
 	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE SFCGAL::SFCGAL)
+	target_include_directories(alg PRIVATE ${SFCGAL_INCLUDE_DIRS})
 endif()
 
 if(HAVE_ARMADILLO)
-	target_include_directories(alg PRIVATE ${ALMADILLO_INCLUDE_DIRS})
-	target_compile_definitions(alg PRIVATE -DHAVE_ARMADILLO)
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
+    target_include_directories(alg PRIVATE ${ALMADILLO_INCLUDE_DIRS})
+    target_compile_definitions(alg PRIVATE -DHAVE_ARMADILLO)
+    target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${ARMADILLO_LIBRARIES})
 endif()
 
 if(USE_CPL)
-	target_compile_definitions(alg PRIVATE -DUSE_CPL)
+    target_compile_definitions(alg PRIVATE -DUSE_CPL)
 endif()
 
 if(ENABLE_PAM)
@@ -70,16 +71,13 @@ endif()
 
 if(HAVE_OPENCL)
 	target_include_directories(alg PRIVATE ${OpenCL_INCLUDE_DIRS})
-	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${OpenCL_LIBRARIES})
+	target_link_libraries(GDAL_LINK_LIBRARY INTERFACE OpenCL::OpenCL)
 	target_compile_definitions(alg PRIVATE -DHAVE_OPENCL)
-	target_sources(alg PRIVATE
-		gdalwarpkernel_opencl.h
-		gdalwarpkernel_opencl.cpp
-	)
+	target_sources(alg PRIVATE gdalwarpkernel_opencl.h gdalwarpkernel_opencl.cpp )
 endif()
 
-target_include_directories(alg PRIVATE ${PROJ_INCLUDE_DIRS})
-target_link_libraries(GDAL_LINK_LIBRARY INTERFACE PROJ::PROJ)
+target_compile_definitions(alg PRIVATE PROJ_RENAME_SYMBOLS)
+target_link_libraries(alg PRIVATE PROJ::PROJ)
 
 if(GDAL_ENABLE_QHULL)
     if(GDAL_USE_QHULL_INTERNAL)
@@ -93,7 +91,7 @@ if(GDAL_ENABLE_QHULL)
         else()
             target_compile_definitions(alg PRIVATE -DQHULL_INCLUDE_SUBDIR_IS_LIBQHULL=0)
         endif()
-        target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ${QHULL_LIBRARY})
+        target_link_libraries(alg PRIVATE ${QHULL_LIBRARY})
     endif()
 endif()
 
@@ -108,7 +106,6 @@ if(HAVE_AVX_AT_COMPILE_TIME)
 		target_compile_options(alg PRIVATE ${GDAL_ARCH_FLAG})
 endif()
 
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:alg>)
 include(TargetPublicHeader)
 target_public_header(TARGET gdal HEADERS
 					 gdal_alg.h

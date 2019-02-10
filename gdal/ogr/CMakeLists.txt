@@ -83,6 +83,7 @@ add_library(ogr OBJECT
             ograpispy.cpp
             ogr_xerces.cpp
             ogr_geo_utils.cpp
+            ogr_proj_p.cpp
 
             ogrsf_frmts/ogr_attrind.h
             ogrgeomediageometry.h
@@ -101,43 +102,41 @@ include(GdalStandardIncludes)
 gdal_standard_includes(ogr)
 target_include_directories(ogr PRIVATE $<TARGET_PROPERTY:ogr_geojson,SOURCE_DIR>
                            $<TARGET_PROPERTY:ogr_MEM,SOURCE_DIR>)
-target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogr>)
 set_property(TARGET ogr PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_sources(gdal PRIVATE $<TARGET_OBJECTS:ogr>)
 
-target_compile_definitions(ogr PRIVATE -DHAVE_MITAB)
-
-target_include_directories(ogr PRIVATE ${PROJ_INCLUDE_DIR})
+target_compile_definitions(ogr PRIVATE HAVE_MITAB)
 #TODO: detect whether -DPROJ_STATIC or not.
+target_include_directories(ogr PRIVATE ${PROJ_INCLUDE_DIRS})
 target_link_libraries(GDAL_LINK_LIBRARY INTERFACE PROJ::PROJ)
 
 if(HAVE_GEOS)
-    target_include_directories(ogr PRIVATE  ${GEOS_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_GEOS=1)
+    target_include_directories(ogr PRIVATE ${GEOS_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE GEOS::GEOS)
 endif()
 
 if(HAVE_SFCGAL)
-    target_include_directories(ogr PRIVATE ${SFCGAL_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_SFCGAL=1)
+    target_include_directories(ogr PRIVATE ${SFCGAL_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE SFCGAL::SFCGAL)
 endif()
 
 target_compile_definitions(ogr PRIVATE -DHAVE_LIBZ -DZIP_SUPPORT)
 if(GDAL_USE_LIBZ_INTERNAL)
-    target_include_directories(ogr PRIVATE
-                               $<TARGET_PROPERTY:libz,SOURCE_DIR>)
+    target_include_directories(ogr PRIVATE $<TARGET_PROPERTY:libz,SOURCE_DIR>)
 else()
-    target_include_directories(ogr PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_ZLIB_H -DHAVE_ZLIB)
     if(MSVC)
         target_compile_definitions(ogr PRIVATE -DZLIB_DLL)
     endif()
+    target_include_directories(ogr PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE ZLIB::ZLIB)
 endif()
 
 if(HAVE_EXPAT)
-    target_include_directories(ogr PRIVATE ${EXPAT_INCLUDE_DIRS})
     target_compile_definitions(ogr PRIVATE -DHAVE_EXPAT)
+    target_include_directories(ogr PRIVATE ${EXPAT_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE EXPAT::EXPAT)
 endif()
 
@@ -150,7 +149,7 @@ if(HAVE_XERCESC)
 endif()
 
 if(HAVE_JSONC)
-    target_include_directories(ogr PRIVATE ${JSONC_INCLUDE_DIR})
+    target_include_directories(ogr PRIVATE ${JSONC_INCLUDE_DIRS})
     target_link_libraries(GDAL_LINK_LIBRARY INTERFACE JSONC::JSONC)
 else()
     if(GDAL_USE_LIBJSONC_INTERNAL)
