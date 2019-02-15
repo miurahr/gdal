@@ -27,28 +27,31 @@ wine64 cmd /c dir
 ln -sf /usr/lib/gcc/x86_64-w64-mingw32/4.8/libstdc++-6.dll  "$HOME/.wine/drive_c/windows"
 ln -sf /usr/lib/gcc/x86_64-w64-mingw32/4.8/libgcc_s_sjlj-1.dll  "$HOME/.wine/drive_c/windows"
 ln -sf /usr/x86_64-w64-mingw32/lib/libwinpthread-1.dll  "$HOME/.wine/drive_c/windows"
-ln -sf /usr/local/x86_64-w64-mingw32/bin/libsqlite3-0.dll "$HOME/.wine/drive_c/windows"
-ln -sf /usr/local/x86_64-w64-mingw32/bin/libproj-13.dll "$HOME/.wine/drive_c/windows"
+ln -sf /usr/x86_64-w64-mingw32/bin/libsqlite3-0.dll "$HOME/.wine/drive_c/windows"
+ln -sf /usr/x86_64-w64-mingw32/bin/libproj-13.dll "$HOME/.wine/drive_c/windows"
 ln -sf /usr/x86_64-w64-mingw32/lib/libgeos_c-1.dll "$HOME/.wine/drive_c/windows"
 ln -sf /usr/x86_64-w64-mingw32/lib/libgeos-3-5-0.dll "$HOME/.wine/drive_c/windows"
 
 (cd /home/vagrant/gnumake-build-mingw-w64
     CC="ccache x86_64-w64-mingw32-gcc" CXX="ccache x86_64-w64-mingw32-g++" LD=x86_64-w64-mingw32-ld \
-    ./configure --prefix=/usr/x86_64-w64-mingw32  --host=x86_64-w64-mingw32  --with-geos \
-     --with-sqlite3=/usr/local/x86_64-w64-mingw32 --with-proj=/usr/local/x86_64-w64-mingw32 \
+    PKG_CONFIG=/usr/bin/x86_64-w64-mingw32-pkg-config \
+    ./configure --prefix=/usr/x86_64-w64-mingw32  --host=x86_64-w64-mingw32 \
+     --with-geos=/usr/x86_64-w64-mingw32 --with-sqlite3=/usr/x86_64-w64-mingw32 \
+     --with-proj=/usr/x86_64-w64-mingw32 --with-kea=no --with-ogdi=no
     ln -sf "$PWD/.libs/libgdal-20.dll" "$HOME/.wine/drive_c/windows"
-
-    # Python bindings
-    sudo wget -N -nv -P /var/cache/wget/ http://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi
-    wine64 msiexec /i /var/cache/wget/python-2.7.15.amd64.msi
-    cd swig/python
-    gendef "$HOME/.wine/drive_c/Python27/python27.dll"
-    x86_64-w64-mingw32-dlltool --dllname "$HOME/.wine/drive_c/Python27/python27.dll" --input-def python27.def --output-lib "$HOME/.wine/drive_c/Python27/libs/libpython27.a"
 )
 
-#
+# for Python binding
+sudo wget -N -nv -P /var/cache/wget/ http://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi
+wine64 msiexec /i /var/cache/wget/python-2.7.15.amd64.msi
+wine64 $HOME/.wine/drive_c/Python27/python27.exe -m ensurepip
+
 echo "------------------------------------------------------"
 echo "You now can run cross building with mingw-w64, please run on $PWD"
 echo "make -j $NUMTHREADS"
 echo "cd swig/python; CXX=x86_64-w64-mingw32-g++ bash fallback_build_mingw32_under_unix.sh"
+echo "cp -R build/lib.win-amd64-2.7/osgeo $HOME/.wine/drive_c/Python27/Libs/site-packages/"
+echo "And then you can run autotest on $PWD/autotest"
+echo "wine64 $HOME/.wine/drive_c/Python27/python27.exe -m pip install -r autotest/requirements.txt"
+echo "wine64 $HOME/.wine/drive-c/python27/python27.exe -m pytest"
 echo "------------------------------------------------------"
