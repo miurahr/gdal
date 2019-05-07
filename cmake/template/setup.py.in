@@ -182,7 +182,7 @@ if @GNM_ENABLED@:
 
 packages = ["osgeo", ]
 
-readme = str(open('@CMAKE_CURRENT_SOURCE_DIR@/README.txt', 'rb').read())
+readme = str(open('@CMAKE_CURRENT_SOURCE_DIR@/README.rst', 'rb').read())
 
 name = 'GDAL'
 version = '@GDAL_VERSION@'

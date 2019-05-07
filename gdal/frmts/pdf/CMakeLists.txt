@@ -13,6 +13,7 @@ add_gdal_driver(TARGET gdal_PDF SOURCES
         pdfreadvectors.cpp
         ogrpdflayer.cpp
         pdfwritabledataset.cpp
+        pdfcreatefromcomposition.cpp
 )
 gdal_standard_includes(gdal_PDF)
 target_include_directories(gdal_PDF PRIVATE
