@@ -28,7 +28,7 @@ if [ $(lsb_release -sc) = "bionic" ]; then
      libpq-dev postgresql-10 postgresql-client-10 postgresql-10-postgis-2.5 postgresql-10-postgis-scripts libgdal20
 elif [ $(lsb_release -sc) = "xenial" ]; then
   add-apt-repository -y 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
-  add-apt-repository -y ppa:miurahr/gdal-dev-additions
+  add-apt-repository -y ppa:miurahr/gdal-depends-experimental
   apt-get update --allow-unauthenticated 
   apt-get install -y -q --allow-unauthenticated libjpeg-dev libgif-dev liblzma-dev libgeos-dev \
      libcurl4-gnutls-dev libproj-dev libxml2-dev  libxerces-c-dev libnetcdf-dev netcdf-bin \

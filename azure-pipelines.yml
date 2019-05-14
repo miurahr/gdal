@@ -7,22 +7,6 @@ variables:
   CMAKEREV: 3
 
 jobs:
-- job: Ubuntu_1404
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - template: gdal/ci/azure-pipelines/docker.yml
-    parameters:
-      imageName: 'gdal-trusty'
-      dockerFile: Dockerfile-trusty
-      scriptFile: docker-run.sh
-      environmentVariables: |
-        CC=gcc
-        CXX=g++
-        LANG=C.UTF-8
-        BUILD_TYPE=Debug
-        CMAKE_OPTIONS=-C/src/cmake/configurations/full_drivers.cmake
-
 - job: Ubuntu_1804
   pool:
     vmImage: 'ubuntu-16.04'
