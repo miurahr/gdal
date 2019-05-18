@@ -86,7 +86,7 @@ ogr_optional_driver(vdv "VDV-451/VDV-452/INTREST Data Format")
 #
 # XML drivers
 ogr_dependent_driver(gpx "GPX - GPS Exchange Format" "HAVE_EXPAT")
-ogr_dependent_driver(gmlas GMLAS "HAVE_XERCESC;HAVE_JSONC")
+ogr_dependent_driver(gmlas GMLAS "HAVE_XERCESC;HAVE_JSONC;OGR_ENABLE_PGDUMP")
 ogr_dependent_driver(svg "Scalable Vector Graphics" "HAVE_EXPAT")
 ogr_dependent_driver(csw CSW "HAVE_CURL")
 ogr_dependent_driver(dods DODS "HAVE_DAP;HAVE_LIBXML2")
@@ -117,10 +117,10 @@ ogr_dependent_driver(vfk "Czech Cadastral Exchange Data Format" "HAVE_SQLITE3")
 ogr_dependent_driver(mvt "MVT" "HAVE_SQLITE3")
 
 # ODBC/POSTGRES/MYSQL/INGRESS/COUCHDB
-ogr_dependent_driver(amigocloud AMIGOCLOUD "HAVE_CURL")
+ogr_dependent_driver(amigocloud AMIGOCLOUD "HAVE_CURL;OGR_ENABLE_PGDUMP")
 ogr_dependent_driver(cloudant Cloudant "HAVE_CURL")
 ogr_dependent_driver(couchdb CouchDB "HAVE_CURL")
-ogr_optional_driver(carto CARTO)
+ogr_dependent_driver(carto CARTO "OGR_ENABLE_PGDUMP")
 ogr_dependent_driver(ingress INGRESS "HAVE_INGRESS")
 ogr_dependent_driver(ili ILI "HAVE_XERCESC")
 ogr_dependent_driver(mysql MySQL "HAVE_MYSQL")
