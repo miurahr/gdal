@@ -19,8 +19,8 @@ if [ $(lsb_release -si) = "Ubuntu" ]; then
     ln -sf /usr/x86_64-w64-mingw32/lib/libgeos-3-5-0.dll  $HOME/.wine/drive_c/windows
     ln -sf /usr/x86_64-w64-mingw32/lib/libgeos_c-1.dll  $HOME/.wine/drive_c/windows
 elif [ $(lsb_release -si) = "Arch" ]; then
-    pacman -S wine mingw-w64-gcc mingw-w64-cmake
-    pacman -S mingw-w64-proj mingw-w64-geos mingw-w64-curl mingw-w64-giflib mingw-w64-hdf5 mingw-w64-jasper \
+    pacman -S --noconfirm wine mingw-w64-gcc mingw-w64-cmake \
+        mingw-w64-proj mingw-w64-geos mingw-w64-curl mingw-w64-giflib mingw-w64-hdf5 mingw-w64-jasper \
         mingw-w64-libfreexl mingw-w64-libgeotiff mingw-w64-libjpeg mingw-w64-libpng mingw-w64-libtiff \
         mingw-w64-netcdf mingw-w64-postgresql mingw-w64-sqlite mingw-w64-configure mingw-w64-poppler
     wine cmd /c dir

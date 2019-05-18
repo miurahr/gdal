@@ -1,4 +1,6 @@
 FROM archlinux/base:latest
+COPY linux-install.sh .
 COPY mingw-install.sh .
 RUN pacman -Sy --noconfirm lsb-release
 RUN ./linux-install.sh
+RUN ./mingw-install.sh
