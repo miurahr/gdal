@@ -27,13 +27,11 @@ steps:
     git clone --depth=1 https://github.com/OSGeo/proj.4 proj
     mkdir build-proj
   displayName: Install numpy, swig, sqlite and sdk
-- powershell: Write-Host "##vso[task.prependpath]$(Build.BinariesDirectory)"
-  displayName: Add $(Build.BinariesDirectory) to PATH
 - task: CMake@1
   displayName: Configure proj-6
   inputs:
     workingDirectory: '$(Build.BinariesDirectory)/build-proj'
-    cmakeArgs: -G "${{ parameters.generator }}" -DCMAKE_INSTALL_PREFIX="$(Build.BinariesDirectory)/install-proj" -DPROJ_TESTS=OFF -DBUILD_LIBPROJ_SHARED=ON -DSQLITE3_LIBRARY=$(Build.BinariesDirectory)/sqlite3.dll -DSQLITE3_INCLUDE_DIR=$(Build.BinariesDirectory) $(Build.BinariesDirectory)/proj
+    cmakeArgs: -G "${{ parameters.generator }}" -DCMAKE_INSTALL_PREFIX="$(Build.BinariesDirectory)/install-proj" -DPROJ_TESTS=OFF -DBUILD_LIBPROJ_SHARED=ON -DEXE_SQLITE3=$(Build.BinariesDirectory)/sqlite3.exe -DSQLITE3_LIBRARY=$(Build.BinariesDirectory)/sqlite3.dll -DSQLITE3_INCLUDE_DIR=$(Build.BinariesDirectory) $(Build.BinariesDirectory)/proj
 - task: CMake@1
   displayName: Build and install proj-6
   inputs:
