@@ -4,7 +4,7 @@
 # * Author: Dmitriy Baryshnikov (aka Bishop), polimax@mail.ru
 # ******************************************************************************
 # * Copyright (C) 2012,2013 Bishop
-# * Copyright (C) 2017,2018 Hiroshi Miura
+# * Copyright (C) 2017-2019 Hiroshi Miura
 # *
 # * Permission is hereby granted, free of charge, to any person obtaining a
 # * copy of this software and associated documentation files (the "Software"),
@@ -43,43 +43,44 @@ ogr_default_driver(geojson "GeoJSON/ESRIJSON/TopoJSON driver")
 ogr_default_driver2(mitab TAB "MapInfo TAB and MIF/MID")
 
 ###########################################
-#
-ogr_default_driver(segukooa SEGUKOOA)
-ogr_default_driver(segy SEG)
-ogr_default_driver(aeronavfaa AERONAVFAA)
-ogr_default_driver(avc AVC)
-ogr_default_driver(bna BNA)
-ogr_default_driver(csv CSV)
-ogr_default_driver(dgn DGN)
-ogr_default_driver(gmt GMT)
-ogr_default_driver(ntf NTF)
-ogr_default_driver(rec REC)
-option(ENABLE_S57_BUILTIN_CLASSES "Set ON to build s57 driver with builin classes" OFF)
-ogr_default_driver(s57 S57)
-ogr_default_driver(sdts SDTS ) #depends ISO8211
-ogr_default_driver(shape "ESRI shape-file")
-ogr_default_driver(tiger "U.S. Census TIGER/Line")
-ogr_default_driver(vrt "VRT - Virtual Format")
-ogr_default_driver(geoconcept GEOCONCEPT)
-ogr_default_driver(xplane XPLANE)
-ogr_default_driver(georss GEORSS)
-ogr_default_driver(gtm "GPS TrackMaker")
-ogr_default_driver(dxf DXF)
-ogr_default_driver(pgdump PGDump)
-ogr_default_driver(gpsbabel GPSBABEL)
-ogr_default_driver(sua "Tim Newport-Peace's Special Use Airspace Format")
-ogr_default_driver(openair OPENAIR)
-ogr_default_driver(htf HTF)
-ogr_default_driver(edigeo EDIGEO)
-ogr_default_driver(arcgen ARCGEN)
-ogr_default_driver(sxf SXF)
-ogr_default_driver(openfilegdb OPENFILEGDB)
-ogr_default_driver(wasp "WAsP .map format")
-ogr_default_driver(selafin OSELAFIN)
-ogr_default_driver(jml JML)
-ogr_default_driver(vdv "VDV-451/VDV-452/INTREST Data Format")
 ogr_default_driver(kml KML) # when not found EXPAT, it use CPL_MINIXML (ex. android)
+ogr_default_driver(vrt "VRT - Virtual Format")
+ogr_default_driver(sdts SDTS ) #depends ISO8211
 ogr_default_driver(gml GML) # when not found both EXPAT/XercesC, return error in driver, referenced by WCS
+
+###########################################
+ogr_optional_driver(segukooa SEGUKOOA)
+ogr_optional_driver(segy SEG)
+ogr_optional_driver(aeronavfaa AERONAVFAA)
+ogr_optional_driver(avc AVC)
+ogr_optional_driver(bna BNA)
+ogr_optional_driver(csv CSV)
+ogr_optional_driver(dgn DGN)
+ogr_optional_driver(gmt GMT)
+ogr_optional_driver(ntf NTF)
+ogr_optional_driver(rec REC)
+option(ENABLE_S57_BUILTIN_CLASSES "Set ON to build s57 driver with builin classes" OFF)
+ogr_optional_driver(s57 S57)
+ogr_optional_driver(shape "ESRI shape-file")
+ogr_optional_driver(tiger "U.S. Census TIGER/Line")
+ogr_optional_driver(geoconcept GEOCONCEPT)
+ogr_optional_driver(xplane XPLANE)
+ogr_optional_driver(georss GEORSS)
+ogr_optional_driver(gtm "GPS TrackMaker")
+ogr_optional_driver(dxf DXF)
+ogr_optional_driver(pgdump PGDump)
+ogr_optional_driver(gpsbabel GPSBABEL)
+ogr_optional_driver(sua "Tim Newport-Peace's Special Use Airspace Format")
+ogr_optional_driver(openair OPENAIR)
+ogr_optional_driver(htf HTF)
+ogr_optional_driver(edigeo EDIGEO)
+ogr_optional_driver(arcgen ARCGEN)
+ogr_optional_driver(sxf SXF)
+ogr_optional_driver(openfilegdb OPENFILEGDB)
+ogr_optional_driver(wasp "WAsP .map format")
+ogr_optional_driver(selafin OSELAFIN)
+ogr_optional_driver(jml JML)
+ogr_optional_driver(vdv "VDV-451/VDV-452/INTREST Data Format")
 
 ######################################
 #
@@ -102,7 +103,7 @@ ogr_dependent_driver(ngw "NextGIS Web" "HAVE_CURL")
 
 ogr_optional_driver(elastic ELASTIC)
 ogr_optional_driver(idrisi IDRISI)
-ogr_optional_driver(pds "Planetary Data Systems TABLE")
+ogr_dependent_driver(pds "Planetary Data Systems TABLE" "GDAL_ENABLE_FRMT_PDS")
 
 ogr_dependent_driver(sqlite "SQLite3 / Spatialite RDBMS" "HAVE_SQLITE3")
 # GeoPacage is a part of sqlite driver.
@@ -154,7 +155,8 @@ ogr_dependent_driver(idb "IDB" "HAVE_IDB")
 if(WIN32)
     ogr_optional_driver(arcobjects ARCOBJECTS)
 endif()
-ogr_optional_driver(ods ODS)
+ogr_dependent_driver(ods ODS "HAVE_EXPAT")
 ogr_dependent_driver(ogdi "OGDI" "HAVE_OGDI")
 
+# Add generic in last line
 add_subdirectory(generic)
