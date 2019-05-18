@@ -33,7 +33,7 @@ steps:
   displayName: Configure proj-6
   inputs:
     workingDirectory: '$(Build.BinariesDirectory)/build-proj'
-    cmakeArgs: -G "${{ parameters.generator }}" -DCMAKE_INSTALL_PREFIX="$(Build.BinariesDirectory)/install-proj" -DPROJ_TESTS=OFF -DBUILD_LIBPROJ_SHARED=ON -DSQLITE3_LIBRARY=$(Build.BinaresDirectory)/sqlite3.dll -DSQLITE3_INCLUDE_DIR=$(Build.BinaresDirectory) $(Build.BinaresDirectory)/proj
+    cmakeArgs: -G "${{ parameters.generator }}" -DCMAKE_INSTALL_PREFIX="$(Build.BinariesDirectory)/install-proj" -DPROJ_TESTS=OFF -DBUILD_LIBPROJ_SHARED=ON -DSQLITE3_LIBRARY=$(Build.BinariesDirectory)/sqlite3.dll -DSQLITE3_INCLUDE_DIR=$(Build.BinariesDirectory) $(Build.BinariesDirectory)/proj
 - task: CMake@1
   displayName: Build and install proj-6
   inputs:
