@@ -46,5 +46,5 @@ elif [ $(lsb_release -si) = "Arch" ]; then
         libpng libpng12 libspatialite libtiff netcdf postgresql-libs sqlite chrpath doxygen swig poppler \
         libwebp libxml2 libdap libkml cairo-ubuntu cgal json-c ninja python-numpy python-pytest python \
         python-setuptools kealib filegdb-api pcre proj unixodbc xerces-c perl mariadb \
-        cmake clang ninja swig doxygen make ccache cppcheck g++ gcc
+        cmake clang ninja swig doxygen make ccache cppcheck gcc
 fi
