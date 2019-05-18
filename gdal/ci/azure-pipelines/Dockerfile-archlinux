@@ -1,4 +1,4 @@
 FROM archlinux/base:latest
 COPY mingw-install.sh .
-RUN pacman -Sy lsb-release
+RUN pacman -Sy --noconfirm lsb-release
 RUN ./linux-install.sh

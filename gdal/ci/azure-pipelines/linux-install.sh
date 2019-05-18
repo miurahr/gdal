@@ -42,7 +42,7 @@ if [ $(lsb_release -si) = "Ubuntu" ]; then
          libpq-dev postgresql-9.5 postgresql-client-9.5 postgresql-9.5-postgis-2.4 postgresql-9.5-postgis-scripts libgdal20
     fi
 elif [ $(lsb_release -si) = "Arch" ]; then
-    pacman -S cfitsio curl geos giflib hdf5 libgeotiff libjpeg-turbo mariadb-10.3 openjpeg2 \
+    pacman -S --noconfirm cfitsio curl geos giflib hdf5 libgeotiff libjpeg-turbo mariadb-10.3 openjpeg2 \
         libpng libpng12 libspatialite libtiff netcdf postgresql-libs sqlite chrpath doxygen swig poppler \
         libwebp libxml2 libdap libkml cairo-ubuntu cgal json-c ninja python-numpy python-pytest python \
         python-setuptools kealib filegdb-api pcre proj unixodbc xerces-c perl mariadb \
