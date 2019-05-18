@@ -45,19 +45,6 @@ jobs:
         CC: clang
         CXX: clang++
 
-- job: MinGW_arch
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - template: gdal/ci/azure-pipelines/docker.yml
-    parameters:
-      imageName: 'gdal-arch'
-      dockerFile: Dockerfile-archlinux
-      scriptFile: mingw-run.sh
-      environmentVariables: |
-        CXX=x86_64-w64-mingw32-g++
-        CC=x86_64-w64-mingw32-gcc
-
 - job: MinGW
   pool:
     vmImage: 'ubuntu-16.04'
