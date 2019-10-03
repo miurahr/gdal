@@ -10,6 +10,7 @@ set(_SOURCES
             hdf-eos/SWapi.c
             hdf4compat.h hdf4dataset.h
             hdf4dataset.cpp  hdf4imagedataset.cpp
+            hdf4multidim.cpp
     )
 if(GDAL_ENABLE_FRMT_HDF4_PLUGIN)
     add_gdal_driver(TARGET gdal_HDF4 SOURCES ${_SOURCES} PLUGIN)

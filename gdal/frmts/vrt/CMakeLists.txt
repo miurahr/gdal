@@ -12,6 +12,7 @@ add_gdal_driver(TARGET gdal_vrt BUILTIN SOURCES
                 vrtdataset.cpp
                 pixelfunctions.cpp
                 vrtpansharpened.cpp
+                vrtmultidim.cpp
 )
 gdal_standard_includes(gdal_vrt)
 target_include_directories(gdal_vrt PRIVATE $<TARGET_PROPERTY:gdal_raw,SOURCE_DIR>)

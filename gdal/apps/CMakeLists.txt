@@ -39,6 +39,8 @@ add_library(appslib OBJECT
 	ogr2ogr_lib.cpp
 	gdaldem_lib.cpp
     nearblack_lib.cpp
+            gdalmdiminfo_lib.cpp
+            gdalmdimtranslate_lib.cpp
 )
 target_sources(gdal PRIVATE $<TARGET_OBJECTS:appslib>)
 gdal_standard_includes(appslib)
@@ -80,6 +82,8 @@ if(BUILD_APPS)
     add_executable(ogrlineref ogrlineref.cpp)
     add_executable(ogrtindex ogrtindex.cpp)
     add_executable(nearblack nearblack_bin.cpp)
+    add_executable(gdalmdiminfo gdalmdiminfo_bin.cpp)
+    add_executable(gdalmdimtranslate gdalmdimtranslate_bin.cpp)
 
     # Default Apps
     set(APPS_TARGETS

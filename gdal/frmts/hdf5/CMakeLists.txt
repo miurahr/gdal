@@ -2,7 +2,7 @@
 option(GDAL_ENABLE_FRMT_HDF5_PLUGIN "build HDF5 driver as plugin" ON)
 set(_SOURCES hdf5dataset.h iso19115_srs.h gh5_convenience.h
              hdf5dataset.cpp hdf5imagedataset.cpp gh5_convenience.cpp
-             iso19115_srs.cpp bagdataset.cpp)
+             iso19115_srs.cpp bagdataset.cpp hdf5multidim.cpp)
 if(GDAL_ENABLE_FRMT_HDF5_PLUGIN)
     add_gdal_driver(TARGET gdal_HDF5 SOURCES ${_SOURCES} PLUGIN)
 else()

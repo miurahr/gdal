@@ -4,7 +4,9 @@
 option(GDAL_ENABLE_NETCDF_PLUGIN "Enable to build NetCDF plugin" ON)
 set(_SOURCES netcdfdataset.h
                 gmtdataset.cpp  netcdfdataset.cpp
-                netcdflayer.cpp netcdfwriterconfig.cpp)
+                netcdflayer.cpp netcdfwriterconfig.cpp
+                netcdfmultidim.cpp netcdfvirtual.cpp netcdfvirtual.h
+    )
 if(GDAL_ENABLE_NETCDF_PLUGIN)
     add_gdal_driver(TARGET gdal_netCDF SOURCES ${_SOURCES} PLUGIN)
 else()

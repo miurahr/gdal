@@ -36,7 +36,8 @@ target_public_header(TARGET gdal HEADERS
                      cpl_sha1.h cpl_sha256.h cpl_string.h cpl_time.h cpl_vsi.h
                      cpl_vsi_error.h cpl_vsi_virtual.h cpl_virtualmem.h gdal_csv.h cpl_spawn.h
                      cpl_progress.h cpl_json_streaming_parser.h
-                     cpl_md5.h cpl_mem_cache.h cpl_worker_thread_pool.h)
+                     cpl_md5.h cpl_mem_cache.h cpl_worker_thread_pool.h
+                     cpl_json_streaming_writer.h)
 
 add_library(cpl STATIC
             cpl_alibaba_oss.cpp
@@ -101,6 +102,7 @@ add_library(cpl STATIC
             cpl_vsil_s3.cpp
             cpl_vsil_oss.cpp
             cpl_vsil_swift.cpp
+            cpl_json_streaming_writer.cpp
 )
 set_target_properties(cpl PROPERTIES CXX_STANDARD 11
                           CXX_STANDARD_REQUIRED ON
