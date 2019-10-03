@@ -94,7 +94,8 @@ SET(UNUSED_SOURCES
 GDAL_STANDARD_INCLUDES(gdal_GRIB)
 target_include_directories(gdal_GRIB PRIVATE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/degrib/degrib>
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/degrib/g2clib>)
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/degrib/g2clib>
+                           $<TARGET_PROPERTY:gdal_MEM,SOURCE_DIR>)
 if(GDAL_USE_LIBPNG_INTERNAL)
     target_include_directories(gdal_GRIB PRIVATE $<TARGET_PROPERTY:libpng,SOURCE_DIR>)
     target_compile_definitions(gdal_GRIB PRIVATE -DUSE_PNG)
