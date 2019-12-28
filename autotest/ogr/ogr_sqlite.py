@@ -1533,63 +1533,12 @@ def test_ogr_spatialite_5(require_spatialite, bUseComprGeom):
         pass
     ds = ogr.GetDriverByName('SQLite').CreateDataSource('tmp/ogr_spatialite_5.sqlite', options=['SPATIALITE=YES'])
 
-    geometries = [
-        # 'POINT EMPTY',
-        'POINT (1 2)',
-        'POINT Z (1 2 3)',
-        'POINT M (1 2 3)',
-        'POINT ZM (1 2 3 4)',
-        'LINESTRING EMPTY',
-        'LINESTRING (1 2)',
-        'LINESTRING (1 2,3 4)',
-        'LINESTRING (1 2,3 4,5 6)',
-        'LINESTRING Z (1 2 3,4 5 6)',
-        'LINESTRING Z (1 2 3,4 5 6,7 8 9)',
-        'LINESTRING M (1 2 3,4 5 6)',
-        'LINESTRING M (1 2 3,4 5 6,7 8 9)',
-        'LINESTRING ZM (1 2 3 4,5 6 7 8)',
-        'LINESTRING ZM (1 2 3 4,5 6 7 8,9 10 11 12)',
-        'POLYGON EMPTY',
-        'POLYGON ((1 2,1 3,2 3,2 2,1 2))',
-        'POLYGON Z ((1 2 10,1 3 -10,2 3 20,2 2 -20,1 2 10))',
-        'POLYGON M ((1 2 10,1 3 -10,2 3 20,2 2 -20,1 2 10))',
-        'POLYGON ZM ((1 2 10 20,1 3 -10 -20,2 3 20 30,2 2 -20 -30,1 2 10 20))',
-        'POLYGON ((1 2,1 3,2 3,2 2,1 2),(1.25 2.25,1.25 2.75,1.75 2.75,1.75 2.25,1.25 2.25))',
-        'MULTIPOINT EMPTY',
-        'MULTIPOINT ((1 2),(3 4))',
-        'MULTIPOINT Z ((1 2 3),(4 5 6))',
-        'MULTIPOINT M ((1 2 3),(4 5 6))',
-        'MULTIPOINT ZM ((1 2 3 4),(5 6 7 8))',
-        'MULTILINESTRING EMPTY',
-        'MULTILINESTRING ((1 2,3 4),(5 6,7 8))',
-        'MULTILINESTRING Z ((1 2 3,4 5 6),(7 8 9,10 11 12))',
-        'MULTILINESTRING M ((1 2 3,4 5 6),(7 8 9,10 11 12))',
-        'MULTILINESTRING ZM ((1 2 3 4,5 6 7 8),(9 10 11 12,13 14 15 16))',
-        'MULTIPOLYGON EMPTY',
-        'MULTIPOLYGON (((1 2,1 3,2 3,2 2,1 2)),((-1 -2,-1 -3,-2 -3,-2 -2,-1 -2)))',
-        'MULTIPOLYGON (((1 2,1 3,2 3,2 2,1 2),(1.25 2.25,1.25 2.75,1.75 2.75,1.75 2.25,1.25 2.25)),((-1 -2,-1 -3,-2 -3,-2 -2,-1 -2)))',
-        'MULTIPOLYGON Z (((1 2 -4,1 3 -3,2 3 -3,2 2 -3,1 2 -6)),((-1 -2 0,-1 -3 0,-2 -3 0,-2 -2 0,-1 -2 0)))',
-        'MULTIPOLYGON M (((1 2 -4,1 3 -3,2 3 -3,2 2 -3,1 2 -6)),((-1 -2 0,-1 -3 0,-2 -3 0,-2 -2 0,-1 -2 0)))',
-        'MULTIPOLYGON ZM (((1 2 -4 -40,1 3 -3 -30,2 3 -3 -30,2 2 -3 30,1 2 -6 -60)),((-1 -2 0 0,-1 -3 0 0,-2 -3 0 0,-2 -2 0 0,-1 -2 0 0)))',
-        'GEOMETRYCOLLECTION EMPTY',
-        # 'GEOMETRYCOLLECTION (GEOMETRYCOLLECTION EMPTY)',
-        'GEOMETRYCOLLECTION (POINT (1 2))',
-        'GEOMETRYCOLLECTION Z (POINT Z (1 2 3))',
-        'GEOMETRYCOLLECTION M (POINT M (1 2 3))',
-        'GEOMETRYCOLLECTION ZM (POINT ZM (1 2 3 4))',
-        'GEOMETRYCOLLECTION (LINESTRING (1 2,3 4))',
-        'GEOMETRYCOLLECTION Z (LINESTRING Z (1 2 3,4 5 6))',
-        'GEOMETRYCOLLECTION (POLYGON ((1 2,1 3,2 3,2 2,1 2)))',
-        'GEOMETRYCOLLECTION Z (POLYGON Z ((1 2 10,1 3 -10,2 3 20,2 2 -20,1 2 10)))',
-        'GEOMETRYCOLLECTION (POINT (1 2),LINESTRING (1 2,3 4),POLYGON ((1 2,1 3,2 3,2 2,1 2)))',
-        'GEOMETRYCOLLECTION Z (POINT Z (1 2 3),LINESTRING Z (1 2 3,4 5 6),POLYGON Z ((1 2 10,1 3 -10,2 3 20,2 2 -20,1 2 10)))',
-    ]
-
+    wkts = ogrtest.get_wkt_data_series(with_z=True, with_m=True, with_gc=False, with_circular=False, with_surface=False)
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(4326)
 
     num_layer = 0
-    for wkt in geometries:
+    for wkt in wkts:
         # print(wkt)
         geom = ogr.CreateGeometryFromWkt(wkt)
         if bUseComprGeom:
@@ -1602,12 +1551,12 @@ def test_ogr_spatialite_5(require_spatialite, bUseComprGeom):
         feat.SetGeometry(geom)
         lyr.CreateFeature(feat)
         num_layer = num_layer + 1
-
+    
     ds = None
 
     ds = ogr.Open('tmp/ogr_spatialite_5.sqlite')
     num_layer = 0
-    for wkt in geometries:
+    for wkt in wkts:
         geom = ogr.CreateGeometryFromWkt(wkt)
         lyr = ds.GetLayer(num_layer)
         assert lyr.GetGeomType() == geom.GetGeometryType()
@@ -1625,7 +1574,7 @@ def test_ogr_spatialite_5(require_spatialite, bUseComprGeom):
 
     if bUseComprGeom:
         num_layer = 0
-        for wkt in geometries:
+        for wkt in wkts:
             if wkt.find('EMPTY') == -1 and wkt.find('POINT') == -1:
                 sql_lyr = ds.ExecuteSQL("SELECT GEOMETRY == CompressGeometry(GEOMETRY) FROM test%d" % num_layer)
                 feat = sql_lyr.GetNextFeature()
