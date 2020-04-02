@@ -291,30 +291,30 @@ void GDALMDReaderPleiades::LoadMetadata()
  * LoadRPCXmlFile()
  */
 
-static const char * const apszRPBMap[] = {
-    RPC_LINE_OFF,   "RFM_Validity.LINE_OFF", // do not change order !
-    RPC_SAMP_OFF,   "RFM_Validity.SAMP_OFF", // do not change order !
-    RPC_LAT_OFF,    "RFM_Validity.LAT_OFF",
-    RPC_LONG_OFF,   "RFM_Validity.LONG_OFF",
-    RPC_HEIGHT_OFF, "RFM_Validity.HEIGHT_OFF",
-    RPC_LINE_SCALE, "RFM_Validity.LINE_SCALE",
-    RPC_SAMP_SCALE, "RFM_Validity.SAMP_SCALE",
-    RPC_LAT_SCALE,  "RFM_Validity.LAT_SCALE",
-    RPC_LONG_SCALE, "RFM_Validity.LONG_SCALE",
-    RPC_HEIGHT_SCALE,   "RFM_Validity.HEIGHT_SCALE",
-    nullptr,             nullptr };
-
-static const char * const apszRPCTXT20ValItems[] =
-{
-    RPC_LINE_NUM_COEFF,
-    RPC_LINE_DEN_COEFF,
-    RPC_SAMP_NUM_COEFF,
-    RPC_SAMP_DEN_COEFF,
-    nullptr
-};
-
 char** GDALMDReaderPleiades::LoadRPCXmlFile()
 {
+    static const char * const apszRPBMap[] = {
+        RPC_LINE_OFF,   "RFM_Validity.LINE_OFF", // do not change order !
+        RPC_SAMP_OFF,   "RFM_Validity.SAMP_OFF", // do not change order !
+        RPC_LAT_OFF,    "RFM_Validity.LAT_OFF",
+        RPC_LONG_OFF,   "RFM_Validity.LONG_OFF",
+        RPC_HEIGHT_OFF, "RFM_Validity.HEIGHT_OFF",
+        RPC_LINE_SCALE, "RFM_Validity.LINE_SCALE",
+        RPC_SAMP_SCALE, "RFM_Validity.SAMP_SCALE",
+        RPC_LAT_SCALE,  "RFM_Validity.LAT_SCALE",
+        RPC_LONG_SCALE, "RFM_Validity.LONG_SCALE",
+        RPC_HEIGHT_SCALE,   "RFM_Validity.HEIGHT_SCALE",
+        nullptr,             nullptr };
+
+    static const char * const apszRPCTXT20ValItems[] =
+    {
+        RPC_LINE_NUM_COEFF,
+        RPC_LINE_DEN_COEFF,
+        RPC_SAMP_NUM_COEFF,
+        RPC_SAMP_DEN_COEFF,
+        nullptr
+    };
+
     CPLXMLNode* pNode = CPLParseXMLFile(m_osRPBSourceFilename);
 
     if(nullptr == pNode)

@@ -245,25 +245,25 @@ char** GDALMDReaderDigitalGlobe::LoadIMDXmlNode(CPLXMLNode* psNode)
 /**
  * GDALLoadRPBXmlNode()
  */
-static const char * const apszRPBMap[] = {
-    RPC_LINE_OFF,   "image.lineOffset",
-    RPC_SAMP_OFF,   "image.sampOffset",
-    RPC_LAT_OFF,    "image.latOffset",
-    RPC_LONG_OFF,   "image.longOffset",
-    RPC_HEIGHT_OFF, "image.heightOffset",
-    RPC_LINE_SCALE, "image.lineScale",
-    RPC_SAMP_SCALE, "image.sampScale",
-    RPC_LAT_SCALE,  "image.latScale",
-    RPC_LONG_SCALE, "image.longScale",
-    RPC_HEIGHT_SCALE,   "image.heightScale",
-    RPC_LINE_NUM_COEFF, "image.lineNumCoefList.lineNumCoef",
-    RPC_LINE_DEN_COEFF, "image.lineDenCoefList.lineDenCoef",
-    RPC_SAMP_NUM_COEFF, "image.sampNumCoefList.sampNumCoef",
-    RPC_SAMP_DEN_COEFF, "image.sampDenCoefList.sampDenCoef",
-    nullptr,             nullptr };
-
 char** GDALMDReaderDigitalGlobe::LoadRPBXmlNode(CPLXMLNode* psNode)
 {
+    static const char * const apszRPBMap[] = {
+        RPC_LINE_OFF,   "image.lineOffset",
+        RPC_SAMP_OFF,   "image.sampOffset",
+        RPC_LAT_OFF,    "image.latOffset",
+        RPC_LONG_OFF,   "image.longOffset",
+        RPC_HEIGHT_OFF, "image.heightOffset",
+        RPC_LINE_SCALE, "image.lineScale",
+        RPC_SAMP_SCALE, "image.sampScale",
+        RPC_LAT_SCALE,  "image.latScale",
+        RPC_LONG_SCALE, "image.longScale",
+        RPC_HEIGHT_SCALE,   "image.heightScale",
+        RPC_LINE_NUM_COEFF, "image.lineNumCoefList.lineNumCoef",
+        RPC_LINE_DEN_COEFF, "image.lineDenCoefList.lineDenCoef",
+        RPC_SAMP_NUM_COEFF, "image.sampNumCoefList.sampNumCoef",
+        RPC_SAMP_DEN_COEFF, "image.sampDenCoefList.sampDenCoef",
+        nullptr,             nullptr };
+
     if(nullptr == psNode)
         return nullptr;
     char** papszList = nullptr;
