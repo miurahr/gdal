@@ -151,7 +151,7 @@ constexpr int aoEllipsUsgs[] =
     0       // FIXME: WGS 60 --- skipped
 };
 
-#define NUMBER_OF_ELLIPSOIDS    static_cast<int>(CPL_ARRAYSIZE(aoEllipsUsgs))
+#define NUMBER_OF_ELLIPSOIDS_USGS    static_cast<int>(CPL_ARRAYSIZE(aoEllipsUsgs))
 
 /************************************************************************/
 /*                         OSRImportFromUSGS()                          */
@@ -740,7 +740,7 @@ OGRErr OGRSpatialReference::importFromUSGS( long iProjSys, long iZone,
                 }
             }
         }
-        else if( iDatum < NUMBER_OF_ELLIPSOIDS && aoEllipsUsgs[iDatum] )
+        else if( iDatum < NUMBER_OF_ELLIPSOIDS_USGS && aoEllipsUsgs[iDatum] )
         {
             if( OSRGetEllipsoidInfo( aoEllipsUsgs[iDatum], &pszName,
                                      &dfSemiMajor,
@@ -770,7 +770,7 @@ OGRErr OGRSpatialReference::importFromUSGS( long iProjSys, long iZone,
             CPLError( CE_Warning, CPLE_AppDefined,
                       "Wrong datum code %d. Supported datums 0--%d only.  "
                       "Setting WGS84 as a fallback.",
-                      static_cast<int>(iDatum), NUMBER_OF_ELLIPSOIDS );
+                      static_cast<int>(iDatum), NUMBER_OF_ELLIPSOIDS_USGS );
             SetWellKnownGeogCS( "WGS84" );
         }
 
@@ -1173,7 +1173,7 @@ OGRErr OGRSpatialReference::exportToUSGS( long *piProjSys, long *piZone,
 #endif
 
             int i = 0;  // Used after for.
-            for( ; i < NUMBER_OF_ELLIPSOIDS; i++ )
+            for( ; i < NUMBER_OF_ELLIPSOIDS_USGS; i++ )
             {
                 double dfSM = 0.0;
                 double dfIF = 0.0;
@@ -1188,7 +1188,7 @@ OGRErr OGRSpatialReference::exportToUSGS( long *piProjSys, long *piZone,
                 }
             }
 
-            if( i == NUMBER_OF_ELLIPSOIDS )  // Didn't found matches; set
+            if( i == NUMBER_OF_ELLIPSOIDS_USGS )  // Didn't found matches; set
             {                                // custom ellipsoid parameters.
 #ifdef DEBUG
                 CPLDebug( "OSR_USGS",

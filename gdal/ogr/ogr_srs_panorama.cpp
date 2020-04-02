@@ -146,7 +146,7 @@ constexpr int aoEllipsPanorama[] =
     7003   // Australian National, 1965
 };
 
-constexpr int NUMBER_OF_ELLIPSOIDS = static_cast<int>(CPL_ARRAYSIZE(aoEllipsPanorama));
+constexpr int NUMBER_OF_ELLIPSOIDS_PANORAMA = static_cast<int>(CPL_ARRAYSIZE(aoEllipsPanorama));
 
 /************************************************************************/
 /*                        OSRImportFromPanorama()                       */
@@ -437,7 +437,7 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
             CopyGeogCSFrom( &oGCS );
         }
         else if( iEllips > 0
-                 && iEllips < NUMBER_OF_ELLIPSOIDS
+                 && iEllips < NUMBER_OF_ELLIPSOIDS_PANORAMA
                  && aoEllipsPanorama[iEllips] )
         {
             char *pszName = nullptr;
@@ -795,7 +795,7 @@ OGRErr OGRSpatialReference::exportToPanorama( long *piProjSys, long *piDatum,
 #endif
 
         int i = 0;  // Used after for.
-        for( ; i < NUMBER_OF_ELLIPSOIDS; i++ )
+        for( ; i < NUMBER_OF_ELLIPSOIDS_PANORAMA; i++ )
         {
             if( aoEllipsPanorama[i] )
             {
@@ -813,7 +813,7 @@ OGRErr OGRSpatialReference::exportToPanorama( long *piProjSys, long *piDatum,
             }
         }
 
-        if( i == NUMBER_OF_ELLIPSOIDS )  // Didn't found matches.
+        if( i == NUMBER_OF_ELLIPSOIDS_PANORAMA )  // Didn't found matches.
         {
 #ifdef DEBUG
             CPLDebug( "OSR_Panorama",
