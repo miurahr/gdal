@@ -27,6 +27,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_RAW_ATLSCI_SPHEROID_H
+#define GDAL_FRMTS_RAW_ATLSCI_SPHEROID_H
+
 #include "cpl_port.h"
 
 /**********************************************************************/
@@ -85,3 +88,5 @@ class SpheroidList
   double GetSpheroidPolarRadius( const char *spheroid_name );
   double GetSpheroidInverseFlattening( const char *spheroid_name );
 };
+
+#endif //GDAL_FRMTS_RAW_ATLSCI_SPHEROID_H
