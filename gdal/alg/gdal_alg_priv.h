@@ -34,8 +34,15 @@
 
 #ifndef DOXYGEN_SKIP
 
+#include "cpl_port.h"
 #include "gdal_alg.h"
 #include "ogr_spatialref.h"
+
+
+CPL_INLINE static int MAKE_COLOR_CODE( int r, int g, int b )
+{
+    return r | (g << 8) | (b << 16);
+}
 
 CPL_C_START
 

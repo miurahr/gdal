@@ -79,11 +79,6 @@
 
 CPL_CVSID("$Id$")
 
-static int MAKE_COLOR_CODE( int r, int g, int b )
-{
-  return r | (g << 8) | (b << 16);
-}
-
 static void FindNearestColor( int nColors, int *panPCT, GByte *pabyColorMap,
                               int nCLevels );
 static int FindNearestColor( int nColors, int *panPCT,

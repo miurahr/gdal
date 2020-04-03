@@ -61,11 +61,6 @@ template<typename T> static T* HISTOGRAM( T *h, int n, int r, int g, int b )
     return &h[index];
 }
 
-static int MAKE_COLOR_CODE( int r, int g, int b )
-{
-    return r + g * 256 + b * 256 * 256;
-}
-
 // NOTE: If changing the size of this structure, edit
 // MEDIAN_CUT_AND_DITHER_BUFFER_SIZE_65536 in gdal_alg_priv.h and take into
 // account ColorIndex in gdaldither.cpp.
