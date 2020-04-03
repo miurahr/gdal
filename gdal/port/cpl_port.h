@@ -887,14 +887,9 @@ template<> struct CPLStaticAssert<true>
 
 /*! @cond Doxygen_Suppress */
 #ifndef DISABLE_CVSID
-#if defined(__GNUC__) && __GNUC__ >= 4
-#  define CPL_CVSID(string)     static const char cpl_cvsid[] __attribute__((used)) = string;
-#else
-#  define CPL_CVSID(string)     static const char cpl_cvsid[] = string; \
+static const char cpl_cvsid[] __attribute__((used)) = "$id$";
 static const char *cvsid_aw() { return( cvsid_aw() ? NULL : cpl_cvsid ); }
-#endif
-#else
-#  define CPL_CVSID(string)
+#define CPL_CVSID(string)
 #endif
 /*! @endcond */
 
