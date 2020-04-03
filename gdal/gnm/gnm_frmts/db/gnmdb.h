@@ -29,6 +29,8 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GNMDB_H
+#define GNMDB_H
 #include "gnm.h"
 
 class GNMDatabaseNetwork : public GNMGenericNetwork
@@ -59,3 +61,4 @@ protected:
     GDALDataset* m_poDS;
     CPLString m_soNetworkFullName;
 };
+#endif

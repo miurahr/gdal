@@ -29,6 +29,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GNMFILE_H
+#define GNMFILE_H
+
 #include "gnm.h"
 
 #define GNM_MD_DEFAULT_FILE_FORMAT  "ESRI Shapefile"
@@ -73,3 +76,5 @@ protected:
     GDALDataset* m_pFeaturesDS;
     std::map<OGRLayer*, GDALDataset*> m_mpLayerDatasetMap;
 };
+
+#endif
