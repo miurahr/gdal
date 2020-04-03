@@ -13,6 +13,9 @@ limitations under the License.
 Contributors:  Lucian Plesea
 */
 
+#ifndef GDAL_FRMTS_MRF_PACKER_RLE_H
+#define GDAL_FRMTS_MRF_PACKER_RLE_H
+
 #include "Packer.h"
 
 NAMESPACE_MRF_START
@@ -23,3 +26,5 @@ public:
     virtual int store(storage_manager *src, storage_manager *dst) override;
 };
 NAMESPACE_MRF_END
+
+#endif // GDAL_FRMTS_MRF_PACKER_RLE_H

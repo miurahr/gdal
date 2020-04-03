@@ -31,6 +31,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_NITFDATASET_H
+#define GDAL_FRMTS_NITFDATASET_H
+
 #include "gdal_pam.h"
 #include "nitflib.h"
 #include "ogr_spatialref.h"
@@ -370,3 +373,6 @@ class NITFWrapperRasterBand final: public NITFProxyPamRasterBand
     /* Specific method */
     void                    SetColorTableFromNITFBandInfo();
 };
+
+
+#endif //GDAL_FRMTS_NITFDATASET_H

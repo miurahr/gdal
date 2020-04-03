@@ -28,6 +28,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_WMS_MINIDRIVER_WMS_H
+#define GDAL_FRMTS_WMS_MINIDRIVER_WMS_H
+
 /*
  * Base class for a WMS minidriver.
  * At least Initialize() and one of the ImageRequest() or TiledImageRequest() has to be provided
@@ -69,3 +72,4 @@ protected:
     CPLString m_bbox_order;
     CPLString m_transparent;
 };
+#endif // GDAL_FRMTS_WMS_MINIDRIVER_WMS_H

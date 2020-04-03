@@ -28,6 +28,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_WMS_MINIDRIVER_TILED_H
+#define GDAL_FRMTS_WMS_MINIDRIVER_TILED_H
+
 class WMSMiniDriver_TiledWMS : public WMSMiniDriver {
 
 public:
@@ -47,3 +50,4 @@ protected:
     int m_bsx;
     int m_bsy;
 };
+#endif // GDAL_FRMTS_WMS_MINIDRIVER_TILED_H

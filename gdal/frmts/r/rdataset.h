@@ -27,6 +27,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
+#ifndef GDAL_FRMTS_RDATASET.H
+#define GDAL_FRMTS_RDATASET.H
 
 #include <cstddef>
 #include <cstdlib>
@@ -102,3 +104,5 @@ class RRasterBand final: public GDALPamRasterBand
 
     virtual CPLErr          IReadBlock( int, int, void * ) override;
 };
+
+#endif // GDAL_FRMTS_RDATASET.H

@@ -28,6 +28,9 @@
 * DEALINGS IN THE SOFTWARE.
 *****************************************************************************/
 
+#ifndef GDAL_FRMTS_INGR_INTERGRAPH_BAND_H
+#define GDAL_FRMTS_INGR_INTERGRAPH_BAND_H
+
 #include "IngrTypes.h"
 
 //  ----------------------------------------------------------------------------
@@ -148,3 +151,5 @@ public:
 
     virtual CPLErr IReadBlock( int nBlockXOff, int nBlockYOff, void *pImage ) override;
 };
+
+#endif // GDAL_FRMTS_INGR_INTERGRAPH_BAND_H

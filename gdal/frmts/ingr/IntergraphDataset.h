@@ -28,6 +28,9 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
+#ifndef GDAL_FRMTS_INGR_INTERGRAPH_DATESET_H
+#define GDAL_FRMTS_INGR_INTERGRAPH_DATESET_H
+
 #include "IngrTypes.h"
 
 //  ----------------------------------------------------------------------------
@@ -75,3 +78,4 @@ public:
         return OldSetProjectionFromSetSpatialRef(poSRS);
     }
 };
+#endif // GDAL_FRMTS_INGR_INTERGRAPH_DATESET_H

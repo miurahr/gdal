@@ -29,6 +29,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_WCSDATASET_H
+#define GDAL_FRMTS_WCSDATASET_H
+
 /************************************************************************/
 /* ==================================================================== */
 /*                              WCSDataset                              */
@@ -236,3 +239,5 @@ class WCSDataset201 final: public WCSDataset110
         "UpdateSequence", "GEOTIFF:COMPRESSION", "GEOTIFF:JPEG_QUALITY", \
         "GEOTIFF:PREDICTOR", "GEOTIFF:INTERLEAVE", "GEOTIFF:TILING",    \
         "GEOTIFF:TILEWIDTH"
+
+#endif // GDAL_FRMTS_WCSDATASET_H
