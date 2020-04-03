@@ -45,7 +45,9 @@
 #endif
 
 // For atoll (at least for NetBSD)
+#ifndef _ISOC99_SOURCE
 #define _ISOC99_SOURCE
+#endif
 
 #ifdef MSVC_USE_VLD
 #include <vld.h>
