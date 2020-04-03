@@ -92,7 +92,9 @@ void VSICurlStreamingClearCache( void )
 
 #include <curl/curl.h>
 
+#ifndef ENABLE_DEBUG
 #define ENABLE_DEBUG        0
+#endif
 
 #define N_MAX_REGIONS       10
 

@@ -90,8 +90,12 @@ int VSICurlUninstallReadCbk( VSILFILE* /* fp */ )
 //! @cond Doxygen_Suppress
 #ifndef DOXYGEN_SKIP
 
+#ifndef ENABLE_DEBUG
 #define ENABLE_DEBUG 1
+#endif
+#ifndef ENALBE_DEBUG_VERBOSE
 #define ENABLE_DEBUG_VERBOSE 0
+#endif
 
 static int N_MAX_REGIONS = 1000;
 static int DOWNLOAD_CHUNK_SIZE = 16384;
