@@ -121,7 +121,7 @@ constexpr int aoDatums[] =
 /*  Correspondence between "Panorama" and EPSG ellipsoid codes.         */
 /************************************************************************/
 
-constexpr int aoEllips[] =
+constexpr int aoEllipsPanorama[] =
 {
     0,
     7024,   // Krassovsky, 1940
@@ -146,7 +146,7 @@ constexpr int aoEllips[] =
     7003   // Australian National, 1965
 };
 
-constexpr int NUMBER_OF_ELLIPSOIDS = static_cast<int>(CPL_ARRAYSIZE(aoEllips));
+constexpr int NUMBER_OF_ELLIPSOIDS = static_cast<int>(CPL_ARRAYSIZE(aoEllipsPanorama));
 
 /************************************************************************/
 /*                        OSRImportFromPanorama()                       */
@@ -438,13 +438,13 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
         }
         else if( iEllips > 0
                  && iEllips < NUMBER_OF_ELLIPSOIDS
-                 && aoEllips[iEllips] )
+                 && aoEllipsPanorama[iEllips] )
         {
             char *pszName = nullptr;
             double dfSemiMajor = 0.0;
             double dfInvFlattening = 0.0;
 
-            if( OSRGetEllipsoidInfo( aoEllips[iEllips], &pszName,
+            if( OSRGetEllipsoidInfo( aoEllipsPanorama[iEllips], &pszName,
                                      &dfSemiMajor,
                                      &dfInvFlattening ) == OGRERR_NONE )
             {
@@ -456,7 +456,7 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
                        "Not specified (based on %s spheroid)", pszName ),
                    pszName, dfSemiMajor, dfInvFlattening,
                    nullptr, 0.0, nullptr, 0.0 );
-                SetAuthority( "SPHEROID", "EPSG", aoEllips[iEllips] );
+                SetAuthority( "SPHEROID", "EPSG", aoEllipsPanorama[iEllips] );
             }
             else
             {
@@ -797,12 +797,12 @@ OGRErr OGRSpatialReference::exportToPanorama( long *piProjSys, long *piDatum,
         int i = 0;  // Used after for.
         for( ; i < NUMBER_OF_ELLIPSOIDS; i++ )
         {
-            if( aoEllips[i] )
+            if( aoEllipsPanorama[i] )
             {
                 double dfSM = 0.0;
                 double dfIF = 1.0;
 
-                if( OSRGetEllipsoidInfo( aoEllips[i], nullptr,
+                if( OSRGetEllipsoidInfo( aoEllipsPanorama[i], nullptr,
                                          &dfSM, &dfIF ) == OGRERR_NONE
                     && std::abs(dfSemiMajor - dfSM) < 1e-10 * dfSemiMajor
                     && std::abs(dfInvFlattening - dfIF) < 1e-10 * dfInvFlattening )
