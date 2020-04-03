@@ -37,6 +37,7 @@
 #include "cpl_conv.h"
 #include "cpl_error.h"
 #include "cpl_string.h"
+#include "cpl_simplejson.h"
 
 
 CPL_CVSID("$Id$")
@@ -60,43 +61,6 @@ CPL_CVSID("$Id$")
 #define GDAL_CLIENT_SECRET "0IbTUDOYzaL6vnIdWTuQnvLz"
 
 #define GOOGLE_AUTH_URL "https://accounts.google.com/o/oauth2"
-
-/************************************************************************/
-/*                          ParseSimpleJson()                           */
-/*                                                                      */
-/*      Return a string list of name/value pairs extracted from a       */
-/*      JSON doc.  The Google OAuth2 web service returns simple JSON    */
-/*      responses.  The parsing as done currently is very fragile       */
-/*      and depends on JSON documents being in a very very simple       */
-/*      form.                                                           */
-/************************************************************************/
-
-static CPLStringList ParseSimpleJson(const char *pszJson)
-
-{
-/* -------------------------------------------------------------------- */
-/*      We are expecting simple documents like the following with no    */
-/*      hierarchy or complex structure.                                 */
-/* -------------------------------------------------------------------- */
-/*
-    {
-        "access_token":"1/fFBGRNJru1FQd44AzqT3Zg",
-        "expires_in":3920,
-        "token_type":"Bearer"
-    }
-*/
-
-    CPLStringList oWords(
-        CSLTokenizeString2(pszJson, " \n\t,:{}", CSLT_HONOURSTRINGS ));
-    CPLStringList oNameValue;
-
-    for( int i=0; i < oWords.size(); i += 2 )
-    {
-        oNameValue.SetNameValue(oWords[i], oWords[i+1]);
-    }
-
-    return oNameValue;
-}
 
 /************************************************************************/
 /*                      GOA2GetAuthorizationURL()                       */
