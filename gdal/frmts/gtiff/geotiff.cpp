@@ -19499,7 +19499,7 @@ static void GTiffTagExtender(TIFF *tif)
 #include <dlfcn.h>
 #endif
 
-static std::mutex oDeleteMutex;
+static std::mutex oGeotiffDeleteMutex;
 #ifdef HAVE_LERC
 static TIFFCodec* pLercCodec = nullptr;
 #endif
@@ -19507,7 +19507,7 @@ static TIFFCodec* pLercCodec = nullptr;
 int GTiffOneTimeInit()
 
 {
-    std::lock_guard<std::mutex> oLock(oDeleteMutex);
+    std::lock_guard<std::mutex> oLock(oGeotiffDeleteMutex);
  
 #ifdef HAVE_LERC
     if( pLercCodec == nullptr )
