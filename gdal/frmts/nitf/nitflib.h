@@ -36,6 +36,8 @@
 #include "cpl_vsi.h"
 #include "cpl_minixml.h"
 
+CPL_INLINE static void CPL_IGNORE_RET_VAL_INT(CPL_UNUSED int unused) {}
+
 CPL_C_START
 
 typedef struct {

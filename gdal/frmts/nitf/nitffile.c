@@ -36,8 +36,6 @@
 
 CPL_CVSID("$Id$")
 
-CPL_INLINE static void CPL_IGNORE_RET_VAL_INT(CPL_UNUSED int unused) {}
-
 static int NITFWriteBLOCKA( VSILFILE* fp, vsi_l_offset nOffsetUDIDL,
                             int *pnOffset,
                             char **papszOptions );
