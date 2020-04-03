@@ -45,10 +45,10 @@ CPL_CVSID("$Id$")
 #ifdef HAVE_CURL
 
 /************************************************************************/
-/*                            GetSignature()                            */
+/*                            GetAribabaSignature()                            */
 /************************************************************************/
 
-static CPLString GetSignature(const CPLString& osStringToSign,
+static CPLString GetAribabaSignature(const CPLString& osStringToSign,
                               const CPLString& osSecretAccessKey )
 {
 
@@ -110,7 +110,7 @@ CPLGetOSSHeaders( const CPLString& osSecretAccessKey,
     CPLString osAuthorization("OSS ");
     osAuthorization += osAccessKeyId;
     osAuthorization += ":";
-    osAuthorization += GetSignature(osStringToSign, osSecretAccessKey);
+    osAuthorization += GetAribabaSignature(osStringToSign, osSecretAccessKey);
 
 #ifdef DEBUG_VERBOSE
     CPLDebug("OSS", "osAuthorization='%s'", osAuthorization.c_str());
@@ -433,7 +433,7 @@ CPLString VSIOSSHandleHelper::GetSignedURL(CSLConstList papszOptions)
     CPLDebug("OSS", "osStringToSign = %s", osStringToSign.c_str());
 #endif
 
-    CPLString osSignature(GetSignature(osStringToSign, m_osSecretAccessKey));
+    CPLString osSignature(GetAribabaSignature(osStringToSign, m_osSecretAccessKey));
 
     ResetQueryParameters();
     //  Note: https://www.alibabacloud.com/help/doc-detail/31952.htm?spm=a3c0i.o32002en.b99.294.6d70a0fc7cRJfJ is wrong on the name of the OSSAccessKeyId parameter !

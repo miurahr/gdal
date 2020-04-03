@@ -39,10 +39,10 @@ CPL_CVSID("$Id$")
 #ifdef HAVE_CURL
 
 /************************************************************************/
-/*                            GetSignature()                            */
+/*                            GetAzureSignature()                            */
 /************************************************************************/
 
-static CPLString GetSignature(const CPLString& osStringToSign,
+static CPLString GetAzureSignature(const CPLString& osStringToSign,
                               const CPLString& osStorageKeyB64 )
 {
 
@@ -142,7 +142,7 @@ struct curl_slist* GetAzureBlobHeaders( const CPLString& osVerb,
 /* -------------------------------------------------------------------- */
 
     CPLString osAuthorization("SharedKey " + osStorageAccount + ":" +
-                              GetSignature(osStringToSign, osStorageKeyB64));
+                              GetAzureSignature(osStringToSign, osStorageKeyB64));
 
     struct curl_slist *headers=nullptr;
     headers = curl_slist_append(
@@ -459,7 +459,7 @@ CPLString VSIAzureBlobHandleHelper::GetSignedURL(CSLConstList papszOptions)
 /* -------------------------------------------------------------------- */
 /*      Compute signature.                                              */
 /* -------------------------------------------------------------------- */
-    CPLString osSignature(GetSignature(osStringToSign, m_osStorageKey));
+    CPLString osSignature(GetAzureSignature(osStringToSign, m_osStorageKey));
 
     ResetQueryParameters();
     AddQueryParameter("sv", "2012-02-12");
