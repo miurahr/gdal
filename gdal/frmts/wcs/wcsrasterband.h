@@ -27,6 +27,8 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_WCS_WCSRASTERBAND_H
+#define GDAL_FRMTS_WCS_WCSRASTERBAND_H
 /************************************************************************/
 /* ==================================================================== */
 /*                            WCSRasterBand                             */
@@ -62,3 +64,5 @@ class WCSRasterBand final: public GDALPamRasterBand
 
     virtual CPLErr IReadBlock( int, int, void * ) override;
 };
+
+#endif // GDAL_FRMTS_WCS_WCSRASTERBAND_H

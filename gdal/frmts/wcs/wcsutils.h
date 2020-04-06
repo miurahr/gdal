@@ -29,6 +29,9 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef GDAL_FRMTS_WCS_WCSUTIL_H
+#define GDAL_FRMTS_WCS_WCSUTIL_H
+
 #include "cpl_string.h"
 #include "cpl_minixml.h"
 #include <vector>
@@ -135,3 +138,5 @@ std::vector<std::vector<int> > ParseGridEnvelope(CPLXMLNode *node,
 std::vector<CPLString> ParseBoundingBox(CPLXMLNode *node);
 
 }
+
+#endif // GDAL_FRMTS_WCS_WCSUTIL_H

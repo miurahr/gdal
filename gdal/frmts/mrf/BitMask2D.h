@@ -13,6 +13,9 @@ limitations under the License.
 Contributors:  Lucian Plesea
 */
 
+#ifndef GDAL_FRMTS_MRF_BITMASK2D_H
+#define GDAL_FRMTS_MRF_BITMASK2D_H
+
 /*
 
 A 2D bitmask stored in 4x4 or 8x8 units
@@ -202,3 +205,5 @@ private:
 #undef TGSIZE
 NAMESPACE_MRF_END
 #endif
+
+#endif // GDAL_FRMTS_MRF_BITMASK2D_H

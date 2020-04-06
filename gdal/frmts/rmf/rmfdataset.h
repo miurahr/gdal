@@ -27,6 +27,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
+#ifndef GDAL_FRMTS_RMF_RMFDATASET_H
+#define GDAL_FRMTS_RMF_RMFDATASET_H
 
 #include <list>
 #include "gdal_priv.h"
@@ -364,3 +366,4 @@ class RMFRasterBand final: public GDALRasterBand
                                       GSpacing nPixelSpace, GSpacing nLineSpace,
                                       GDALRasterIOExtraArg* psExtraArg ) override;
 };
+#endif // GDAL_FRMTS_RMF_RMFDATASET_H
