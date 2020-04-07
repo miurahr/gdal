@@ -32,6 +32,7 @@
 
 #ifndef DOXYGEN_SKIP
 
+#include <cpl_string.h>
 #include "cpl_port.h"
 #include "gdal_utils.h"
 
@@ -157,6 +158,29 @@ struct GDALMultiDimTranslateOptionsForBinary
 };
 
 CPL_C_END
+
+/************************************************************************/
+/*                            IsNumber()                               */
+/************************************************************************/
+
+CPL_INLINE static bool IsNumber(const char* pszStr)
+{
+    if (*pszStr == '-' || *pszStr == '+')
+        pszStr ++;
+    if (*pszStr == '.')
+        pszStr ++;
+    return (*pszStr >= '0' && *pszStr <= '9');
+}
+
+/************************************************************************/
+/*                            ArgIsNumeric()                            */
+/************************************************************************/
+
+CPL_INLINE static int ArgIsNumeric( const char *pszArg )
+
+{
+    return CPLGetValueType(pszArg) != CPL_VALUE_STRING;
+}
 
 #endif /* #ifndef DOXYGEN_SKIP */
 

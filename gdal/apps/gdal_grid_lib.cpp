@@ -617,13 +617,13 @@ static CPLErr ProcessLayer( OGRLayerH hSrcLayer, GDALDatasetH hDstDS,
 }
 
 /************************************************************************/
-/*                            LoadGeometry()                            */
+/*                            LoadGridGeometry()                            */
 /*                                                                      */
 /*  Read geometries from the given dataset using specified filters and  */
 /*  returns a collection of read geometries.                            */
 /************************************************************************/
 
-static OGRGeometryCollection* LoadGeometry( const char* pszDS,
+static OGRGeometryCollection* LoadGridGeometry( const char* pszDS,
                                             const char* pszSQL,
                                             const char* pszLyr,
                                             const char* pszWhere )
@@ -963,19 +963,6 @@ GDALDatasetH GDALGrid( const char *pszDest, GDALDatasetH hSrcDataset,
 }
 
 /************************************************************************/
-/*                            IsNumber()                               */
-/************************************************************************/
-
-static bool IsNumber(const char* pszStr)
-{
-    if (*pszStr == '-' || *pszStr == '+')
-        pszStr ++;
-    if (*pszStr == '.')
-        pszStr ++;
-    return *pszStr >= '0' && *pszStr <= '9';
-}
-
-/************************************************************************/
 /*                             GDALGridOptionsNew()                     */
 /************************************************************************/
 
@@ -1298,7 +1285,7 @@ GDALGridOptions *GDALGridOptionsNew(char** papszArgv, GDALGridOptionsForBinary* 
 
     if ( psOptions->bClipSrc && psOptions->pszClipSrcDS != nullptr )
     {
-        psOptions->poClipSrc = LoadGeometry( psOptions->pszClipSrcDS, psOptions->pszClipSrcSQL,
+        psOptions->poClipSrc = LoadGridGeometry( psOptions->pszClipSrcDS, psOptions->pszClipSrcSQL,
                                   psOptions->pszClipSrcLayer, psOptions->pszClipSrcWhere );
         if ( psOptions->poClipSrc == nullptr )
         {

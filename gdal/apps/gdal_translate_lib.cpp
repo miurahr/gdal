@@ -2194,16 +2194,6 @@ static void CopyBandInfo( GDALRasterBand * poSrcBand, GDALRasterBand * poDstBand
 }
 
 /************************************************************************/
-/*                            ArgIsNumeric()                            */
-/************************************************************************/
-
-int ArgIsNumeric( const char *pszArg )
-
-{
-    return CPLGetValueType(pszArg) != CPL_VALUE_STRING;
-}
-
-/************************************************************************/
 /*                             GetColorInterp()                         */
 /************************************************************************/
 

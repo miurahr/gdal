@@ -3239,16 +3239,6 @@ double GDALGeneric3x3RasterBand<T>::GetNoDataValue( int* pbHasNoData )
 }
 
 /************************************************************************/
-/*                            ArgIsNumeric()                            */
-/************************************************************************/
-
-static int ArgIsNumeric( const char *pszArg )
-
-{
-    return CPLGetValueType(pszArg) != CPL_VALUE_STRING;
-}
-
-/************************************************************************/
 /*                            GetAlgorithm()                            */
 /************************************************************************/
 
