@@ -49,9 +49,6 @@ GifFileType * EGifOpen(void* userData, OutputFunc writeFunc);
 
 CPL_C_END
 
-constexpr int InterlacedOffset[] = { 0, 4, 2, 1 };
-constexpr int InterlacedJumps[] = { 8, 8, 4, 2 };
-
 /************************************************************************/
 /*                          VSIGIFWriteFunc()                           */
 /*                                                                      */
@@ -166,7 +163,10 @@ CPLErr GIFRasterBand::IReadBlock( CPL_UNUSED int nBlockXOff,
 /*                            GIFDataset()                            */
 /************************************************************************/
 
-GIFDataset::GIFDataset() {}
+GIFDataset::GIFDataset() {
+    static constexpr int InterlacedOffset[] = { 0, 4, 2, 1 };
+    static constexpr int InterlacedJumps[] = { 8, 8, 4, 2 };
+}
 
 /************************************************************************/
 /*                                Open()                                */
