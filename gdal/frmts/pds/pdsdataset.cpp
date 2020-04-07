@@ -32,14 +32,6 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
-// Set up PDS NULL values
-constexpr int NULL1 = 0;
-constexpr int NULL2 = -32768;
-//#define NULL3 -0.3402822655089E+39
-//Same as ESRI_GRID_FLOAT_NO_DATA
-//#define NULL3 -340282346638528859811704183484516925440.0
-constexpr double NULL3 = -3.4028226550889044521e+38;
-
 #include "cpl_string.h"
 #include "gdal_frmts.h"
 #include "gdal_proxy.h"
@@ -96,6 +88,14 @@ class PDSDataset final: public RawDataset
     const char *GetKeywordUnit( const char *pszPath,
                                int iSubscript,
                                const char *pszDefault = "");
+
+    // Set up PDS NULL values
+    static constexpr int NULL1 = 0;
+    static constexpr int NULL2 = -32768;
+    //#define NULL3 -0.3402822655089E+39
+    //Same as ESRI_GRID_FLOAT_NO_DATA
+    //#define NULL3 -340282346638528859811704183484516925440.0
+    static constexpr double NULL3 = -3.4028226550889044521e+38;
 
   protected:
     virtual int         CloseDependentDatasets() override;

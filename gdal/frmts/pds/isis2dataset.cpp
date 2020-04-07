@@ -34,10 +34,6 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
-constexpr int NULL1 = 0;
-constexpr int NULL2 = -32768;
-constexpr double NULL3 = -3.4028226550889044521e+38;
-
 constexpr int RECORD_SIZE = 512;
 
 #include "cpl_string.h"
@@ -58,6 +54,10 @@ class ISIS2Dataset final: public RawDataset
 {
     VSILFILE     *fpImage;      // image data file.
     CPLString    osExternalCube;
+
+    static constexpr int NULL1 = 0;
+    static constexpr int NULL2 = -32768;
+    static constexpr double NULL3 = -3.4028226550889044521e+38;
 
     NASAKeywordHandler  oKeywords;
 

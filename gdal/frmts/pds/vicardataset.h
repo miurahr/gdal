@@ -98,6 +98,10 @@ class VICARDataset final: public RawDataset
                                 int nXSize, int nYSize, int nBands,
                                 GDALDataType eType, char ** papszOptions );
 
+    static constexpr int NULL1 = 0;
+    static constexpr int NULL2 = -32768;
+    static constexpr double NULL3 = -32768.0;
+
 public:
     VICARDataset();
     virtual ~VICARDataset();

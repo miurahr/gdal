@@ -28,10 +28,6 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 
-constexpr int NULL1 = 0;
-constexpr int NULL2 = -32768;
-constexpr double NULL3 = -32768.0;
-
 #include "cpl_port.h"
 #include "cpl_safemaths.hpp"
 #include "cpl_vax.h"
