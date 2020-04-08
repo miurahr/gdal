@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  APP ENVISAT Support
  * Purpose:  Low Level Envisat file access (read/write) API.
@@ -34,8 +33,6 @@
 #  define GDAL_BUILD
 #  include "cpl_conv.h"
 #  include "EnvisatFile.h"
-
-CPL_CVSID("$Id$")
 
 #else
 #  include "APP/app.h"

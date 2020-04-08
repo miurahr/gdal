@@ -2,7 +2,6 @@
 #define SHAPEFILE_H_INCLUDED
 
 /******************************************************************************
- * $Id$
  *
  * Project:  Shapelib
  * Purpose:  Primary include file for Shapelib.
@@ -114,21 +113,6 @@ extern "C" {
 
 #ifndef SHPAPI_CALL1
 #  define SHPAPI_CALL1(x)      x SHPAPI_CALL
-#endif
-
-/* -------------------------------------------------------------------- */
-/*      Macros for controlling CVSID and ensuring they don't appear     */
-/*      as unreferenced variables resulting in lots of warnings.        */
-/* -------------------------------------------------------------------- */
-#ifndef DISABLE_CVSID
-#  if defined(__GNUC__) && __GNUC__ >= 4
-#    define SHP_CVSID(string)     static const char cpl_cvsid[] __attribute__((used)) = string;
-#  else
-#    define SHP_CVSID(string)     static const char cpl_cvsid[] = string; \
-static const char *cvsid_aw() { return( cvsid_aw() ? NULL : cpl_cvsid ); }
-#  endif
-#else
-#  define SHP_CVSID(string)
 #endif
 
 /* -------------------------------------------------------------------- */

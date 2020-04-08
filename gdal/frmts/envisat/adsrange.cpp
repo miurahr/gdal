@@ -38,8 +38,6 @@ CPL_C_END
 
 #include <cmath>
 
-CPL_CVSID("$Id$")
-
 /* -------------------------------------------------------------------- */
 /*
  * data-set descriptor (private helper class)

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  APP ENVISAT Support
  * Purpose:  Low Level Envisat file access (read/write) API.
@@ -29,8 +28,6 @@
 
 #include "cpl_string.h"
 #include "records.h"
-
-CPL_CVSID("$Id$")
 
 /* --- ASAR record descriptors --------------------------------------------- */
 static const EnvisatFieldDescr ASAR_ANTENNA_ELEV_PATT_ADSR[] = {

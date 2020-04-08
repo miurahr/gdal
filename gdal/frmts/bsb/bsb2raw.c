@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  BSB Reader
  * Purpose:  Test program for dumping BSB to PPM raster format.
@@ -31,8 +30,6 @@
 #include "cpl_vsi.h"
 #include "cpl_conv.h"
 #include "bsb_read.h"
-
-CPL_CVSID("$Id$")
 
 /************************************************************************/
 /*                                main()                                */

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  GXF Reader
  * Purpose:  Majority of Geosoft GXF reading code.
@@ -33,8 +32,6 @@
 
 #include <ctype.h>
 #include "gxfopen.h"
-
-CPL_CVSID("$Id$")
 
 
 /* this is also defined in gdal.h which we avoid in this separable component */

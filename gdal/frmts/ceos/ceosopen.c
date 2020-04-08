@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  CEOS Translator
  * Purpose:  Implementation of non-GDAL dependent CEOS support.
@@ -29,8 +28,6 @@
  ****************************************************************************/
 
 #include "ceosopen.h"
-
-CPL_CVSID("$Id$")
 
 CPL_INLINE static void CPL_IGNORE_RET_VAL_INT(CPL_UNUSED int unused) {}
 

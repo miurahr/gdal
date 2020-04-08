@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  Shapelib
  * Purpose:  Implementation of core Shapefile read/write functions.
@@ -43,8 +42,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-
-SHP_CVSID("$Id$")
 
 typedef unsigned char uchar;
 

@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  GXF Reader
  * Purpose:  Handle GXF to PROJ.4 projection transformation.
@@ -29,8 +28,6 @@
  ****************************************************************************/
 
 #include "gxfopen.h"
-
-CPL_CVSID("$Id$")
 
 
 #define SAFE_strcat(x,y) snprintf(x + strlen(x),sizeof(x) - strlen(x), "%s", y)

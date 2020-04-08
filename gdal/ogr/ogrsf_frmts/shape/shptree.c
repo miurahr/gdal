@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  Shapelib
  * Purpose:  Implementation of quadtree building and searching functions.
@@ -45,8 +44,6 @@
 #ifdef USE_CPL
 #include "cpl_error.h"
 #endif
-
-SHP_CVSID("$Id$")
 
 #ifndef TRUE
 #  define TRUE 1

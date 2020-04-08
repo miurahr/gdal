@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  ASI CEOS Translator
  * Purpose:  Functions related to CeosSARVolume_t.
@@ -28,8 +27,6 @@
  ****************************************************************************/
 
 #include "ceos.h"
-
-CPL_CVSID("$Id$")
 
 extern Link_t *RecipeFunctions;
 

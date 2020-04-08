@@ -1,5 +1,4 @@
 /******************************************************************************
- * $Id$
  *
  * Project:  BSB Reader
  * Purpose:  Low level BSB Access API Implementation (non-GDAL).
@@ -36,8 +35,6 @@
 #include "bsb_read.h"
 #include "cpl_conv.h"
 #include "cpl_string.h"
-
-CPL_CVSID("$Id$")
 
 static int BSBReadHeaderLine( BSBInfo *psInfo, char* pszLine, int nLineMaxLen, int bNO1 );
 static int BSBSeekAndCheckScanlineNumber ( BSBInfo *psInfo, unsigned nScanline,

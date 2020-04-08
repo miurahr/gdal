@@ -49,8 +49,6 @@
 #include "ogrshape.h"
 #include "shapefil.h"
 
-CPL_CVSID("$Id$")
-
 /************************************************************************/
 /*                        RingStartEnd                                  */
 /*        Set first and last vertex for given ring.                     */

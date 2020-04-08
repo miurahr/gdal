@@ -40,8 +40,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-SHP_CVSID("$Id$")
-
 #ifndef TRUE
 #  define TRUE 1
 #  define FALSE 0
