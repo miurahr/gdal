@@ -1,0 +1,29 @@
+name: Build the project
+
+on: push
+
+jobs:
+  build-mac:
+    runs-on: macOS-latest
+    env:
+        CC: ccache cc
+        CXX: ccache c++
+    steps:
+    - name: Checkout GDAL master HEAD
+      uses: actions/checkout@v2
+    - name: Install dependency
+      run: |
+        brew update
+        brew outdated
+        brew install postgresql || brew link --overwrite postgresql
+        brew install proj geos postgis
+        brew uninstall --ignore-dependencies gdal
+    - name: Configure
+      run: |
+        (cd $GITHUB_WORKSPACE/gdal; ./configure --prefix=$HOME/install-gdal --enable-debug --with-jpeg12 \
+            --without-libtool --with-sqlite3=/usr/local/opt/sqlite --without-jasper --without-webp \
+            --with-expat=/usr/local/opt/expat/ --with-proj=/usr/local/opt/proj \
+            --with-xerces=/usr/local/opt/xerces-c/ )
+    - name: Build
+      run: |
+        (cd $GITHUB_WORKSPACE/gdal; make USER_DEFS="-Wextra -Werror" -j3)
