@@ -5,8 +5,8 @@ set -e
 ccache -M 1G
 ccache -s
 
-export CC="ccache gcc"
-export CXX="ccache g++"
+export CC="ccache cc"
+export CXX="ccache c++"
 
 SCRIPT_DIR=$(dirname "$0")
 case $SCRIPT_DIR in
