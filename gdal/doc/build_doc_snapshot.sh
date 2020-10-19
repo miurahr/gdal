@@ -3,6 +3,7 @@
 set -eu
 
 TAG=$1
+LANG=$2
 
 ARCHIVE="gdal${TAG}doc.zip"
 echo "Building ${ARCHIVE}..."
@@ -12,8 +13,13 @@ TMPDIR=gdaldoc
 rm -f .doxygen_up_to_date
 rm -rf build/html
 rm -rf build/latex
+if [ "x$LANG" = "x" ]; then
 make html
 make latexpdf
+else
+make -e SPHINXOPTS="-D language='$LANG'" html
+make -e SPHINXOPTS="-D language='$LANG'" latexpdf
+fi
 
 rm -rf "${TMPDIR}"
 mkdir ${TMPDIR}
